@@ -1,7 +1,6 @@
 package fr.lhdp.compagnon.client;
 
 import fr.lhdp.compagnon.Compagnon;
-import fr.lhdp.compagnon.entite.CompagnonEntity;
 import fr.lhdp.compagnon.fiche.Barre;
 import fr.lhdp.compagnon.livre.DonneesLivre;
 import fr.lhdp.compagnon.livre.EntreeCompetence;
@@ -9,7 +8,6 @@ import fr.lhdp.compagnon.reseau.PaquetLivre;
 import fr.lhdp.compagnon.reseau.PaquetRoue;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.locale.Language;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -57,7 +55,7 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int FLECHE_LARGEUR = 29;
 	private static final int FLECHE_HAUTEUR = 28;
 
-	private static final int PORTRAIT = 52;
+	private static final int PORTRAIT = 68;
 	private static final int PORTRAIT_SOURCE = 88;
 	private static final int SOULIGNEMENT_SOURCE_L = 159;
 	private static final int SOULIGNEMENT_SOURCE_H = 11;
@@ -132,6 +130,16 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int HAUTEUR_JAUGE = 8;
 	private static final int LIGNE = 11;
 
+	/** Les signets de navigation, poses sur le bord droit du livre. */
+	private static final int SIGNET_LARGEUR = 72;
+	private static final int SIGNET_HAUTEUR = 18;
+	private static final int SIGNET_ECART = 3;
+	private static final String[] SIGNETS = {
+			"livre.compagnon.onglet.aujourdhui",
+			"livre.compagnon.onglet.histoire",
+			"livre.compagnon.onglet.competences",
+			"livre.compagnon.onglet.missions"};
+
 	private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	private final DonneesLivre donnees;
@@ -151,11 +159,18 @@ public class EcranLivre extends EcranCompagnon {
 	private int haut;
 	private int page;
 
-	/** L'apercu en trois dimensions ; {@code null} tant qu'on ne l'a pas cree. */
-	private CompagnonEntity apercu;
+	/** De zero a un pendant que l'encre de la nouvelle double-page apparait. */
+	private float apparitionPage;
 
-	/** Passe a vrai si le rendu de l'entite echoue : on n'insiste pas. */
-	private boolean apercuAbandonne;
+	/** Le cote d'ou arrive la page : un pour la droite, moins un pour la gauche. */
+	private int sensPage = 1;
+
+	/** La vraie boite de la jauge d'XP, renseignee pendant le dessin. */
+	private int xpX, xpY, xpLargeur;
+
+	/** L'introduction ne se joue qu'a la premiere ouverture sur ce client. */
+	private boolean decouverte;
+	private long debutDecouverte;
 
 	public EcranLivre(DonneesLivre donnees, int combien, int index,
 			List<String> compagnons) {
@@ -171,6 +186,11 @@ public class EcranLivre extends EcranCompagnon {
 	protected void init() {
 		this.gauche = (this.width - LARGEUR) / 2;
 		this.haut = (this.height - HAUTEUR) / 2;
+		if (DecouverteLivre.premiereOuverture()) {
+			this.decouverte = true;
+			this.debutDecouverte = System.currentTimeMillis();
+			Bruits.decouverte();
+		}
 	}
 
 	@Override
@@ -184,13 +204,20 @@ public class EcranLivre extends EcranCompagnon {
 
 		g.blit(FOND, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
 		g.blit(SALISSURES, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+		ambiance(g);
 
 		this.missionSurvolee = -1;
 		onglets(g, sourisX, sourisY, partiel);
+		this.apparitionPage = Peinture.vers(this.apparitionPage, 1.0F, 0.24F, partiel);
+		float arrivee = Peinture.adoucir(this.apparitionPage);
+		int glissement = Math.round((1.0F - arrivee) * 9.0F) * this.sensPage;
+
+		g.pose().pushPose();
+		g.pose().translate(glissement, 0, 0);
 
 		if (this.page == PAGE_IDENTITE) {
 			pageIdentite(g, sourisX, sourisY);
-			pageSante(g);
+			pageAujourdhui(g);
 		} else if (this.page == PAGE_HISTOIRE) {
 			pageHistoire(g);
 			pageMoments(g);
@@ -199,12 +226,81 @@ public class EcranLivre extends EcranCompagnon {
 		} else {
 			pageMissions(g, sourisX, sourisY);
 		}
+		g.pose().popPose();
+
+		// Un voile couleur papier se retire pendant le glissement. Le fond du livre
+		// reste immobile : seule l'encre donne l'impression d'arriver avec la page.
+		int opacite = Math.round((1.0F - arrivee) * 150.0F);
+		if (opacite > 0) {
+			int papier = (opacite << 24) | 0x00EFD29B;
+			g.fill(this.gauche + 27, this.haut + 21,
+					this.gauche + LARGEUR - 27, this.haut + HAUTEUR - 42, papier);
+		}
 
 		bordDePage(g);
+		signets(g, sourisX, sourisY, partiel);
 		clochette(g, sourisX, sourisY, partiel);
 		if (this.page == PAGE_IDENTITE) {
 			aideExperience(g, sourisX, sourisY);
 		}
+		dessinerDecouverte(g, sourisX, sourisY);
+	}
+
+	/** Une teinte tres legere : l'etat se ressent avant meme de lire les chiffres. */
+	private void ambiance(GuiGraphics g) {
+		float pire = Barre.MAXIMUM;
+		for (Barre barre : Barre.values()) {
+			pire = Math.min(pire, this.donnees.barres().getOrDefault(barre, Barre.MAXIMUM));
+		}
+		int teinte = pire < 25.0F ? 0x168A2F2F
+				: this.donnees.barres().getOrDefault(Barre.COMPLICITE, 0.0F) >= 80.0F
+					? 0x123F7A48 : 0;
+		if (teinte != 0) {
+			g.fill(this.gauche + 27, this.haut + 21,
+					this.gauche + LARGEUR - 27, this.haut + HAUTEUR - 42, teinte);
+		}
+	}
+
+	/**
+	 * La premiere page n'est pas un tutoriel : c'est une rencontre.
+	 *
+	 * <p>Elle dure quatre secondes au plus et n'empeche jamais de jouer : un clic
+	 * ou une touche la ferme. Le modele est le vrai modele 3D de l'espece, pas une
+	 * image generique qui oublierait les variantes ajoutees plus tard.
+	 */
+	private void dessinerDecouverte(GuiGraphics g, int sourisX, int sourisY) {
+		if (!this.decouverte) {
+			return;
+		}
+		long ecoule = System.currentTimeMillis() - this.debutDecouverte;
+		if (ecoule >= 4_200L) {
+			this.decouverte = false;
+			return;
+		}
+		float entree = Math.min(1.0F, ecoule / 450.0F);
+		float sortie = Math.min(1.0F, (4_200L - ecoule) / 650.0F);
+		float presence = Peinture.adoucir(Math.min(entree, sortie));
+		int alpha = Math.round(238.0F * presence);
+		int papier = (alpha << 24) | 0x00EFD29B;
+		g.fill(this.gauche + 27, this.haut + 21,
+				this.gauche + LARGEUR - 27, this.haut + HAUTEUR - 42, papier);
+		if (presence < 0.25F) {
+			return;
+		}
+
+		Component titre = Component.translatable("livre.compagnon.decouverte",
+				this.donnees.nom());
+		int centre = this.gauche + LARGEUR / 2;
+		g.drawString(this.font, titre, centre - this.font.width(titre) / 2,
+				this.haut + 39, ENCRE, false);
+		Apercu.dessiner(g, centre - 72, this.haut + 55, 144, 105,
+				this.donnees.espece(), this.donnees.variante(), sourisX, sourisY);
+		Component phrase = Component.translatable("livre.compagnon.decouverte_aide");
+		g.drawString(this.font, phrase, centre - this.font.width(phrase) / 2,
+				this.haut + 172, ENCRE_PALE, false);
+		Component passer = Component.translatable("livre.compagnon.decouverte_passer");
+		g.drawString(this.font, passer, centre - this.font.width(passer) / 2,
+				this.haut + 193, ENCRE_PALE, false);
 	}
 
 	// --- Page 1, a gauche : qui il est, et comment il va ------------------------
@@ -213,43 +309,26 @@ public class EcranLivre extends EcranCompagnon {
 		int x = this.gauche + PAGE_GAUCHE_X;
 		int y = this.haut + PAGE_Y;
 
-		portrait(g, x, y, sourisX, sourisY);
-
-		int texteX = x + PORTRAIT + 8;
-		int largeurTexte = PAGE_LARGEUR - PORTRAIT - 8;
-
-		g.drawString(this.font, this.donnees.nom(), texteX, y + 6, ENCRE, false);
-		g.blit(SOULIGNEMENT, texteX, y + 16, largeurTexte, 4,
+		g.drawString(this.font, this.donnees.nom(), x, y, ENCRE, false);
+		g.blit(SOULIGNEMENT, x, y + 10, PAGE_LARGEUR, 4,
 				0.0F, 0.0F, SOULIGNEMENT_SOURCE_L, SOULIGNEMENT_SOURCE_H,
 				SOULIGNEMENT_SOURCE_L, SOULIGNEMENT_SOURCE_H);
 
-		g.drawString(this.font,
-				fr.lhdp.compagnon.espece.Especes.titre(this.donnees.espece())
-					+ " · " + this.donnees.variante(),
-				texteX, y + 23, ENCRE_PALE, false);
-		g.drawString(this.font, Component.translatable(this.donnees.mode()),
-				texteX, y + 35, ENCRE_PALE, false);
+		String espece = fr.lhdp.compagnon.espece.Especes.titre(this.donnees.espece())
+				+ " · " + this.donnees.variante();
+		g.drawString(this.font, this.font.plainSubstrByWidth(espece, PAGE_LARGEUR),
+				x, y + 16, ENCRE_PALE, false);
 
-		// PEUT-ON LE MONTER ?
-		//
-		// C'est la seule chose qu'un joueur d'oiseau bleu veut savoir, et le livre
-		// ne la disait nulle part : il fallait essayer pour decouvrir qu'il
-		// refusait, sans jamais apprendre a partir de quand il accepterait.
-		//
-		// Une espece qui ne se monte pas n'affiche rien du tout : mieux vaut le
-		// silence qu'une ligne qui dit non.
-		if (this.donnees.monterAuNiveau() > 0) {
-			boolean maintenant = this.donnees.niveau() >= this.donnees.monterAuNiveau();
-			g.drawString(this.font, maintenant
-					? Component.translatable("livre.compagnon.se_monte")
-					: Component.translatable("livre.compagnon.se_monte_au",
-						this.donnees.monterAuNiveau()),
-				texteX, y + 47, maintenant ? ENCRE_VERTE : ENCRE_PALE, false);
-		}
+		portrait(g, x, y + 29, sourisX, sourisY);
+		y += 103;
 
-		y += PORTRAIT + 10;
-		filet(g, x, y);
-		y += 7;
+		String humeur = this.donnees.humeurBouille() + "  " + this.donnees.humeurLibelle();
+		g.drawString(this.font, humeur, x, y, ENCRE_VERTE, false);
+		String mode = Component.translatable(this.donnees.mode()).getString();
+		g.drawString(this.font, this.font.plainSubstrByWidth(mode, PAGE_LARGEUR / 2),
+				x + PAGE_LARGEUR - this.font.width(this.font.plainSubstrByWidth(
+					mode, PAGE_LARGEUR / 2)), y, ENCRE_PALE, false);
+		y += LIGNE + 3;
 
 		// Niveau et experience.
 		String titreNiveau = Component.translatable("livre.compagnon.niveau",
@@ -262,22 +341,38 @@ public class EcranLivre extends EcranCompagnon {
 
 		y += LIGNE + 1;
 		jauge(g, x, y, this.donnees.avancementDuNiveau(), 0xFF3E7BB5);
+		this.xpX = x;
+		this.xpY = y;
+		this.xpLargeur = PAGE_LARGEUR;
 
-		y += HAUTEUR_JAUGE + 8;
+		y += HAUTEUR_JAUGE + 7;
+		int demi = (PAGE_LARGEUR - 8) / 2;
+		miniBarre(g, x, y, demi, "livre.compagnon.faim", Barre.FAIM, 0xFFD07A2E);
+		miniBarre(g, x + demi + 8, y, demi, "livre.compagnon.energie",
+				Barre.ENERGIE, 0xFFD4B02A);
+		y += 19;
+		miniBarre(g, x, y, demi, "livre.compagnon.complicite",
+				Barre.COMPLICITE, 0xFFC9569A);
+		miniBarre(g, x + demi + 8, y, demi, "livre.compagnon.sante",
+				Barre.SANTE, 0xFFC04040);
+	}
 
-		y += barre(g, x, y, "livre.compagnon.faim", Barre.FAIM, 0xFFD07A2E);
-		y += barre(g, x, y, "livre.compagnon.energie", Barre.ENERGIE, 0xFFD4B02A);
-		y += barre(g, x, y, "livre.compagnon.complicite", Barre.COMPLICITE, 0xFFC9569A);
-		y += barre(g, x, y, "livre.compagnon.sante", Barre.SANTE, 0xFFC04040);
-		y += 3;
-
-		filet(g, x, y);
-		y += 6;
-
-		// L'humeur, en toutes lettres avec sa bouille. Jamais en jauge.
-		g.drawString(this.font, this.donnees.humeurBouille(), x, y, ENCRE_PALE, false);
-		g.drawString(this.font, this.donnees.humeurLibelle(),
-				x + this.font.width(this.donnees.humeurBouille()) + 6, y, ENCRE, false);
+	/** Une petite jauge : quatre informations tiennent en deux lignes lisibles. */
+	private void miniBarre(GuiGraphics g, int x, int y, int large, String cle,
+			Barre barre, int couleur) {
+		float valeur = this.donnees.barres().getOrDefault(barre, 0.0F);
+		String nom = Component.translatable(cle).getString();
+		String nombre = String.valueOf(Math.round(valeur));
+		g.drawString(this.font, nom, x, y, ENCRE_PALE, false);
+		g.drawString(this.font, nombre, x + large - this.font.width(nombre), y,
+				valeur <= SEUIL_DU_CONSEIL ? ENCRE_ROUGE : ENCRE_PALE, false);
+		g.fill(x, y + 10, x + large, y + 15, CREUX_HAUT);
+		int rempli = Math.round(large * Math.max(0.0F, Math.min(1.0F,
+				valeur / Barre.MAXIMUM)));
+		if (rempli > 0) {
+			g.fill(x, y + 10, x + rempli, y + 15, couleur);
+			g.fill(x, y + 10, x + rempli, y + 11, eclaircir(couleur, 0.45F));
+		}
 	}
 
 	/**
@@ -294,10 +389,8 @@ public class EcranLivre extends EcranCompagnon {
 		if (this.donnees.xpDuSuivant() < 0) {
 			return;
 		}
-		int x = this.gauche + PAGE_DROITE_X;
-		int y = this.haut + PAGE_Y + PORTRAIT + 10 + 7 + LIGNE + 1;
-		boolean dessus = sourisX >= x && sourisX < x + PAGE_LARGEUR
-				&& sourisY >= y && sourisY < y + HAUTEUR_JAUGE;
+		boolean dessus = sourisX >= this.xpX && sourisX < this.xpX + this.xpLargeur
+				&& sourisY >= this.xpY && sourisY < this.xpY + HAUTEUR_JAUGE;
 		if (!dessus) {
 			return;
 		}
@@ -377,9 +470,15 @@ public class EcranLivre extends EcranCompagnon {
 	 */
 	private void deuxColonnes(GuiGraphics g, int x, int y, String gauche, String droite,
 			int couleurGauche, int couleurDroite) {
+		deuxColonnesDans(g, x, y, PAGE_LARGEUR, gauche, droite,
+				couleurGauche, couleurDroite);
+	}
+
+	private void deuxColonnesDans(GuiGraphics g, int x, int y, int largeur,
+			String gauche, String droite, int couleurGauche, int couleurDroite) {
 
 		int placeDeLaValeur = this.font.width(droite);
-		int placeDuLibelle = PAGE_LARGEUR - placeDeLaValeur - ECART_COLONNES;
+		int placeDuLibelle = largeur - placeDeLaValeur - ECART_COLONNES;
 
 		String coupe = gauche;
 		if (placeDuLibelle > 0 && this.font.width(gauche) > placeDuLibelle) {
@@ -389,7 +488,7 @@ public class EcranLivre extends EcranCompagnon {
 				Math.max(0, placeDuLibelle - this.font.width(SUITE))) + SUITE;
 		}
 		g.drawString(this.font, coupe, x, y, couleurGauche, false);
-		g.drawString(this.font, droite, x + PAGE_LARGEUR - placeDeLaValeur, y,
+		g.drawString(this.font, droite, x + largeur - placeDeLaValeur, y,
 				couleurDroite, false);
 	}
 
@@ -422,70 +521,130 @@ public class EcranLivre extends EcranCompagnon {
 	 * de faire tomber tout le livre.
 	 */
 	private void portrait(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
-		g.blit(CADRE_PORTRAIT, x, y, PORTRAIT, PORTRAIT,
+		g.blit(CADRE_PORTRAIT, x, y, PAGE_LARGEUR, PORTRAIT,
 				0.0F, 0.0F, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE);
-
-		if (this.apercuAbandonne || this.minecraft == null || this.minecraft.level == null) {
-			return;
-		}
-
-		if (this.apercu == null) {
-			this.apercu = Compagnon.COMPAGNON.create(this.minecraft.level);
-			if (this.apercu == null) {
-				this.apercuAbandonne = true;
-				return;
-			}
-			this.apercu.setEspece(this.donnees.espece());
-			this.apercu.setVariante(this.donnees.variante());
-		}
-
-		int marge = 5;
-		try {
-			InventoryScreen.renderEntityInInventoryFollowsMouse(g,
-					x + marge, y + marge, x + PORTRAIT - marge, y + PORTRAIT - marge,
-					16, 0.0625F, sourisX, sourisY, this.apercu);
-		} catch (Exception echec) {
-			this.apercuAbandonne = true;
-			Compagnon.LOG.warn("Apercu du compagnon impossible dans le livre : {}", echec.toString());
-		}
+		Apercu.dessiner(g, x + 5, y + 4, PAGE_LARGEUR - 10, PORTRAIT - 8,
+				this.donnees.espece(), this.donnees.variante(), sourisX, sourisY);
 	}
 
 	// --- Page 1, a droite : ce qui ne va pas, et ce qu'on a fait ----------------
 
-	private void pageSante(GuiGraphics g) {
+	private void pageAujourdhui(GuiGraphics g) {
 		int x = this.gauche + PAGE_DROITE_X;
 		int y = this.haut + PAGE_Y;
 
-		if (!this.donnees.aUnBobo()) {
-			g.drawString(this.font, Component.translatable("livre.compagnon.va_bien"),
-					x, y, ENCRE, false);
-			y += LIGNE;
-			g.drawString(this.font, Component.translatable("livre.compagnon.rien_a_soigner"),
-					x, y, ENCRE_PALE, false);
-			y += LIGNE + 8;
-		} else {
-			g.drawString(this.font, this.donnees.boboNom(), x, y, ENCRE_ROUGE, false);
-			y += LIGNE + 2;
+		g.drawString(this.font, Component.translatable("livre.compagnon.aujourdhui"),
+				x, y, ENCRE, false);
+		y += LIGNE + 3;
+		priorite(g, x, y);
 
-			for (String ligne : decouper(this.donnees.boboDescription())) {
-				g.drawString(this.font, ligne, x, y, ENCRE_PALE, false);
-				y += LIGNE;
-			}
-
-			y += 6;
-			g.drawString(this.font, Component.translatable("livre.compagnon.il_lui_faut"),
-					x, y, ENCRE, false);
-			y += LIGNE;
-			g.drawString(this.font, this.donnees.boboRemede(), x, y, ENCRE_ROUGE, false);
-			y += LIGNE + 8;
-		}
-
+		y = this.haut + PAGE_Y + 67;
 		filet(g, x, y);
 		y += 7;
-
-		g.drawString(this.font, Component.translatable("livre.compagnon.compteurs"), x, y, ENCRE, false);
+		g.drawString(this.font, Component.translatable("livre.compagnon.rituels"),
+				x, y, ENCRE, false);
 		y += LIGNE + 2;
-		compteurs(g, x, y);
+
+		int montrees = 0;
+		for (var mission : this.donnees.missions()) {
+			if (mission.longue() || montrees >= 2) {
+				continue;
+			}
+			int limite = this.haut + HAUTEUR - 87;
+			if (y + hauteurMission(mission, PAGE_LARGEUR) > limite) {
+				break;
+			}
+			y = uneMission(g, x, y, PAGE_LARGEUR, mission);
+			montrees++;
+		}
+		if (montrees == 0) {
+			g.drawString(this.font, Component.translatable("livre.compagnon.aucune_mission"),
+					x, y, ENCRE_PALE, false);
+		}
+
+		// La prochaine recompense reste a la meme place : la page ne saute pas
+		// quand un enonce de mission prend une ligne de plus.
+		y = this.haut + HAUTEUR - 83;
+		filet(g, x, y);
+		y += 7;
+		g.drawString(this.font, Component.translatable("livre.compagnon.prochaine_etape"),
+				x, y, ENCRE, false);
+		String niveau = Component.translatable("livre.compagnon.prochain_niveau",
+				this.donnees.niveau() + 1).getString();
+		g.drawString(this.font, niveau, x + PAGE_LARGEUR - this.font.width(niveau),
+				y, ENCRE_PALE, false);
+		y += LIGNE;
+		String monte = "";
+		if (this.donnees.monterAuNiveau() > 0) {
+			monte = this.donnees.niveau() >= this.donnees.monterAuNiveau()
+					? Component.translatable("livre.compagnon.se_monte").getString()
+					: Component.translatable("livre.compagnon.se_monte_au",
+							this.donnees.monterAuNiveau()).getString();
+		}
+		int restant = Math.max(0, this.donnees.xpDuSuivant() - this.donnees.xp());
+		deuxColonnes(g, x, y, monte,
+				Component.translatable("livre.compagnon.xp_avant", restant).getString(),
+				ENCRE_PALE, ENCRE_PALE);
+		y += LIGNE;
+		jauge(g, x, y, this.donnees.avancementDuNiveau(), 0xFFB17B28);
+	}
+
+	/** Le besoin le plus urgent, ecrit comme une intention et non comme un tableau. */
+	private void priorite(GuiGraphics g, int x, int y) {
+		g.fill(x, y, x + PAGE_LARGEUR, y + 39, 0x14964B32);
+		g.fill(x, y, x + 3, y + 39, this.donnees.aUnBobo() ? ENCRE_ROUGE : 0xFFA85D35);
+		int texteX = x + 7;
+		if (this.donnees.aUnBobo()) {
+			g.drawString(this.font, this.donnees.boboNom(), texteX, y + 5,
+					ENCRE_ROUGE, false);
+			Component soin = Component.translatable("livre.compagnon.besoin_soin",
+					this.donnees.boboRemede());
+			dessinerDeuxLignes(g, soin, texteX, y + 16, PAGE_LARGEUR - 11, ENCRE_PALE);
+			return;
+		}
+
+		Barre pire = Barre.FAIM;
+		for (Barre barre : Barre.values()) {
+			if (this.donnees.barres().getOrDefault(barre, Barre.MAXIMUM)
+					< this.donnees.barres().getOrDefault(pire, Barre.MAXIMUM)) {
+				pire = barre;
+			}
+		}
+		float valeur = this.donnees.barres().getOrDefault(pire, Barre.MAXIMUM);
+		if (valeur <= 60.0F) {
+			String cle = cleDeBarre(pire);
+			g.drawString(this.font, Component.translatable(cle), texteX, y + 5,
+					valeur <= SEUIL_DU_CONSEIL ? ENCRE_ROUGE : ENCRE, false);
+			dessinerDeuxLignes(g, Component.translatable(cle + ".conseil"),
+					texteX, y + 16, PAGE_LARGEUR - 11, ENCRE_PALE);
+		} else {
+			g.drawString(this.font, Component.translatable("livre.compagnon.va_bien"),
+					texteX, y + 5, ENCRE_VERTE, false);
+			dessinerDeuxLignes(g, Component.translatable("livre.compagnon.humeur_du_jour",
+					this.donnees.humeurBouille(), this.donnees.humeurLibelle()),
+					texteX, y + 16, PAGE_LARGEUR - 11, ENCRE_PALE);
+		}
+	}
+
+	private void dessinerDeuxLignes(GuiGraphics g, Component texte, int x, int y,
+			int large, int couleur) {
+		int ligne = 0;
+		for (var morceau : this.font.split(texte, large)) {
+			if (ligne >= 2) {
+				break;
+			}
+			g.drawString(this.font, morceau, x, y + ligne * (LIGNE - 3), couleur, false);
+			ligne++;
+		}
+	}
+
+	private static String cleDeBarre(Barre barre) {
+		return switch (barre) {
+			case FAIM -> "livre.compagnon.faim";
+			case ENERGIE -> "livre.compagnon.energie";
+			case COMPLICITE -> "livre.compagnon.complicite";
+			case SANTE -> "livre.compagnon.sante";
+		};
 	}
 
 	private void compteurs(GuiGraphics g, int x, int y) {
@@ -750,7 +909,13 @@ public class EcranLivre extends EcranCompagnon {
 			}
 			String quand = Instant.ofEpochMilli(moment.date())
 					.atZone(ZoneId.systemDefault()).format(DATE);
-			deuxColonnes(g, x, y, libelleMoment(moment.cle()), quand, ENCRE, ENCRE_PALE);
+			// Un fil et un point transforment une liste de dates en histoire. Les
+			// souvenirs restent dans le meme ordre, mais l'oeil comprend maintenant
+			// qu'ils appartiennent tous a la meme vie.
+			g.fill(x + 2, y + 4, x + 3, y + LIGNE + 2, FILET);
+			g.fill(x, y + 3, x + 5, y + 8, ENCRE_PALE);
+			deuxColonnesDans(g, x + 9, y, PAGE_LARGEUR - 9,
+					libelleMoment(moment.cle()), quand, ENCRE, ENCRE_PALE);
 			y += LIGNE;
 		}
 	}
@@ -894,7 +1059,76 @@ public class EcranLivre extends EcranCompagnon {
 		return y + LIGNE + 2;
 	}
 
+	/** La place exacte que prendra une mission, avant de la dessiner. */
+	private int hauteurMission(fr.lhdp.compagnon.livre.EntreeMission mission, int large) {
+		Component enonce = Component.translatable(mission.texte(), mission.quantite());
+		return this.font.split(enonce, large).size() * (LIGNE - 4) + LIGNE + 2;
+	}
+
 	// --- Navigation -------------------------------------------------------------
+
+	/** Une chaleur par signet : celui qu'on quitte s'eteint pendant que l'autre monte. */
+	private final float[] chaleurSignets = new float[SIGNETS.length];
+
+	/** Les quatre pages sont accessibles directement, sans feuilleter a l'aveugle. */
+	private void signets(GuiGraphics g, int sourisX, int sourisY, float partiel) {
+		int x = signetX();
+		int y = signetY();
+		for (int i = 0; i < SIGNETS.length; i++) {
+			boolean actif = i == this.page;
+			boolean survole = sourisX >= x && sourisX < x + SIGNET_LARGEUR
+					&& sourisY >= y && sourisY < y + SIGNET_HAUTEUR;
+			this.chaleurSignets[i] = Peinture.vers(this.chaleurSignets[i],
+					survole ? 1.0F : 0.0F, 0.30F, partiel);
+			Peinture.boutonPeint(g, x, y, SIGNET_LARGEUR, SIGNET_HAUTEUR,
+					this.chaleurSignets[i], false,
+					actif ? 0xEE3F6B37 : 0xCC70462F,
+					actif ? 0xFF4F8246 : 0xEE8D5A38,
+					0xFFC8BCA4);
+			Component nom = Component.translatable(SIGNETS[i]);
+			g.drawString(this.font, nom,
+					x + (SIGNET_LARGEUR - this.font.width(nom)) / 2,
+					y + (SIGNET_HAUTEUR - 8) / 2,
+					actif || survole ? 0xFFFFFFFF : ONGLET_TEXTE, false);
+			y += SIGNET_HAUTEUR + SIGNET_ECART;
+		}
+	}
+
+	private int signetX() {
+		return Math.min(this.width - SIGNET_LARGEUR - BORD,
+				this.gauche + LARGEUR - 10);
+	}
+
+	private int signetY() {
+		return this.haut + 32;
+	}
+
+	private int signetSous(double sourisX, double sourisY) {
+		int x = signetX();
+		int y = signetY();
+		if (sourisX < x || sourisX >= x + SIGNET_LARGEUR) {
+			return -1;
+		}
+		for (int i = 0; i < SIGNETS.length; i++) {
+			if (sourisY >= y && sourisY < y + SIGNET_HAUTEUR) {
+				return i;
+			}
+			y += SIGNET_HAUTEUR + SIGNET_ECART;
+		}
+		return -1;
+	}
+
+	/** Change de double-page et relance le petit glissement de l'encre. */
+	private void allerPage(int nouvelle) {
+		int bornee = Math.max(0, Math.min(DERNIERE_PAGE, nouvelle));
+		if (bornee == this.page) {
+			return;
+		}
+		this.sensPage = bornee > this.page ? 1 : -1;
+		this.page = bornee;
+		this.apparitionPage = 0.0F;
+		Bruits.page();
+	}
 
 	private void bordDePage(GuiGraphics g) {
 		int y = this.haut + HAUTEUR - 44;
@@ -919,6 +1153,11 @@ public class EcranLivre extends EcranCompagnon {
 
 	@Override
 	public boolean mouseClicked(double sourisX, double sourisY, int bouton) {
+		if (this.decouverte) {
+			this.decouverte = false;
+			Bruits.clic();
+			return true;
+		}
 		if (clochetteCliquee(sourisX, sourisY, bouton)) {
 			return true;
 		}
@@ -928,6 +1167,11 @@ public class EcranLivre extends EcranCompagnon {
 				Bruits.page();
 				ClientPlayNetworking.send(new PaquetLivre(onglet));
 			}
+			return true;
+		}
+		int pageDemandee = signetSous(sourisX, sourisY);
+		if (pageDemandee >= 0) {
+			allerPage(pageDemandee);
 			return true;
 		}
 
@@ -952,13 +1196,11 @@ public class EcranLivre extends EcranCompagnon {
 		int y = this.haut + HAUTEUR - 44;
 		if (sourisY >= y && sourisY <= y + FLECHE_HAUTEUR) {
 			if (this.page > 0 && dansX(sourisX, this.gauche + 44)) {
-				this.page--;
-				Bruits.page();
+				allerPage(this.page - 1);
 				return true;
 			}
 			if (this.page < DERNIERE_PAGE && dansX(sourisX, this.gauche + LARGEUR - 73)) {
-				this.page++;
-				Bruits.page();
+				allerPage(this.page + 1);
 				return true;
 			}
 		}
@@ -1070,6 +1312,18 @@ public class EcranLivre extends EcranCompagnon {
 
 	@Override
 	public boolean keyPressed(int touche, int codeMateriel, int modificateurs) {
+		if (this.decouverte) {
+			this.decouverte = false;
+			return true;
+		}
+		if (touche == GLFW.GLFW_KEY_LEFT && this.page > 0) {
+			allerPage(this.page - 1);
+			return true;
+		}
+		if (touche == GLFW.GLFW_KEY_RIGHT && this.page < DERNIERE_PAGE) {
+			allerPage(this.page + 1);
+			return true;
+		}
 		// Passer d'un compagnon a l'autre : on redemande au serveur, qui reste
 		// seul juge de ce que ce joueur a le droit de voir.
 		if (this.combien > 1 && touche == GLFW.GLFW_KEY_TAB) {

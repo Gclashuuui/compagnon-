@@ -149,6 +149,12 @@ public final class Bruits {
 		jouer(SoundEvents.BOOK_PAGE_TURN, 1.0F, 0.7F);
 	}
 
+	/** La toute premiere ouverture : le papier, puis une petite etincelle. */
+	public static void decouverte() {
+		jouer(SoundEvents.BOOK_PAGE_TURN, 0.82F, 0.8F);
+		jouer(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.45F, 0.22F);
+	}
+
 	/**
 	 * La clochette, quand on vient de la faire tourner.
 	 *

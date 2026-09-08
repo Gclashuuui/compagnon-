@@ -461,9 +461,28 @@ public class EcranRoue extends EcranCompagnon {
 	// --- Le trou du milieu ------------------------------------------------------
 
 	private void centre(GuiGraphics g, int cx, int cy) {
-		texteCentre(g, Component.literal(this.nomCompagnon), cx, cy - 24, TEXTE_TITRE);
-		texteCentre(g, Component.translatable("roue.compagnon.niveau", this.niveau),
-				cx, cy - 13, TEXTE_VERROU);
+		EntreeRoue regardee = this.survolee < 0 ? null : entreeDe(this.survolee);
+		if (regardee == null) {
+			texteCentre(g, Component.literal(this.nomCompagnon), cx, cy - 24, TEXTE_TITRE);
+			texteCentre(g, Component.translatable("roue.compagnon.niveau", this.niveau),
+					cx, cy - 13, TEXTE_VERROU);
+		} else {
+			// Le centre devient la legende de ce qu'on regarde. Le compagnon joue deja
+			// l'apercu dans le monde ; ces deux lignes disent ce que c'est et comment
+			// le redemander a la voix.
+			texteCentre(g, Component.literal(etiquette(regardee.nom())),
+					cx, cy - 24, regardee.debloque() ? TEXTE_TITRE : TEXTE_VERROU);
+			if (!regardee.debloque()) {
+				texteCentre(g, Component.translatable("roue.compagnon.verrouillee",
+						regardee.niveauRequis()), cx, cy - 11, TEXTE_VERROU);
+			} else if (regardee.aUnMot()) {
+				texteCentre(g, Component.translatable("roue.compagnon.dire", regardee.mot()),
+						cx, cy - 11, TEXTE_NOUVEAU);
+			} else {
+				texteCentre(g, Component.translatable("roue.compagnon.apercu"),
+						cx, cy - 11, TEXTE_VERROU);
+			}
+		}
 
 		if (this.entrees.isEmpty()) {
 			texteCentre(g, Component.translatable("roue.compagnon.vide"), cx, cy + 4, TEXTE_VERROU);
@@ -475,7 +494,7 @@ public class EcranRoue extends EcranCompagnon {
 			fleche(g, cx + 24, cy + 8, true, this.survolApres ? TEXTE_TITRE : TEXTE_VERROU);
 		}
 		texteCentre(g, Component.literal((this.page + 1) + " / " + nombreDePages()),
-				cx, cy + 4, TEXTE);
+				cx, cy + 7, TEXTE);
 	}
 
 	/**

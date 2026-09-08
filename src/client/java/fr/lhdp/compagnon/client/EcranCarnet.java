@@ -1,13 +1,11 @@
 package fr.lhdp.compagnon.client;
 
 import fr.lhdp.compagnon.Compagnon;
-import fr.lhdp.compagnon.entite.CompagnonEntity;
 import fr.lhdp.compagnon.livre.EntreeCarnet;
 import fr.lhdp.compagnon.reseau.PaquetInvoquer;
 import fr.lhdp.compagnon.reseau.PaquetLivre;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
@@ -76,11 +74,11 @@ public class EcranCarnet extends EcranCompagnon {
 	/** Le cadre du modele, en pixels. Assez grand pour voir la bete. */
 	private static final int PORTRAIT = 100;
 
-	/** Hauteur d'une ligne de la liste. */
-	private static final int LIGNE = 15;
+	/** Hauteur d'une carte de la collection. */
+	private static final int LIGNE = 30;
 
 	/** Combien de compagnons par page de liste. */
-	private static final int PAR_PAGE = 8;
+	private static final int PAR_PAGE = 5;
 
 	private static final int BOUTON_LARGEUR = 104;
 	private static final int BOUTON_HAUTEUR = 18;
@@ -94,18 +92,14 @@ public class EcranCarnet extends EcranCompagnon {
 	/** La page de la <b>liste</b>, a droite. Rien a voir avec le compagnon choisi. */
 	private int page;
 
-	/** L'apercu en trois dimensions ; refait quand on change de compagnon. */
 	/** De zero a un : le bouton est en train de s allumer. */
 	private float chaleurDuBouton;
 
-	private CompagnonEntity apercu;
+	/** Une animation par carte : celle qu'on quitte refroidit sans sauter. */
+	private float[] chaleurDesCartes = new float[0];
 
-	/** L'espece et la variante de l'apercu en cours, pour savoir s'il est perime. */
-	private String apercuEspece = "";
-	private String apercuVariante = "";
-
-	/** Passe a vrai si le rendu de l'entite echoue : on n'insiste pas. */
-	private boolean apercuAbandonne;
+	/** Le modele glisse doucement quand on choisit une autre bete. */
+	private float arriveePortrait;
 
 	public EcranCarnet(int choisi, List<EntreeCarnet> entrees) {
 		super(Component.translatable("carnet.compagnon.titre"));
@@ -162,8 +156,9 @@ public class EcranCarnet extends EcranCompagnon {
 		g.blit(FOND, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
 		g.blit(SALISSURES, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
 
+		this.arriveePortrait = Peinture.vers(this.arriveePortrait, 1.0F, 0.25F, partiel);
 		pageDuChoisi(g, sourisX, sourisY);
-		pageDeLaListe(g, sourisX, sourisY);
+		pageDeLaListe(g, sourisX, sourisY, partiel);
 		clochette(g, sourisX, sourisY, partiel);
 	}
 
@@ -217,7 +212,7 @@ public class EcranCarnet extends EcranCompagnon {
 	}
 
 	/** A droite : tous les autres, et les fleches. */
-	private void pageDeLaListe(GuiGraphics g, int sourisX, int sourisY) {
+	private void pageDeLaListe(GuiGraphics g, int sourisX, int sourisY, float partiel) {
 		int x = this.gauche + PAGE_DROITE_X;
 		int y = this.haut + PAGE_Y;
 
@@ -230,7 +225,7 @@ public class EcranCarnet extends EcranCompagnon {
 			if (position >= this.entrees.size()) {
 				break;
 			}
-			ligne(g, x, y + 22 + i * LIGNE, position, sourisX, sourisY);
+			ligne(g, x, y + 22 + i * LIGNE, position, sourisX, sourisY, partiel);
 		}
 
 		if (pagesMaximum() > 1) {
@@ -251,32 +246,36 @@ public class EcranCarnet extends EcranCompagnon {
 		}
 	}
 
-	/** Une ligne de la liste : sa pastille, son nom. */
-	private void ligne(GuiGraphics g, int x, int y, int position, int sourisX, int sourisY) {
+	/** Une carte de collection : nom, espece, niveau et presence dans le monde. */
+	private void ligne(GuiGraphics g, int x, int y, int position, int sourisX, int sourisY,
+			float partiel) {
 		EntreeCarnet entree = this.entrees.get(position);
 		boolean choisie = position == this.choisi;
-		boolean survolee = dansLaBoite(sourisX, sourisY, x, y - 2, PAGE_LARGEUR, LIGNE);
-
-		// Un trait sous la ligne choisie, et rien de plus. Un rectangle plein
-		// faisait ressembler la ligne a un bouton qu'on pouvait presser, alors
-		// qu'il n'y a qu'un bouton sur cette page et qu'il est a gauche.
-		if (choisie) {
-			g.fill(x - 2, y + LIGNE - 5, x + PAGE_LARGEUR, y + LIGNE - 4, CADRE);
-		} else if (survolee) {
-			g.fill(x - 2, y + LIGNE - 5, x + PAGE_LARGEUR, y + LIGNE - 4, CREUX_HAUT);
+		boolean survolee = dansLaBoite(sourisX, sourisY, x - 2, y - 2,
+				PAGE_LARGEUR + 2, LIGNE - 3);
+		if (this.chaleurDesCartes.length != this.entrees.size()) {
+			this.chaleurDesCartes = new float[this.entrees.size()];
 		}
+		this.chaleurDesCartes[position] = Peinture.vers(
+				this.chaleurDesCartes[position], survolee ? 1.0F : 0.0F, 0.30F, partiel);
+		Peinture.boutonPeint(g, x - 2, y - 2, PAGE_LARGEUR + 2, LIGNE - 3,
+				this.chaleurDesCartes[position], false,
+					choisie ? 0x223F6B37 : 0x10000000,
+					choisie ? 0x334F8246 : 0x26000000,
+					choisie ? ENCRE_VERTE : CREUX_HAUT);
 
 		// Pleine s'il est dehors, creuse s'il est range : on lit la colonne d'un
 		// coup d'oeil sans avoir a lire les mots.
-		pastille(g, x + 1, y + 1, entree.sorti());
+		pastille(g, x + 4, y + 8, entree.sorti());
 
 		int couleur = choisie ? ENCRE : ENCRE_PALE;
-		String nom = this.font.plainSubstrByWidth(entree.nom(), PAGE_LARGEUR - 40);
-		g.drawString(this.font, nom, x + 12, y, couleur, false);
+		String nom = this.font.plainSubstrByWidth(entree.nom(), PAGE_LARGEUR - 23);
+		g.drawString(this.font, nom, x + 16, y + 3, couleur, false);
 
-		String niveau = String.valueOf(entree.niveau());
-		g.drawString(this.font, niveau,
-				x + PAGE_LARGEUR - this.font.width(niveau) - 2, y, ENCRE_PALE, false);
+		String detail = Component.translatable("carnet.compagnon.carte_detail",
+				majuscule(entree.espece()), entree.niveau()).getString();
+		detail = this.font.plainSubstrByWidth(detail, PAGE_LARGEUR - 23);
+		g.drawString(this.font, detail, x + 16, y + 15, ENCRE_PALE, false);
 	}
 
 	private void pastille(GuiGraphics g, int x, int y, boolean pleine) {
@@ -326,37 +325,11 @@ public class EcranCarnet extends EcranCompagnon {
 		g.blit(CADRE_PORTRAIT, x, y, PORTRAIT, PORTRAIT,
 				0.0F, 0.0F, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE);
 
-		if (this.apercuAbandonne || this.minecraft == null || this.minecraft.level == null) {
-			return;
-		}
-
-		// Refait seulement quand la bete change : creer une entite a chaque image
-		// serait du gaspillage pur.
-		if (this.apercu == null
-				|| !this.apercuEspece.equals(entree.espece())
-				|| !this.apercuVariante.equals(entree.variante())) {
-
-			this.apercu = Compagnon.COMPAGNON.create(this.minecraft.level);
-			if (this.apercu == null) {
-				this.apercuAbandonne = true;
-				return;
-			}
-			this.apercu.setEspece(entree.espece());
-			this.apercu.setVariante(entree.variante());
-			this.apercuEspece = entree.espece();
-			this.apercuVariante = entree.variante();
-		}
-
 		int marge = 8;
-		try {
-			InventoryScreen.renderEntityInInventoryFollowsMouse(g,
-					x + marge, y + marge, x + PORTRAIT - marge, y + PORTRAIT - marge,
-					34, 0.0625F, sourisX, sourisY, this.apercu);
-		} catch (Exception echec) {
-			this.apercuAbandonne = true;
-			Compagnon.LOG.warn("Apercu du compagnon impossible dans le carnet : {}",
-					echec.toString());
-		}
+		int glissement = Math.round((1.0F - Peinture.adoucir(this.arriveePortrait)) * 8.0F);
+		Apercu.dessiner(g, x + marge, y + marge + glissement,
+				PORTRAIT - marge * 2, PORTRAIT - marge * 2 - glissement,
+				entree.espece(), entree.variante(), sourisX, sourisY);
 	}
 
 	// --- Le bouton --------------------------------------------------------------------
@@ -431,6 +404,7 @@ public class EcranCarnet extends EcranCompagnon {
 			if (dansLaBoite(sourisX, sourisY, listeX - 2, listeY + i * LIGNE - 2,
 					PAGE_LARGEUR + 2, LIGNE)) {
 				this.choisi = position;
+				this.arriveePortrait = 0.0F;
 				Bruits.clic();
 				return true;
 			}
@@ -489,6 +463,7 @@ public class EcranCarnet extends EcranCompagnon {
 	private void choisirAutre(int pas) {
 		this.choisi = Math.floorMod(this.choisi + pas, this.entrees.size());
 		this.page = this.choisi / PAR_PAGE;
+		this.arriveePortrait = 0.0F;
 		Bruits.clic();
 	}
 

@@ -1062,3 +1062,31 @@ l'animation etait la.
 
 Il plane maintenant tant qu'il est en l'air, et perd doucement de l'altitude :
 un oiseau qui plane, pas un ballon qui flotte.
+
+## Le livre vivant
+
+Les interfaces suivent maintenant une meme idee : le compagnon n'est plus une
+fiche de statistiques, c'est quelqu'un dont on a envie de s'occuper.
+
+Le livre s'ouvre sur **Aujourd'hui**. Il montre en grand le vrai modele 3D du
+compagnon, son humeur, son mode, ses quatre besoins, la priorite du moment, deux
+petites choses a faire ensemble et la prochaine recompense de progression. Les
+onglets sur la tranche menent directement a Aujourd'hui, l'histoire, les
+talents et les missions. Les pages glissent et se revelent comme de l'encre.
+
+La toute premiere ouverture est une rencontre speciale : le compagnon apparait
+en grand avec « Votre histoire commence ici ». Cette decouverte n'est jouee
+qu'une fois sur le client et laisse une marque dans le dossier de configuration.
+
+Le papier prend une nuance chaude quand un besoin devient urgent et une nuance
+verte quand la complicite est forte. Les souvenirs forment une petite frise
+chronologique, afin que le livre ressemble davantage a une histoire partagee.
+
+Le carnet est devenu une collection de cartes avec etat, espece et niveau. Le
+portrait s'adapte a la taille reelle de chaque espece et glisse a l'arrivee.
+La roue garde son apercu du geste en jeu, mais son centre explique maintenant le
+geste survole, le mot vocal appris ou le niveau encore necessaire.
+
+Les sons, les boutons animes, les parchemins et les apercus 3D deja presents ont
+ete conserves : ils font partie de cette nouvelle identite plutot que d'etre
+remplaces.
