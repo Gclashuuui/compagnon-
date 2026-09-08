@@ -75,8 +75,8 @@ public final class Objets {
 	public static final Block COUSSIN = enregistrerBloc("coussin", new BlocCoussin(
 			BlockBehaviour.Properties.of()
 					.strength(0.3F).sound(SoundType.WOOL).noOcclusion()));
-	public static final Block GAMELLE = enregistrerBloc("gamelle", new BlocCoin(
-			BlocCoin.Forme.GAMELLE, BlockBehaviour.Properties.of()
+	public static final Block GAMELLE = enregistrerBloc("gamelle", new BlocGamelle(
+			BlockBehaviour.Properties.of()
 					.strength(0.8F).sound(SoundType.DECORATED_POT).noOcclusion()));
 	public static final Block PERCHOIR = enregistrerBloc("perchoir", new BlocCoin(
 			BlocCoin.Forme.PERCHOIR, BlockBehaviour.Properties.of()
@@ -155,7 +155,8 @@ public final class Objets {
 
 	private static Block enregistrerBloc(String nom, Block bloc) {
 		Block enregistre = Registry.register(BuiltInRegistries.BLOCK, Compagnon.id(nom), bloc);
-		enregistrer(nom, new BlockItem(enregistre, new Item.Properties()));
+		enregistrer(nom, new ObjetMeuble(enregistre, new Item.Properties(),
+				"objet.compagnon." + nom + ".aide"));
 		return enregistre;
 	}
 

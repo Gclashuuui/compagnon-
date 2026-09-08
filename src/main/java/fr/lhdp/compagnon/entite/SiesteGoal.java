@@ -1,6 +1,11 @@
 package fr.lhdp.compagnon.entite;
 
 import fr.lhdp.compagnon.mission.Compteurs;
+import fr.lhdp.compagnon.fiche.FicheCompagnon;
+import fr.lhdp.compagnon.fiche.Fiches;
+import fr.lhdp.compagnon.objet.Objets;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -48,11 +53,19 @@ public class SiesteGoal extends Goal {
 
 	/** Il ne cherche pas a s'endormir a chaque tick. */
 	private static final int ENTRE_DEUX_ENVIES = 20 * 5;
+	private static final int PORTEE_COUSSIN = 12;
+	private static final int TEMPS_POUR_ATTEINDRE_COUSSIN = 20 * 12;
+	private static final double ARRIVE_COUSSIN = 1.45D;
+	private static final double VITESSE_VERS_COUSSIN = 0.95D;
 
 	private final CompagnonEntity compagnon;
 
 	private int reste;
 	private int avantDeRegarder;
+	private int avantDeRecalculer;
+	private int tempsPourAtteindre;
+	private BlockPos coussin;
+	private boolean endormi;
 
 	public SiesteGoal(CompagnonEntity compagnon) {
 		this.compagnon = compagnon;
@@ -88,7 +101,31 @@ public class SiesteGoal extends Goal {
 		if (!ilTombeDeSommeil()) {
 			return false;
 		}
-		return this.compagnon.attention().permet("sieste", AVANT_DE_REDORMIR);
+		if (!this.compagnon.attention().permet("sieste", AVANT_DE_REDORMIR)) {
+			return false;
+		}
+		this.coussin = trouverCoussin();
+		return true;
+	}
+
+	/** Trouve le coussin pose le plus pres, sans imposer qu'il y en ait un. */
+	private BlockPos trouverCoussin() {
+		BlockPos centre = this.compagnon.blockPosition();
+		BlockPos meilleur = null;
+		double distance = Double.MAX_VALUE;
+		for (BlockPos position : BlockPos.betweenClosed(
+				centre.offset(-PORTEE_COUSSIN, -3, -PORTEE_COUSSIN),
+				centre.offset(PORTEE_COUSSIN, 3, PORTEE_COUSSIN))) {
+			if (!this.compagnon.level().getBlockState(position).is(Objets.COUSSIN)) {
+				continue;
+			}
+			double candidate = position.distToCenterSqr(this.compagnon.position());
+			if (candidate < distance) {
+				distance = candidate;
+				meilleur = position.immutable();
+			}
+		}
+		return meilleur;
 	}
 
 	/**
@@ -129,9 +166,16 @@ public class SiesteGoal extends Goal {
 	@Override
 	public void start() {
 		this.reste = this.compagnon.energie() <= ENERGIE_QUI_ENDORT ? LONGUE : COURTE;
-		this.compagnon.getNavigation().stop();
-		this.compagnon.setDort(true);
-		Compteurs.compter(this.compagnon, Compteurs.SIESTES);
+		this.endormi = false;
+		this.avantDeRecalculer = 0;
+		this.tempsPourAtteindre = TEMPS_POUR_ATTEINDRE_COUSSIN;
+		if (coussinAtteint()) {
+			sEndormir();
+		} else if (this.coussin != null) {
+			allerAuCoussin();
+		} else {
+			sEndormir();
+		}
 	}
 
 	@Override
@@ -140,20 +184,78 @@ public class SiesteGoal extends Goal {
 			return false;
 		}
 		// On le reveille en le bousculant, en le montant, ou en l'emmenant nager.
-		return !this.compagnon.estMonte() && !this.compagnon.isInWater()
-				&& this.compagnon.onGround() && !maitreQuiSAgite();
+		if (this.compagnon.estMonte() || this.compagnon.isInWater()
+				|| !this.compagnon.onGround() || maitreQuiSAgite()) {
+			return false;
+		}
+		return this.endormi || this.coussin != null
+				&& this.tempsPourAtteindre > 0
+				&& this.compagnon.level().getBlockState(this.coussin).is(Objets.COUSSIN);
 	}
 
 	@Override
 	public void stop() {
 		this.compagnon.setDort(false);
+		this.compagnon.getNavigation().stop();
 		this.reste = 0;
+		this.coussin = null;
+		this.endormi = false;
+		this.tempsPourAtteindre = 0;
 	}
 
 	@Override
 	public void tick() {
+		if (!this.endormi && this.coussin != null) {
+			this.tempsPourAtteindre--;
+			this.compagnon.getLookControl().setLookAt(this.coussin.getX() + 0.5D,
+					this.coussin.getY() + 0.2D, this.coussin.getZ() + 0.5D);
+			if (coussinAtteint()) {
+				sEndormir();
+			} else if (--this.avantDeRecalculer <= 0
+					|| this.compagnon.getNavigation().isDone()) {
+				this.avantDeRecalculer = 10;
+				allerAuCoussin();
+			}
+			return;
+		}
 		this.reste--;
 		this.compagnon.getNavigation().stop();
+	}
+
+	private boolean coussinAtteint() {
+		if (this.coussin == null) {
+			return false;
+		}
+		double dx = this.compagnon.getX() - (this.coussin.getX() + 0.5D);
+		double dz = this.compagnon.getZ() - (this.coussin.getZ() + 0.5D);
+		return dx * dx + dz * dz <= ARRIVE_COUSSIN * ARRIVE_COUSSIN;
+	}
+
+	private void allerAuCoussin() {
+		this.compagnon.getNavigation().moveTo(this.coussin.getX() + 0.5D,
+				this.coussin.getY() + 0.2D, this.coussin.getZ() + 0.5D,
+				VITESSE_VERS_COUSSIN);
+	}
+
+	private void sEndormir() {
+		this.endormi = true;
+		this.compagnon.getNavigation().stop();
+		this.compagnon.setDort(true);
+		Compteurs.compter(this.compagnon, Compteurs.SIESTES);
+		if (this.coussin == null || !(this.compagnon.level() instanceof ServerLevel niveau)
+				|| this.compagnon.ficheId() == null) {
+			return;
+		}
+		Fiches fiches = Fiches.de(niveau.getServer());
+		FicheCompagnon fiche = fiches.get(this.compagnon.ficheId());
+		if (fiche == null) {
+			return;
+		}
+		long maintenant = System.currentTimeMillis();
+		fiche.marquer("premiere_sieste_coussin", maintenant);
+		fiche.retenirLeLieu("sommeil", this.coussin.getX(), this.coussin.getY(),
+				this.coussin.getZ(), maintenant);
+		fiches.setDirty();
 	}
 
 	@Override

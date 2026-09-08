@@ -15,6 +15,7 @@ import fr.lhdp.compagnon.progression.Progression;
 import fr.lhdp.compagnon.progression.SourceXp;
 import fr.lhdp.compagnon.reseau.Reseau;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.component.DataComponents;
@@ -281,6 +282,66 @@ public final class Interactions {
 
 		dire(joueur, fiche.nom() + " mange " + quoi + ".", gagne);
 		return InteractionResult.CONSUME;
+	}
+
+	/**
+	 * Mange de lui-meme le repas pose dans une gamelle.
+	 *
+	 * <p>C'est le meme repas que lorsqu'un joueur lui tend l'objet : memes barres,
+	 * memes gouts, memes miettes et meme progression quotidienne. La difference
+	 * est seulement le geste. Le lieu memorise est le bol et non la position un
+	 * peu approximative de la creature, afin qu'elle puisse revenir exactement a
+	 * son coin au prochain repas.
+	 *
+	 * @return vrai si un aliment a bien ete consomme
+	 */
+	public static boolean mangerDepuisGamelle(CompagnonEntity compagnon,
+			FicheCompagnon fiche, Fiches fiches, ItemStack pile, BlockPos gamelle) {
+		if (fiche == null || pile.isEmpty() || fiche.barre(Barre.FAIM) >= Barre.MAXIMUM) {
+			return false;
+		}
+
+		Progression table = Niveaux.progression();
+		long maintenant = System.currentTimeMillis();
+		Gouts.Avis avis = Gouts.Avis.ORDINAIRE;
+		if (pile.is(Objets.ALIMENT)) {
+			String variete = pile.get(Objets.VARIETE);
+			Donnable aliment = variete == null ? null : Contenu.aliment(variete);
+			if (aliment == null) {
+				return false;
+			}
+			avis = fiche.gouts().avis(aliment.id());
+			appliquer(fiche, aliment.effets(), table);
+			if (avis == Gouts.Avis.PREFERE) {
+				fiche.ajouterBarre(Barre.COMPLICITE, COMPLICITE_REPAS_PREFERE, table);
+				fiche.marquer("gout.aime." + aliment.id(), maintenant);
+			} else if (avis == Gouts.Avis.BOUDE) {
+				fiche.marquer("gout.boude." + aliment.id(), maintenant);
+			}
+		} else {
+			FoodProperties nourriture = pile.get(DataComponents.FOOD);
+			if (nourriture == null) {
+				return false;
+			}
+			Map<Barre, Float> effets = new EnumMap<>(Barre.class);
+			effets.put(Barre.FAIM, nourriture.nutrition() * FAIM_PAR_POINT);
+			if (nourriture.saturation() > 0.0F) {
+				effets.put(Barre.ENERGIE,
+						nourriture.saturation() * ENERGIE_PAR_SATURATION);
+			}
+			appliquer(fiche, effets, table);
+		}
+
+		fiche.incrementer(FicheCompagnon.REPAS);
+		fiche.marquer("premier_repas", maintenant);
+		fiche.marquer("premier_repas_gamelle", maintenant);
+		fiche.retenirLeLieu("repas", gamelle.getX(), gamelle.getY(), gamelle.getZ(), maintenant);
+		fiche.noterUnRepas(heureDuMonde(compagnon));
+		fiche.gagnerXp(SourceXp.SOINS, table, maintenant);
+		leRepasSeVoit(compagnon, fiche, pile, avis);
+		pile.shrink(1);
+		fiches.setDirty();
+		return true;
 	}
 
 	// --- Le sac vivant ----------------------------------------------------------

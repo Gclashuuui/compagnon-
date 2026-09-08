@@ -205,6 +205,9 @@
 	"block.compagnon.coussin": "Coussin du compagnon",
 	"block.compagnon.gamelle": "Gamelle enchantée",
 	"block.compagnon.perchoir": "Perchoir du compagnon",
+	"objet.compagnon.coussin.aide": "Assemble-les pour créer son coin de repos.",
+	"objet.compagnon.gamelle.aide": "Clic droit avec un aliment pour y déposer son repas.",
+	"objet.compagnon.perchoir.aide": "Un point de repos pour les petits compagnons.",
 	"caresse.compagnon.en_cours": "La caresse n’est pas encore terminée.",
 	"livre.compagnon.gouts": "Ses goûts à table",
 	"livre.compagnon.aime": "Aime : %s",
@@ -422,5 +425,11 @@
 	"roue.compagnon.action.animation.varasuchus_adulte.flex3": "Se deploie",
 	"roue.compagnon.action.animation.atroxiia_adulte.jump": "Bondit",
 	"item.compagnon.balle": "Balle",
-	"item.compagnon.os_a_macher": "Os à mâcher"
+	"item.compagnon.os_a_macher": "Os à mâcher",
+	"gamelle.compagnon.pleine": "La gamelle contient déjà un repas.",
+	"gamelle.compagnon.depose": "%s est posé dans la gamelle.",
+	"gamelle.compagnon.vide": "La gamelle est vide.",
+	"gamelle.compagnon.reprend": "Tu reprends %s.",
+	"moment.compagnon.premier_repas_gamelle": "Il a mangé seul dans sa gamelle pour la première fois.",
+	"moment.compagnon.premiere_sieste_coussin": "Il a choisi son coussin pour y dormir pour la première fois."
 }

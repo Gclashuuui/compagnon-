@@ -380,6 +380,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// passage ne doit pas lui faire ignorer un joueur qui vient le caresser.
 		this.goalSelector.addGoal(8, new RetrouverGoal(this));
 		this.goalSelector.addGoal(9, new AbriGoal(this));
+		// Son coin sert vraiment : lorsqu'un repas l'attend dans la gamelle, il
+		// vient le manger sans qu'on ait besoin de cliquer directement sur lui.
+		this.goalSelector.addGoal(10, new MangerDansGamelleGoal(this));
 
 		// « Il t'attend. » Apres l'abri — il ne va pas se poster sous la pluie —
 		// et avant la flanerie, qu'il doit pouvoir interrompre pour y aller.

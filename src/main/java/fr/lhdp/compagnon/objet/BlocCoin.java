@@ -12,10 +12,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public final class BlocCoin extends Block {
 
 	public enum Forme {
-		GAMELLE, PERCHOIR
+		PERCHOIR
 	}
 
-	private static final VoxelShape GAMELLE = Block.box(3, 0, 3, 13, 3, 13);
 	private static final VoxelShape PERCHOIR = Block.box(2, 0, 3, 14, 13, 13);
 
 	private final Forme forme;
@@ -29,7 +28,6 @@ public final class BlocCoin extends Block {
 	protected VoxelShape getShape(BlockState etat, BlockGetter monde, BlockPos position,
 			CollisionContext contexte) {
 		return switch (this.forme) {
-			case GAMELLE -> GAMELLE;
 			case PERCHOIR -> PERCHOIR;
 		};
 	}
