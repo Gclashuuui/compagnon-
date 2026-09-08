@@ -1,6 +1,8 @@
 package fr.lhdp.compagnon.voix;
 
 import fr.lhdp.compagnon.entite.CompagnonEntity;
+import fr.lhdp.compagnon.entite.MangerDansGamelleGoal;
+import fr.lhdp.compagnon.entite.AllerAuPerchoirGoal;
 import fr.lhdp.compagnon.entite.Obeissance;
 import fr.lhdp.compagnon.entite.RapporterGoal;
 import fr.lhdp.compagnon.espece.Espece;
@@ -12,6 +14,8 @@ import fr.lhdp.compagnon.fiche.FicheCompagnon;
 import fr.lhdp.compagnon.progression.Niveaux;
 import fr.lhdp.compagnon.fiche.Fiches;
 import fr.lhdp.compagnon.fiche.Mode;
+import fr.lhdp.compagnon.objet.Objets;
+import net.minecraft.core.BlockPos;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -21,7 +25,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -460,6 +463,38 @@ public final class EcouteVocale {
 			case TOURNER -> {
 				compagnon.jouerActionPendant("@tourne", DUREE_DU_TOUR);
 				return new Resultat(true, fiche.nom() + " fait son tour.");
+			}
+			case MANGER -> {
+				if (fiche.barre(Barre.FAIM) >= Barre.MAXIMUM) {
+					return new Resultat(false, fiche.nom() + " n'a plus faim.");
+				}
+				if (!MangerDansGamelleGoal.ordonner(compagnon)) {
+					return new Resultat(false, "aucun repas ne l'attend dans une gamelle proche.");
+				}
+				fiche.setMode(Mode.RESTE);
+				compagnon.appliquerMode(Mode.RESTE);
+				fiches.setDirty();
+				return new Resultat(true, fiche.nom() + " va manger dans sa gamelle.");
+			}
+			case PERCHOIR -> {
+				BlockPos perchoir = null;
+				for (FicheCompagnon.Lieu lieu : fiche.lieux()) {
+					BlockPos position = new BlockPos(lieu.x(), lieu.y(), lieu.z());
+					if (lieu.cle().equals("perchoir")
+							&& compagnon.level().getBlockState(position).is(Objets.PERCHOIR)) {
+						perchoir = position;
+						break;
+					}
+				}
+				if (perchoir == null) {
+					return new Resultat(false,
+							"montre-lui d'abord un perchoir en cliquant dessus, puis sur lui.");
+				}
+				fiche.setMode(Mode.RESTE);
+				compagnon.appliquerMode(Mode.RESTE);
+				AllerAuPerchoirGoal.ordonner(compagnon, perchoir);
+				fiches.setDirty();
+				return new Resultat(true, fiche.nom() + " retourne à son perchoir.");
 			}
 			case FELICITER -> {
 				return feliciter(joueur, compagnon, fiche, fiches);

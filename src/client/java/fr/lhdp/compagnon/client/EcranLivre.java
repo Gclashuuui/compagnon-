@@ -657,6 +657,7 @@ public class EcranLivre extends EcranCompagnon {
 		g.fill(x + 1, y, x + large - 1, y + 1, bord);
 		g.fill(x + 1, y + HAUTEUR_RITUEL - 1, x + large - 1, y + HAUTEUR_RITUEL, bord);
 		g.fill(x, y + 4, x + 1, y + HAUTEUR_RITUEL - 4, bord);
+		g.fill(x + large - 1, y + 4, x + large, y + HAUTEUR_RITUEL - 4, bord);
 
 		Component symbole = Icones.de(icone);
 		g.drawString(this.font, symbole, x + (large - this.font.width(symbole)) / 2, y + 4,

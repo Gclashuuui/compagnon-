@@ -78,8 +78,8 @@ public final class Objets {
 	public static final Block GAMELLE = enregistrerBloc("gamelle", new BlocGamelle(
 			BlockBehaviour.Properties.of()
 					.strength(0.8F).sound(SoundType.DECORATED_POT).noOcclusion()));
-	public static final Block PERCHOIR = enregistrerBloc("perchoir", new BlocCoin(
-			BlocCoin.Forme.PERCHOIR, BlockBehaviour.Properties.of()
+	public static final Block PERCHOIR = enregistrerBloc("perchoir", new BlocPerchoir(
+			BlockBehaviour.Properties.of()
 					.strength(1.4F).sound(SoundType.WOOD).noOcclusion()));
 
 	/**

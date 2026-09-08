@@ -54,6 +54,12 @@ public enum CommandeVocale {
 	/** Il fait un tour sur lui-meme. Ca ne sert a rien, et c'est le but. */
 	TOURNE("tourne", null, Geste.TOURNER),
 
+	/** Il rejoint le repas visible dans sa gamelle et le mange. */
+	MANGER("manger", null, Geste.MANGER),
+
+	/** Il retourne au perchoir qu'on lui a déjà montré. */
+	PERCHOIR("perchoir", null, Geste.PERCHOIR),
+
 	/**
 	 * On le felicite.
 	 *
@@ -70,6 +76,8 @@ public enum CommandeVocale {
 		MONTER,
 		DESCENDRE,
 		TOURNER,
+		MANGER,
+		PERCHOIR,
 		FELICITER
 	}
 

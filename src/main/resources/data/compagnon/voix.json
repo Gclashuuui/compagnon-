@@ -113,6 +113,17 @@
 			"jette",
 			"relache"
 		],
+		"manger": [
+			"mange",
+			"va manger",
+			"mange ton repas",
+			"à table"
+		],
+		"perchoir": [
+			"va au perchoir",
+			"au perchoir",
+			"retourne au perchoir"
+		],
 		"monte": [
 			"monte",
 			"monte haut",

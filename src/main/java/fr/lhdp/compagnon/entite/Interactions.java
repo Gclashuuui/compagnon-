@@ -10,6 +10,7 @@ import fr.lhdp.compagnon.fiche.Fiches;
 import fr.lhdp.compagnon.fiche.Gouts;
 import fr.lhdp.compagnon.fiche.Mode;
 import fr.lhdp.compagnon.objet.Objets;
+import fr.lhdp.compagnon.objet.BlocPerchoir;
 import fr.lhdp.compagnon.progression.Niveaux;
 import fr.lhdp.compagnon.progression.Progression;
 import fr.lhdp.compagnon.progression.SourceXp;
@@ -107,6 +108,21 @@ public final class Interactions {
 			// Un passant peut le caresser. Rien de plus, et ca ne compte pas dans
 			// sa progression : sinon n'importe qui pourrait la faire monter.
 			return caresser(compagnon, fiche, fiches, joueur, false);
+		}
+
+		// Le joueur a d'abord montre un perchoir, puis touche son compagnon : le
+		// second clic designe qui doit y aller au lieu de faire tourner les poses.
+		if (pile.isEmpty()) {
+			BlockPos perchoir = BlocPerchoir.prendreSelection(joueur);
+			if (perchoir != null) {
+				fiche.setMode(Mode.RESTE);
+				compagnon.appliquerMode(Mode.RESTE);
+				AllerAuPerchoirGoal.ordonner(compagnon, perchoir);
+				fiches.setDirty();
+				joueur.displayClientMessage(Component.translatable(
+						"perchoir.compagnon.ordre", fiche.nom()), true);
+				return InteractionResult.CONSUME;
+			}
 		}
 
 		if (pile.is(Objets.ALIMENT)) {

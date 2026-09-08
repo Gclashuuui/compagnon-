@@ -14,10 +14,14 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Il repere le repas de son coin, s'en approche et mange de lui-meme. */
 public final class MangerDansGamelleGoal extends Goal {
 
+	private static final Set<UUID> ORDRES = ConcurrentHashMap.newKeySet();
 	private static final double PORTEE = 14.0D;
 	private static final double VITESSE = 1.05D;
 	private static final double ARRIVE = 1.35D;
@@ -39,10 +43,22 @@ public final class MangerDansGamelleGoal extends Goal {
 		setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
 	}
 
+	/** Demande un repas immédiatement, même au-dessus du seuil de faim automatique. */
+	public static boolean ordonner(CompagnonEntity compagnon) {
+		if (repasLePlusProche(compagnon) == null) {
+			return false;
+		}
+		ORDRES.add(compagnon.getUUID());
+		return true;
+	}
+
 	@Override
 	public boolean canUse() {
+		boolean demande = ORDRES.remove(this.compagnon.getUUID());
 		if (--this.avantDeChercher > 0) {
-			return false;
+			if (!demande) {
+				return false;
+			}
 		}
 		this.avantDeChercher = ENTRE_DEUX_RECHERCHES;
 		if (!peutSeMettreATable() || !(this.compagnon.level() instanceof ServerLevel niveau)
@@ -52,16 +68,13 @@ public final class MangerDansGamelleGoal extends Goal {
 
 		this.fiches = Fiches.de(niveau.getServer());
 		this.fiche = this.fiches.get(this.compagnon.ficheId());
-		if (this.fiche == null || this.fiche.barre(Barre.FAIM) > FAIM_QUI_DECIDE) {
+		if (this.fiche == null || this.fiche.barre(Barre.FAIM) >= Barre.MAXIMUM
+				|| !demande && this.fiche.barre(Barre.FAIM) > FAIM_QUI_DECIDE) {
 			oublier();
 			return false;
 		}
 
-		AABB alentours = this.compagnon.getBoundingBox().inflate(PORTEE, 5.0D, PORTEE);
-		this.repas = niveau.getEntitiesOfClass(ItemEntity.class, alentours,
-				this::estUnRepasDansUneGamelle).stream()
-				.min(Comparator.comparingDouble(this.compagnon::distanceToSqr))
-				.orElse(null);
+		this.repas = repasLePlusProche(this.compagnon);
 		if (this.repas == null) {
 			oublier();
 			return false;
@@ -70,23 +83,36 @@ public final class MangerDansGamelleGoal extends Goal {
 		return this.gamelle != null;
 	}
 
+	private static ItemEntity repasLePlusProche(CompagnonEntity compagnon) {
+		AABB alentours = compagnon.getBoundingBox().inflate(PORTEE, 5.0D, PORTEE);
+		return compagnon.level().getEntitiesOfClass(ItemEntity.class, alentours,
+				objet -> estUnRepasDansUneGamelle(compagnon, objet)).stream()
+				.min(Comparator.comparingDouble(compagnon::distanceToSqr))
+				.orElse(null);
+	}
+
 	private boolean peutSeMettreATable() {
 		return this.compagnon.estLibre() && this.compagnon.lesMainsVides()
 				&& !this.compagnon.estMonte() && !this.compagnon.isInWater()
 				&& !this.compagnon.volDemande();
 	}
 
-	private boolean estUnRepasDansUneGamelle(ItemEntity objet) {
+	private static boolean estUnRepasDansUneGamelle(CompagnonEntity compagnon,
+			ItemEntity objet) {
 		if (!objet.isAlive() || !BlocGamelle.accepte(objet.getItem())) {
 			return false;
 		}
-		BlockPos position = positionDeLaGamelle(objet);
-		return position != null && BlocGamelle.contenu(this.compagnon.level(), position) == objet;
+		BlockPos position = positionDeLaGamelle(compagnon, objet);
+		return position != null && BlocGamelle.contenu(compagnon.level(), position) == objet;
 	}
 
 	private BlockPos positionDeLaGamelle(ItemEntity objet) {
+		return positionDeLaGamelle(this.compagnon, objet);
+	}
+
+	private static BlockPos positionDeLaGamelle(CompagnonEntity compagnon, ItemEntity objet) {
 		BlockPos position = BlockPos.containing(objet.getX(), objet.getY() - 0.24D, objet.getZ());
-		return this.compagnon.level().getBlockState(position).is(Objets.GAMELLE)
+		return compagnon.level().getBlockState(position).is(Objets.GAMELLE)
 				? position : null;
 	}
 
@@ -101,7 +127,8 @@ public final class MangerDansGamelleGoal extends Goal {
 	public boolean canContinueToUse() {
 		return this.repas != null && this.repas.isAlive() && this.gamelle != null
 				&& this.fiche != null && this.fiche.barre(Barre.FAIM) < Barre.MAXIMUM
-				&& peutSeMettreATable() && estUnRepasDansUneGamelle(this.repas);
+				&& peutSeMettreATable()
+				&& estUnRepasDansUneGamelle(this.compagnon, this.repas);
 	}
 
 	@Override

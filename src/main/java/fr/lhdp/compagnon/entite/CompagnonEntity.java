@@ -361,6 +361,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// « viens » restait donc sans effet tant qu'il etait parti chercher un
 		// objet. Un ordre de rappel doit toujours pouvoir interrompre le reste.
 		this.goalSelector.addGoal(1, new VenirIciGoal(this));
+		// Un meuble que le joueur vient de montrer est un ordre précis, au même
+		// niveau que le rappel : la vie ambiante ne doit pas pouvoir le détourner.
+		this.goalSelector.addGoal(2, new AllerAuPerchoirGoal(this));
 
 		// « Monte. » Un ordre, donc au-dessus du suivi et de la flanerie — mais
 		// sous « viens » : si on le rappelle, il redescend.

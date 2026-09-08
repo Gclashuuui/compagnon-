@@ -1,4 +1,0 @@
-{
-	"textures":{"bord":"minecraft:block/gold_block","particle":"compagnon:block/coussin_tissu"},
-	"elements":[{"from":[0,0,0],"to":[16,3,1],"faces":{"north":{"texture":"#bord"},"east":{"texture":"#bord"},"south":{"texture":"#bord"},"west":{"texture":"#bord"},"up":{"texture":"#bord"}}}]
-}
