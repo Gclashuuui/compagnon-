@@ -3,6 +3,7 @@ package fr.lhdp.compagnon.entite;
 import fr.lhdp.compagnon.contenu.Caractere;
 import fr.lhdp.compagnon.contenu.Contenu;
 import fr.lhdp.compagnon.espece.Espece;
+import fr.lhdp.compagnon.espece.Longueurs;
 import fr.lhdp.compagnon.espece.Partie;
 import fr.lhdp.compagnon.espece.Especes;
 import fr.lhdp.compagnon.fiche.Barre;
@@ -1212,6 +1213,31 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 */
 	public void reagirCaresse() {
 		jouerActionPendant(PREFIXE_ROLE + Espece.CARESSE, DUREE_REACTION);
+	}
+
+	/**
+	 * Celebre une montee de niveau avec le geste propre a l'espece.
+	 *
+	 * <p>Le role {@code niveau} gagne s'il existe. Sinon, une reaction de joie
+	 * deja disponible fait parfaitement l'affaire. Sans l'une ni l'autre, les
+	 * particules et le son restent visibles et la bete n'est pas immobilisee pour
+	 * une animation absente.
+	 */
+	public void reagirMonteeDeNiveau() {
+		Espece espece = Especes.get(espece());
+		if (espece == null) {
+			return;
+		}
+		String role = Espece.NIVEAU;
+		String animation = espece.reaction(role);
+		if (animation == null || animation.isEmpty()) {
+			role = Espece.JOIE;
+			animation = espece.reaction(role);
+		}
+		if (animation == null || animation.isEmpty()) {
+			return;
+		}
+		jouerActionPendant(PREFIXE_ROLE + role, Longueurs.de(animation));
 	}
 
 	public UUID ficheId() {

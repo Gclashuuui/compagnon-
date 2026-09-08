@@ -149,6 +149,12 @@ public record Espece(
 	/** Les roles de pose, facultatifs. Absents, ils retombent sur immobile. */
 	public static final List<String> ROLES_POSE = List.of(ASSIS, COUCHE);
 
+	/** Une joie ordinaire, reutilisee si l'espece n'a pas de geste de niveau. */
+	public static final String JOIE = "joie";
+
+	/** La celebration propre a une montee de niveau, entierement facultative. */
+	public static final String NIVEAU = "niveau";
+
 	/** Vrai si cette espece peut porter quelqu'un, a un niveau ou a un autre. */
 	public boolean seMonte() {
 		return this.monterAuNiveau > 0;

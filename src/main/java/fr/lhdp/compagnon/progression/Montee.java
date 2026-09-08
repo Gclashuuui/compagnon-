@@ -2,6 +2,7 @@ package fr.lhdp.compagnon.progression;
 
 import fr.lhdp.compagnon.espece.Especes;
 import fr.lhdp.compagnon.fiche.FicheCompagnon;
+import fr.lhdp.compagnon.reglage.Reglages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -79,11 +80,30 @@ public final class Montee {
 		}
 
 		List<String> ouverts = cequiSOuvre(fiche, table, annonce, maintenant);
+		int points = pointsGagnes(annonce, maintenant, Reglages.pointsTousLesNiveaux());
+		boolean monte = monteDebloquee(fiche, annonce, maintenant);
 		fiche.poserCompteur(CLE_ANNONCE, maintenant);
 		fiche.marquer("niveau_" + maintenant, System.currentTimeMillis());
-		annoncer(proprietaire, fiche, maintenant, ouverts);
+		annoncer(proprietaire, fiche, maintenant, ouverts, points, monte);
 		faireBriller(proprietaire, fiche);
 		return true;
+	}
+
+	/** Combien de paliers de competence ont ete franchis entre deux annonces. */
+	static int pointsGagnes(int avant, int apres, int tousLesNiveaux) {
+		if (tousLesNiveaux <= 0 || apres <= avant) {
+			return 0;
+		}
+		return Math.max(0, apres / tousLesNiveaux - avant / tousLesNiveaux);
+	}
+
+	/** La monte vient-elle precisement d'etre ouverte pour cette espece ? */
+	private static boolean monteDebloquee(FicheCompagnon fiche, int avant, int apres) {
+		fr.lhdp.compagnon.espece.Espece espece = Especes.get(fiche.espece());
+		if (espece == null || !espece.seMonte()) {
+			return false;
+		}
+		return avant < espece.monterAuNiveau() && apres >= espece.monterAuNiveau();
 	}
 
 	/**
@@ -119,18 +139,19 @@ public final class Montee {
 		if (niveau != null && niveau.getEntity(fiche.id())
 				instanceof fr.lhdp.compagnon.entite.CompagnonEntity compagnon) {
 			fr.lhdp.compagnon.entite.Etincelles.montee(compagnon);
+			compagnon.reagirMonteeDeNiveau();
 		}
 	}
 
 	/**
 	 * Le grand texte, le sous-titre et le son.
 	 *
-	 * <p>Le titre dit le niveau, le sous-titre dit ce qu'on y gagne. Un niveau qui
-	 * n'ouvre rien le dit aussi : mieux vaut « rien de nouveau cette fois » qu'un
-	 * sous-titre vide qui laisse chercher.
+	 * <p>Le titre dit le niveau, le sous-titre dit ce qu'on y gagne : gestes,
+	 * points de competence et monte. Un niveau sans recompense mecanique reste une
+	 * nouvelle etape de leur histoire, jamais une annonce negative.
 	 */
 	private static void annoncer(ServerPlayer joueur, FicheCompagnon fiche, int niveau,
-			List<String> ouverts) {
+			List<String> ouverts, int points, boolean monte) {
 
 		joueur.connection.send(new ClientboundSetTitlesAnimationPacket(
 				APPARITION, DUREE, DISPARITION));
@@ -145,18 +166,44 @@ public final class Montee {
 						Component.translatable("montee.compagnon.titre", fiche.nom(), niveau))
 						.withStyle(ChatFormatting.GOLD)));
 
-		joueur.connection.send(new ClientboundSetSubtitleTextPacket(sousTitre(ouverts)));
+		joueur.connection.send(new ClientboundSetSubtitleTextPacket(
+				sousTitre(ouverts, points, monte)));
 
 		// Le son de montee de niveau du jeu, et pas un autre : c'est celui que le
 		// joueur associe deja a une bonne nouvelle, sans avoir rien a apprendre.
 		joueur.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.7F, 1.2F);
 	}
 
-	private static Component sousTitre(List<String> ouverts) {
-		if (ouverts.isEmpty()) {
-			return Component.translatable("montee.compagnon.rien_de_neuf")
-					.withStyle(ChatFormatting.GRAY);
+	private static Component sousTitre(List<String> ouverts, int points, boolean monte) {
+		List<Component> recompenses = new ArrayList<>();
+		if (!ouverts.isEmpty()) {
+			recompenses.add(gestes(ouverts));
 		}
+		if (points == 1) {
+			recompenses.add(Component.translatable("montee.compagnon.point_competence"));
+		} else if (points > 1) {
+			recompenses.add(Component.translatable(
+					"montee.compagnon.points_competence", points));
+		}
+		if (monte) {
+			recompenses.add(Component.translatable("montee.compagnon.monte"));
+		}
+		if (recompenses.isEmpty()) {
+			return Component.translatable("montee.compagnon.nouvelle_etape")
+					.withStyle(ChatFormatting.YELLOW);
+		}
+		net.minecraft.network.chat.MutableComponent resultat = Component.empty();
+		for (int i = 0; i < recompenses.size(); i++) {
+			if (i > 0) {
+				resultat.append(Component.literal("  •  "));
+			}
+			resultat.append(recompenses.get(i));
+		}
+		return resultat.withStyle(ChatFormatting.YELLOW);
+	}
+
+	/** Le morceau du sous-titre qui nomme les gestes ouverts. */
+	private static Component gestes(List<String> ouverts) {
 		if (ouverts.size() <= NOMMES) {
 			List<Component> noms = new ArrayList<>(ouverts.size());
 			for (String animation : ouverts) {
