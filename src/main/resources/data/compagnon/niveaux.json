@@ -6,8 +6,8 @@
 				"plafond_par_jour": 40
 			},
 			"affection": {
-				"xp": 3,
-				"plafond_par_jour": 30
+				"xp": 2,
+				"plafond_par_jour": 20
 			},
 			"balade": {
 				"xp": 1,

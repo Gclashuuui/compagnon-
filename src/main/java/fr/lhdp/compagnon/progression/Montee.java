@@ -3,14 +3,10 @@ package fr.lhdp.compagnon.progression;
 import fr.lhdp.compagnon.espece.Especes;
 import fr.lhdp.compagnon.fiche.FicheCompagnon;
 import fr.lhdp.compagnon.reglage.Reglages;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
-import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +17,9 @@ import java.util.Set;
  *
  * <h2>Ce qui manquait</h2>
  *
- * <p>Un compagnon montait de niveau et personne ne le lui disait. Les gestes
- * s'ouvraient dans la roue en silence : il fallait ouvrir la roue, se souvenir
- * de ce qu'il y avait avant, et remarquer une case de plus. Autant dire que
- * personne ne le remarquait.
- *
- * <p>Debloquer un geste doit etre un evenement. On reprend donc les deux outils
- * que le jeu utilise pour ses propres moments : <b>le grand texte au milieu de
- * l'ecran</b> et <b>le son de montee de niveau</b>. Ce sont ceux que le joueur
- * associe deja a « il vient de se passer quelque chose de bien ».
+ * <p>Un compagnon montait de niveau et personne ne le lui disait. L'annonce est
+ * maintenant un petit carton dans le coin superieur droit : assez visible pour
+ * marquer le moment, assez discret pour ne jamais cacher le jeu.
  *
  * <h2>Pourquoi c'est verifie une fois par minute</h2>
  *
@@ -49,13 +39,6 @@ public final class Montee {
 
 	/** Le dernier niveau qu'on lui a annonce. Un compteur interne : il a un point. */
 	private static final String CLE_ANNONCE = "t.niveau";
-
-	/** Combien de gestes on nomme au plus dans le sous-titre. */
-	private static final int NOMMES = 2;
-
-	private static final int APPARITION = 10;
-	private static final int DUREE = 60;
-	private static final int DISPARITION = 20;
 
 	/**
 	 * Regarde s'il a monte, et le fait savoir. A appeler une fois par minute.
@@ -144,100 +127,23 @@ public final class Montee {
 	}
 
 	/**
-	 * Le grand texte, le sous-titre et le son.
+	 * Le petit carton du coin et son tintement.
 	 *
-	 * <p>Le titre dit le niveau, le sous-titre dit ce qu'on y gagne : gestes,
+	 * <p>Le titre dit le niveau, la seconde ligne dit ce qu'on y gagne : gestes,
 	 * points de competence et monte. Un niveau sans recompense mecanique reste une
 	 * nouvelle etape de leur histoire, jamais une annonce negative.
 	 */
 	private static void annoncer(ServerPlayer joueur, FicheCompagnon fiche, int niveau,
 			List<String> ouverts, int points, boolean monte) {
 
-		joueur.connection.send(new ClientboundSetTitlesAnimationPacket(
-				APPARITION, DUREE, DISPARITION));
+		ServerPlayNetworking.send(joueur,
+				new fr.lhdp.compagnon.reseau.PaquetMontee(
+						fiche.nom(), niveau, ouverts, points, monte));
 
-		// UNE ETOILE DEVANT LE TITRE.
-		//
-		// Elle vient de la police du mod : c est une lettre, elle se met donc dans
-		// un titre comme dans une phrase, et elle prend l or du titre sans qu on
-		// ait a la teinter.
-		joueur.connection.send(new ClientboundSetTitleTextPacket(
-				fr.lhdp.compagnon.Icones.devant(fr.lhdp.compagnon.Icones.ETOILE,
-						Component.translatable("montee.compagnon.titre", fiche.nom(), niveau))
-						.withStyle(ChatFormatting.GOLD)));
-
-		joueur.connection.send(new ClientboundSetSubtitleTextPacket(
-				sousTitre(ouverts, points, monte)));
-
-		// Le son de montee de niveau du jeu, et pas un autre : c'est celui que le
-		// joueur associe deja a une bonne nouvelle, sans avoir rien a apprendre.
-		joueur.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.7F, 1.2F);
+		// Un tintement court accompagne le carton, sans couvrir le jeu comme le
+		// son vanilla de niveau qui etait prevu pour un plein ecran.
+		joueur.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP,
+				SoundSource.PLAYERS, 0.32F, 1.35F);
 	}
 
-	private static Component sousTitre(List<String> ouverts, int points, boolean monte) {
-		List<Component> recompenses = new ArrayList<>();
-		if (!ouverts.isEmpty()) {
-			recompenses.add(gestes(ouverts));
-		}
-		if (points == 1) {
-			recompenses.add(Component.translatable("montee.compagnon.point_competence"));
-		} else if (points > 1) {
-			recompenses.add(Component.translatable(
-					"montee.compagnon.points_competence", points));
-		}
-		if (monte) {
-			recompenses.add(Component.translatable("montee.compagnon.monte"));
-		}
-		if (recompenses.isEmpty()) {
-			return Component.translatable("montee.compagnon.nouvelle_etape")
-					.withStyle(ChatFormatting.YELLOW);
-		}
-		net.minecraft.network.chat.MutableComponent resultat = Component.empty();
-		for (int i = 0; i < recompenses.size(); i++) {
-			if (i > 0) {
-				resultat.append(Component.literal("  •  "));
-			}
-			resultat.append(recompenses.get(i));
-		}
-		return resultat.withStyle(ChatFormatting.YELLOW);
-	}
-
-	/** Le morceau du sous-titre qui nomme les gestes ouverts. */
-	private static Component gestes(List<String> ouverts) {
-		if (ouverts.size() <= NOMMES) {
-			List<Component> noms = new ArrayList<>(ouverts.size());
-			for (String animation : ouverts) {
-				noms.add(nomLisible(animation));
-			}
-			Component liste = noms.size() == 1
-					? noms.get(0)
-					: Component.translatable("montee.compagnon.et", noms.get(0), noms.get(1));
-			return Component.translatable("montee.compagnon.nouveau_geste", liste)
-					.withStyle(ChatFormatting.YELLOW);
-		}
-		return Component.translatable("montee.compagnon.nouveaux_gestes", ouverts.size())
-				.withStyle(ChatFormatting.YELLOW);
-	}
-
-	/**
-	 * Le nom lisible d'une animation, exactement comme la roue l'ecrit.
-	 *
-	 * <p>La meme regle que {@code EcranCompagnon.etiquette} : une traduction si
-	 * elle existe, sinon le dernier morceau du nom technique. Les deux doivent
-	 * dire la meme chose — sinon le titre annonce un geste sous un nom, et la
-	 * roue le montre sous un autre.
-	 *
-	 * <p>C'est une duplication assumee : l'ecran vit cote client, ce texte-ci
-	 * doit etre compose cote serveur, et partager huit lignes entre les deux
-	 * couterait plus cher que de les ecrire deux fois.
-	 */
-	private static Component nomLisible(String animation) {
-		String cle = "roue.compagnon.action." + animation;
-		if (net.minecraft.locale.Language.getInstance().has(cle)) {
-			return Component.translatable(cle);
-		}
-		int point = animation.lastIndexOf('.');
-		String court = point >= 0 ? animation.substring(point + 1) : animation;
-		return Component.literal(court.replace('_', ' '));
-	}
 }

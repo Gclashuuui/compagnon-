@@ -143,11 +143,13 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	private static final String CLE_ESPECE = "Espece";
 	private static final String CLE_VARIANTE = "Variante";
 
-	/**
-	 * Au-dela de cette amplitude de balancier, on joue la course plutot que la
-	 * marche. Valeur inventee, a regler en jeu.
-	 */
-	private static final float SEUIL_COURSE = 0.6F;
+	/** Deux seuils evitent que marche et course s'echangent a chaque image. */
+	private static final float SEUIL_COURSE_ENTREE = 0.68F;
+	private static final float SEUIL_COURSE_SORTIE = 0.46F;
+
+	/** Meme hysterese entre battement d'ailes et plane. */
+	private static final double SEUIL_PLANE_ENTREE = -0.075D;
+	private static final double SEUIL_PLANE_SORTIE = -0.015D;
 
 	/**
 	 * Un depart en promenade tous les N ticks au plus. Le double du reglage de
@@ -193,6 +195,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * elle se fond dans le mouvement.
 	 */
 	private static final int FONDU = 8;
+	private static final int FONDU_LOCOMOTION = 3;
 
 	/**
 	 * Le nom interne du fondu de sortie.
@@ -1388,7 +1391,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		} else if (this.ticksMouille > 0) {
 			this.ticksMouille--;
 		}
-		if (this.tickCount % Presence.TOUS_LES == 0) {
+		if (this.tickCount % Presence.TOUS_LES == 0 && !enVol()
+				&& !isInWater() && !estMonte()) {
 			// Mesure, comme pour les morceaux de collision : on ne devine pas ce
 			// que coute un comportement, on le chronometre. Voir /compagnon perf.
 			if (Chrono.enMarche()) {
@@ -1542,6 +1546,10 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	/** Volait-il au tick precedent ? Sert a ne compter qu'un envol par envol. */
 	private boolean volaitAvant;
+
+	/** Etats visuels stables : ils ne sont pas sauvegardes et n'ont pas a l'etre. */
+	private boolean courseVisuelle;
+	private boolean planeVisuellement;
 
 	/**
 	 * Combien de ticks il lui reste a planer parce qu'on le lui a demande.
@@ -1815,7 +1823,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// Et ca ne coute rien sur le reseau : chaque client joue deja l animation,
 		// il en connait l instant tout seul. Voir Reperes.
 		registre.add(Reperes.ecouter(
-			new AnimationController<>(this, "locomotion", FONDU, this::locomotion)));
+			new AnimationController<>(this, "locomotion", FONDU_LOCOMOTION, this::locomotion)));
 		registre.add(Reperes.ecouter(
 			new AnimationController<>(this, "action", FONDU, this::action)));
 	}
@@ -1850,9 +1858,16 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 					? roleSiConnu(espece, Espece.NAGE, Espece.MARCHE)
 					: roleSiConnu(espece, Espece.FLOTTE, Espece.IMMOBILE);
 		} else if (enVol()) {
-			// En descente douce les ailes portent, en montee elles battent. Le seuil
-			// ecarte les minuscules oscillations autour de zero.
-			role = getDeltaMovement().y < -0.035D
+			// Autour de zero la vitesse verticale oscille naturellement. Deux seuils
+			// empechent le controleur de relancer vol puis plane presque a chaque
+			// image, ce qui pliait les ailes dans des poses de transition incoherentes.
+			double verticale = getDeltaMovement().y;
+			if (this.planeVisuellement) {
+				this.planeVisuellement = verticale < SEUIL_PLANE_SORTIE;
+			} else {
+				this.planeVisuellement = verticale < SEUIL_PLANE_ENTREE;
+			}
+			role = this.planeVisuellement
 					? roleSiConnu(espece, Espece.PLANE, Espece.VOL)
 					: Espece.VOL;
 		} else if (dort()) {
@@ -1880,7 +1895,14 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			// animation d'attente se comporte donc exactement comme avant.
 			role = mode == Mode.SUIT ? Espece.ASSIS : roleDeLHumeur();
 		} else {
-			role = etat.getLimbSwingAmount() > SEUIL_COURSE ? Espece.COURSE : Espece.MARCHE;
+			this.planeVisuellement = false;
+			float allure = etat.getLimbSwingAmount();
+			if (this.courseVisuelle) {
+				this.courseVisuelle = allure > SEUIL_COURSE_SORTIE;
+			} else {
+				this.courseVisuelle = allure > SEUIL_COURSE_ENTREE;
+			}
+			role = this.courseVisuelle ? Espece.COURSE : Espece.MARCHE;
 		}
 
 		// Un role de pose que la fiche d'espece ne decrit pas retombe sur immobile,
@@ -1950,6 +1972,12 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * efface la demande.
 	 */
 	private PlayState action(AnimationState<CompagnonEntity> etat) {
+		// Une reaction de sol lancee juste avant l'envol ne doit pas continuer sur
+		// la seconde couche et replier une aile pendant que le vol la deploie.
+		if (enVol() || isInWater()) {
+			this.actionJouee = "";
+			return PlayState.STOP;
+		}
 		String demande = this.entityData.get(ACTION);
 		if (demande.isEmpty()) {
 			this.actionJouee = "";

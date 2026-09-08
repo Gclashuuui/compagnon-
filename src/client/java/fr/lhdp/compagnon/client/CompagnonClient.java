@@ -10,6 +10,7 @@ import fr.lhdp.compagnon.reseau.PaquetDonneesLivre;
 import fr.lhdp.compagnon.reseau.PaquetDonneesRoue;
 import fr.lhdp.compagnon.reseau.PaquetEspeces;
 import fr.lhdp.compagnon.reseau.PaquetJauges;
+import fr.lhdp.compagnon.reseau.PaquetMontee;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -114,16 +115,24 @@ public class CompagnonClient implements ClientModInitializer {
 		// ils ont change. Le client ne calcule rien.
 		ClientPlayNetworking.registerGlobalReceiver(PaquetJauges.TYPE, (paquet, contexte) ->
 				contexte.client().execute(() -> Panneau.poser(paquet.jauges())));
+		ClientPlayNetworking.registerGlobalReceiver(PaquetMontee.TYPE, (paquet, contexte) ->
+				contexte.client().execute(() -> AnnonceNiveau.poser(paquet)));
 
-		HudRenderCallback.EVENT.register((graphismes, delta) ->
-				Panneau.dessiner(graphismes, delta.getRealtimeDeltaTicks()));
+		HudRenderCallback.EVENT.register((graphismes, delta) -> {
+			Panneau.dessiner(graphismes, delta.getRealtimeDeltaTicks());
+			AnnonceNiveau.dessiner(graphismes, delta.getRealtimeDeltaTicks());
+		});
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> Caresses.tick());
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			Caresses.tick();
+			AnnonceNiveau.tick();
+		});
 		ClientPlayConnectionEvents.DISCONNECT.register((gestionnaire, client) -> {
 			Caresses.oublier();
 			// Sans ceci, le panneau garderait a l'ecran l'etat d'un compagnon d'un
 			// autre serveur en attendant le premier paquet du nouveau.
 			Panneau.oublier();
+			AnnonceNiveau.oublier();
 			// Un pack de ressources a pu changer : on redemandera quelles variantes
 			// ont un calque lumineux.
 			CalqueLumineux.oublier();

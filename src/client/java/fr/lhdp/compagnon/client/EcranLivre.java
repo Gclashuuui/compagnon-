@@ -523,8 +523,13 @@ public class EcranLivre extends EcranCompagnon {
 	private void portrait(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
 		g.blit(CADRE_PORTRAIT, x, y, PAGE_LARGEUR, PORTRAIT,
 				0.0F, 0.0F, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE);
-		Apercu.dessiner(g, x + 5, y + 4, PAGE_LARGEUR - 10, PORTRAIT - 8,
+		// Le dragonnet est tres long mais bas : le cadrage automatique le posait
+		// contre la barre d'XP. On remonte seulement son rendu et on garde le cadre
+		// comme zone de coupe pour qu'une aile ne passe jamais sur le titre.
+		g.enableScissor(x + 5, y + 4, x + PAGE_LARGEUR - 5, y + PORTRAIT - 4);
+		Apercu.dessiner(g, x + 5, y - 8, PAGE_LARGEUR - 10, PORTRAIT - 8,
 				this.donnees.espece(), this.donnees.variante(), sourisX, sourisY);
+		g.disableScissor();
 	}
 
 	// --- Page 1, a droite : ce qui ne va pas, et ce qu'on a fait ----------------
@@ -1138,7 +1143,7 @@ public class EcranLivre extends EcranCompagnon {
 					FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
 		}
 		if (this.page < DERNIERE_PAGE) {
-			g.blit(FLECHE_DROITE, this.gauche + LARGEUR - 73, y, 0.0F, 0.0F,
+			g.blit(FLECHE_DROITE, this.gauche + LARGEUR - 61, y, 0.0F, 0.0F,
 					FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
 		}
 
@@ -1199,7 +1204,7 @@ public class EcranLivre extends EcranCompagnon {
 				allerPage(this.page - 1);
 				return true;
 			}
-			if (this.page < DERNIERE_PAGE && dansX(sourisX, this.gauche + LARGEUR - 73)) {
+			if (this.page < DERNIERE_PAGE && dansX(sourisX, this.gauche + LARGEUR - 61)) {
 				allerPage(this.page + 1);
 				return true;
 			}

@@ -90,6 +90,7 @@ public final class Reseau {
 		PayloadTypeRegistry.playC2S().register(PaquetChevaucher.TYPE, PaquetChevaucher.CODEC);
 		PayloadTypeRegistry.playS2C().register(PaquetDonneesCarnet.TYPE, PaquetDonneesCarnet.CODEC);
 		PayloadTypeRegistry.playS2C().register(PaquetJauges.TYPE, PaquetJauges.CODEC);
+		PayloadTypeRegistry.playS2C().register(PaquetMontee.TYPE, PaquetMontee.CODEC);
 		PayloadTypeRegistry.playC2S().register(PaquetClassement.TYPE, PaquetClassement.CODEC);
 		PayloadTypeRegistry.playC2S().register(PaquetEcarter.TYPE, PaquetEcarter.CODEC);
 		PayloadTypeRegistry.playS2C().register(PaquetDonneesClassement.TYPE,

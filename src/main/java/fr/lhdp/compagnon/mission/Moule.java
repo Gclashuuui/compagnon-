@@ -40,6 +40,13 @@ import java.util.List;
 public record Moule(String id, String compteur, String texte, List<Integer> quantites,
 		List<Integer> xp, String famille, List<String> especes, boolean longue) {
 
+	/**
+	 * Les anciennes recompenses faisaient franchir les premiers niveaux avec une
+	 * seule mission. Les valeurs des fichiers restent les poids relatifs entre
+	 * missions ; cette part fixe donne le rythme reel de progression.
+	 */
+	private static final float PART_DE_LA_RECOMPENSE = 0.45F;
+
 	/** Le moule vaut-il pour cette espece ? */
 	public boolean concerne(String espece) {
 		return this.especes.isEmpty() || this.especes.contains(espece);
@@ -63,7 +70,8 @@ public record Moule(String id, String compteur, String texte, List<Integer> quan
 		if (this.xp.isEmpty()) {
 			return 0;
 		}
-		return this.xp.get(Math.max(0, Math.min(this.xp.size() - 1, cran)));
+		int brute = this.xp.get(Math.max(0, Math.min(this.xp.size() - 1, cran)));
+		return brute <= 0 ? 0 : Math.max(1, Math.round(brute * PART_DE_LA_RECOMPENSE));
 	}
 
 	/** Combien de crans de difficulte ce moule propose. */
