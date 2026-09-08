@@ -126,6 +126,12 @@ public record Espece(
 	public static final String MARCHE = "marche";
 	public static final String COURSE = "course";
 	public static final String VOL = "vol";
+	/** Vol sans battement, quand il perd doucement de l'altitude. */
+	public static final String PLANE = "plane";
+	/** Deplacement volontaire dans l'eau. */
+	public static final String NAGE = "nage";
+	/** Attente a la surface de l'eau. */
+	public static final String FLOTTE = "flotte";
 
 	// --- Roles optionnels : les poses sur ordre ---
 	public static final String ASSIS = "assis";
@@ -146,8 +152,12 @@ public record Espece(
 	/** Les roles que le fichier doit obligatoirement donner. */
 	public static final List<String> ROLES = List.of(IMMOBILE, MARCHE, COURSE, VOL);
 
-	/** Les roles de pose, facultatifs. Absents, ils retombent sur immobile. */
-	public static final List<String> ROLES_POSE = List.of(ASSIS, COUCHE);
+	/**
+	 * Les roles de locomotion facultatifs. Les poses retombent sur immobile ;
+	 * le vol plane et l'eau choisissent eux-memes leur repli dans l'entite.
+	 */
+	public static final List<String> ROLES_OPTIONNELS =
+			List.of(ASSIS, COUCHE, PLANE, NAGE, FLOTTE);
 
 	/** Une joie ordinaire, reutilisee si l'espece n'a pas de geste de niveau. */
 	public static final String JOIE = "joie";

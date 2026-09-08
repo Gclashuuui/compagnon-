@@ -1,5 +1,8 @@
 package fr.lhdp.compagnon.entite;
 
+import fr.lhdp.compagnon.espece.Espece;
+import fr.lhdp.compagnon.espece.Especes;
+import fr.lhdp.compagnon.espece.Longueurs;
 import net.minecraft.world.entity.monster.Monster;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -63,6 +66,13 @@ public final class Presence {
 
 	/** Une manie ne revient pas avant une minute et demie. */
 	private static final int AVANT_DE_REFAIRE_UNE_MANIE = 20 * 90;
+
+	/** En moyenne une proposition par minute, examinee deux fois par seconde. */
+	private static final int CHANCE_D_UN_GESTE_NATUREL = 120;
+
+	/** Les roles disponibles, dont chaque espece peut remplir tout ou partie. */
+	private static final List<String> GESTES_NATURELS =
+			List.of("ambiance", "ambiance_2", "ambiance_3", "ambiance_4");
 
 	/** Un gourmand remendie au bout d'une minute. */
 	private static final int AVANT_DE_REMENDIER = 20 * 60;
@@ -128,7 +138,41 @@ public final class Presence {
 		if (uneManie(compagnon, maitre, attention)) {
 			return;
 		}
+		if (unGesteNaturel(compagnon, attention)) {
+			return;
+		}
 		leMonde(compagnon, attention);
+	}
+
+	/**
+	 * Un mouvement sans raison utile : renifler, regarder le ciel, s'etirer.
+	 *
+	 * <p>La liste ne contient que des roles. Une espece qui ne les remplit pas ne
+	 * change absolument pas ; celle qui en possede plusieurs varie sans que le
+	 * code connaisse le nom d'une seule animation. Le tirage est rare et ne fait
+	 * aucune recherche dans le monde.
+	 */
+	private static boolean unGesteNaturel(CompagnonEntity compagnon, Attention attention) {
+		if (compagnon.getRandom().nextInt(CHANCE_D_UN_GESTE_NATUREL) != 0) {
+			return false;
+		}
+		Espece espece = Especes.get(compagnon.espece());
+		if (espece == null) {
+			return false;
+		}
+		java.util.ArrayList<String> possibles = new java.util.ArrayList<>(GESTES_NATURELS.size());
+		for (String role : GESTES_NATURELS) {
+			if (espece.reaction(role) != null) {
+				possibles.add(role);
+			}
+		}
+		if (possibles.isEmpty() || !attention.permet("naturel", 20 * 35)) {
+			return false;
+		}
+		String role = possibles.get(compagnon.getRandom().nextInt(possibles.size()));
+		String animation = espece.reaction(role);
+		compagnon.jouerActionPendant("@" + role, Longueurs.de(animation));
+		return true;
 	}
 
 	/**

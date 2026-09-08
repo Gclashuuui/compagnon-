@@ -199,10 +199,11 @@ public final class Especes {
 			}
 			locomotion.put(role, locomotionJson.get(role).getAsString());
 		}
-		// Les poses sont facultatives : absentes, elles retomberont sur immobile.
+		// Les poses et les allures plus fines sont facultatives. L'entite choisit
+		// un repli qui a du sens quand une espece ne sait ni nager ni planer.
 		// Une case laissee vide compte comme absente — on peut donc preparer les
 		// cases dans le fichier et les remplir plus tard.
-		for (String role : Espece.ROLES_POSE) {
+		for (String role : Espece.ROLES_OPTIONNELS) {
 			String trouvee = texteOuNull(locomotionJson, role);
 			if (trouvee != null) {
 				locomotion.put(role, trouvee);

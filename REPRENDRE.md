@@ -1090,3 +1090,36 @@ geste survole, le mot vocal appris ou le niveau encore necessaire.
 Les sons, les boutons animes, les parchemins et les apercus 3D deja presents ont
 ete conserves : ils font partie de cette nouvelle identite plutot que d'etre
 remplaces.
+
+## Le nouveau dragonnet v14
+
+`dragonnet_animations_v14.bbmodel` remplace entierement l'ancien dragon : **109
+os, 115 cubes, 64 animations et une texture 512 x 512**. La geometrie et le jeu
+d'animations precedents ont ete ecrases ; les anciennes textures noire et
+blanche ont ete retirees. Une ancienne sauvegarde portant encore la variante
+`blanc` retombe proprement sur la nouvelle texture par defaut.
+
+Le nouveau modele garde `head_act` et `jaw` : il suit donc le regard sans ecraser
+les animations de tete et continue de porter les objets dans sa gueule. Sa
+hauteur et ses morceaux de collision ont ete remis aux mesures du nouveau corps.
+
+Les animations deja branchees sur sa vie reelle :
+
+- marche, course, battement de vol et plane en descente ;
+- nage quand il avance dans l'eau, flottaison quand il reste a la surface ;
+- assis, sommeil et reveil ;
+- caresse, joie, peur, curiosite, ebrouement, salut, reconnaissance et montee de
+  niveau ;
+- repas, avec les miettes et le son deja presents ;
+- quatre gestes ambiants rares : renifler, regarder le ciel, s'etirer et
+  eternuer.
+
+Les gestes ambiants ne sont pas codes avec des noms d'animation : la fiche de
+l'espece associe des roles aux animations. Ils ne changent donc rien aux autres
+especes et pourront etre remplaces dans le JSON sans recompiler.
+
+`ramasse` reste volontairement vide : le modele n'a pas encore de prise d'objet
+qui raconte exactement ce geste. `drink`, les transitions de saut et d'eau,
+`breath_attack`, `guard`, `detect_magic` et `summon` sont bien exportees et
+testables avec `/compagnon anim`, mais aucune mecanique ne les appelle encore.
+Elles ne sont pas detournees pour jouer un faux comportement.

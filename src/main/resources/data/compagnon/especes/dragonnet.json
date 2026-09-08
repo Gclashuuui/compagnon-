@@ -4,14 +4,13 @@
 	"animations": "compagnon:animations/dragonnet.animation.json",
 	"taille": {
 		"largeur": 0.9,
-		"hauteur": 1
+		"hauteur": 1.45
 	},
 	"vole": true,
 	"nom_a_la_voix": "dragon",
 	"variante_par_defaut": "noir",
 	"variantes": {
-		"noir": "compagnon:textures/entity/dragonnet_noir.png",
-		"blanc": "compagnon:textures/entity/dragonnet_blanc.png"
+		"noir": "compagnon:textures/entity/dragonnet.png"
 	},
 	"_comment_sons": [
 		"Sa voix, empruntee aux sons du jeu.",
@@ -45,20 +44,29 @@
 		"marche": "animation.dragonnet.walk",
 		"course": "animation.dragonnet.walk_fast",
 		"vol": "animation.dragonnet.fly",
-		"assis": "",
-		"couche": "animation.dragonnet.lie_down"
+		"plane": "animation.dragonnet.glide",
+		"nage": "animation.dragonnet.swim",
+		"flotte": "animation.dragonnet.water_float",
+		"assis": "animation.dragonnet.sit",
+		"couche": "animation.dragonnet.sleep"
 	},
 	"reactions": {
-		"caresse": "",
-		"joyeux": "",
-		"triste": "",
-		"ecoute": "",
-		"tourne": "",
-		"joie": "",
-		"niveau": "",
-		"salut": "",
-		"reconnait": "",
-		"ramasse": ""
+		"caresse": "animation.dragonnet.petted",
+		"joyeux": "animation.dragonnet.greet",
+		"triste": "animation.dragonnet.shy_curl",
+		"ecoute": "animation.dragonnet.curious",
+		"tourne": "animation.dragonnet.shake",
+		"joie": "animation.dragonnet.play",
+		"niveau": "animation.dragonnet.little_roar",
+		"salut": "animation.dragonnet.polite_bow",
+		"reconnait": "animation.dragonnet.sniff_air",
+		"ramasse": "",
+		"reveil": "animation.dragonnet.wake_up",
+		"ambiance": "animation.dragonnet.sniff",
+		"ambiance_2": "animation.dragonnet.look_sky",
+		"ambiance_3": "animation.dragonnet.stretch",
+		"ambiance_4": "animation.dragonnet.sneeze",
+		"mange": "animation.dragonnet.eat"
 	},
 	"parties": [
 		{
@@ -69,47 +77,47 @@
 				0
 			],
 			"largeur": 0.85,
-			"hauteur": 1
+			"hauteur": 1.3
 		},
 		{
 			"nom": "cou",
 			"decalage": [
 				0,
-				0.25,
-				0.45
+				0.4,
+				0.55
 			],
-			"largeur": 0.45,
-			"hauteur": 0.6
+			"largeur": 0.55,
+			"hauteur": 0.85
 		},
 		{
 			"nom": "tete",
 			"decalage": [
 				0,
-				0.2,
-				0.95
+				0.5,
+				1.15
 			],
-			"largeur": 0.65,
-			"hauteur": 0.6
+			"largeur": 0.75,
+			"hauteur": 0.8
 		},
 		{
 			"nom": "queue",
 			"decalage": [
 				0,
-				0.05,
-				-0.7
+				0.35,
+				-0.9
 			],
-			"largeur": 0.45,
-			"hauteur": 0.4
+			"largeur": 0.5,
+			"hauteur": 0.55
 		},
 		{
 			"nom": "queue_bout",
 			"decalage": [
 				0,
-				0.05,
-				-1.25
+				0.45,
+				-1.7
 			],
-			"largeur": 0.3,
-			"hauteur": 0.3
+			"largeur": 0.35,
+			"hauteur": 0.4
 		}
 	]
 }

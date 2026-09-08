@@ -200,12 +200,23 @@ console.log("en blocs : largeur " + arrondi((max[0] - min[0]) / 16)
 	+ "  hauteur " + arrondi(max[1] / 16)
 	+ "  longueur " + arrondi((max[2] - min[2]) / 16));
 console.log();
-if (parNom.wingr && parNom.wingl) {
-	const d = parNom.wingr.pivot[0], g = parNom.wingl.pivot[0];
+// Les anciens modeles nommaient les ailes wingr/wingl, le nouveau dragon
+// wing_r/wing_l. La verification doit suivre les deux conventions : sinon le
+// convertisseur reussit mais ne dit plus si le modele est parti en miroir.
+const aileDroite = parNom.wingr || parNom.wing_r;
+const aileGauche = parNom.wingl || parNom.wing_l;
+if (aileDroite && aileGauche) {
+	const d = aileDroite.pivot[0], g = aileGauche.pivot[0];
 	console.log("ailes : droite x=" + d + "  gauche x=" + g
 		+ "   -> " + (Math.abs(d + g) < 0.001 ? "SYMETRIQUES" : "!! ASYMETRIQUES"));
-	console.log("        la droite est " + (d > 0 ? "en +X : correct pour une bete qui regarde -Z"
-		: "!! en -X : la bascule est a l'envers"));
+	// wingr/wingl etait une convention anatomique connue. Les fichiers en
+	// wing_r/wing_l peuvent etre nommes depuis la vue de face de l'animateur :
+	// leur signe ne prouve alors rien, seule la symetrie est universelle.
+	if (parNom.wingr && parNom.wingl) {
+		console.log("        la droite est " + (d > 0
+			? "en +X : correct pour une bete qui regarde -Z"
+			: "!! en -X : la bascule est a l'envers"));
+	}
 }
 if (parNom.head) {
 	console.log("tete  : z=" + parNom.head.pivot[2]

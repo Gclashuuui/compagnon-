@@ -952,9 +952,26 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	/** Joue une animation puis revient tout seul a la vie ordinaire. */
 	public void jouerActionPendant(String nomAnimation, int ticks) {
+		// UN ROLE DURE LE TEMPS DE SA VRAIE ANIMATION.
+		//
+		// Les anciens gestes faisaient deux secondes environ. Le nouveau dragon
+		// en possede qui respirent, regardent puis reviennent a leur pose sur six
+		// ou huit secondes. Garder le vieux nombre couperait chaque animation en
+		// plein milieu. Le nombre donne par l'appelant reste le repli pour une
+		// espece qui ne decrit pas ce role. Dans ce dernier cas on ne la fige pas
+		// pour une animation invisible : le geste n'a simplement pas lieu.
+		if (nomAnimation.startsWith(PREFIXE_ROLE)) {
+			Espece espece = Especes.get(espece());
+			String animation = espece == null
+					? null : espece.reaction(nomAnimation.substring(PREFIXE_ROLE.length()));
+			if (animation == null || animation.isEmpty()) {
+				return;
+			}
+			ticks = Longueurs.de(animation);
+		}
 		this.entityData.set(ACTION, nomAnimation);
 		this.entityData.set(ACTION_JETON, this.entityData.get(ACTION_JETON) + 1);
-		this.ticksAction = ticks;
+		this.ticksAction = Math.max(1, ticks);
 	}
 
 	/**
@@ -1825,8 +1842,19 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// alors que le vol marchait — c'est l'animation qui racontait autre chose.
 		//
 		// Une creature en l'air n'est assise sous aucun pretexte.
-		if (enVol()) {
-			role = Espece.VOL;
+		if (isInWater()) {
+			// A la surface, il flotte. Des qu'il avance, il nage pour de vrai au
+			// lieu de marcher sous l'eau. Les especes sans ces animations gardent
+			// leur attente ou leur marche ordinaires.
+			role = etat.isMoving()
+					? roleSiConnu(espece, Espece.NAGE, Espece.MARCHE)
+					: roleSiConnu(espece, Espece.FLOTTE, Espece.IMMOBILE);
+		} else if (enVol()) {
+			// En descente douce les ailes portent, en montee elles battent. Le seuil
+			// ecarte les minuscules oscillations autour de zero.
+			role = getDeltaMovement().y < -0.035D
+					? roleSiConnu(espece, Espece.PLANE, Espece.VOL)
+					: Espece.VOL;
 		} else if (dort()) {
 			// LA SIESTE PASSE AVANT LES POSES DEMANDEES.
 			//
@@ -1858,6 +1886,11 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// Un role de pose que la fiche d'espece ne decrit pas retombe sur immobile,
 		// jamais sur rien : sans animation, les ailes se deploieraient.
 		return etat.setAndContinue(RawAnimation.begin().thenLoop(espece.animationOuImmobile(role)));
+	}
+
+	/** Le role fin s'il existe, sinon une allure universelle de repli. */
+	private static String roleSiConnu(Espece espece, String fin, String repli) {
+		return espece.animation(fin) != null ? fin : repli;
 	}
 
 	/**

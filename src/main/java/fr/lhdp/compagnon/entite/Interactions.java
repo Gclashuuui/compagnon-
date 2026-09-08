@@ -436,6 +436,9 @@ public final class Interactions {
 	private static void leRepasSeVoit(CompagnonEntity compagnon, FicheCompagnon fiche,
 			ItemStack pile) {
 
+		// Si l'espece sait manger, elle joue toute l'animation ecrite dans son
+		// fichier. Une espece sans ce role garde simplement les miettes et le son.
+		compagnon.jouerActionPendant("@mange", 30);
 		Etincelles.miettes(compagnon, pile);
 		Sons.jouerCeSon(compagnon, net.minecraft.sounds.SoundEvents.GENERIC_EAT, 1.0F);
 
