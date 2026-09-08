@@ -43,3 +43,7 @@ Le mod compile se trouve ensuite dans `build/libs/`.
 Le projet est en cours de developpement. Certaines animations et validations en
 conditions reelles, notamment la chaine vocale complete, restent a terminer.
 
+## Licence
+
+Tous droits reserves. Le code est consultable publiquement, mais sa copie, sa
+modification et sa redistribution demandent l'autorisation de l'auteur.

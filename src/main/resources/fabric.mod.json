@@ -4,6 +4,14 @@
 	"version": "${version}",
 	"name": "Compagnon",
 	"description": "Chaque joueur a un compagnon vivant : il continue d'exister quand on ne le regarde pas, il ne se repete pas, et il change avec le temps.",
+	"authors": [
+		"Gclashuuui"
+	],
+	"contact": {
+		"sources": "https://github.com/Gclashuuui/compagnon-",
+		"issues": "https://github.com/Gclashuuui/compagnon-/issues"
+	},
+	"license": "All-Rights-Reserved",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

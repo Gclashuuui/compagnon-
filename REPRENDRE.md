@@ -184,7 +184,8 @@ disent ce que le serveur a **vraiment** chargé.
 - **L’animation `ramasse`** : le rôle `@ramasse` est appelé quand il baisse la
   tête pour prendre un objet. Case à remplir dans `reactions` du fichier
   d’espèce ; sans elle il ramasse quand même, sans le geste.
-- **`authors` et `license`** dans `fabric.mod.json` — jamais renseignés.
+- **Les métadonnées du mod sont renseignées** : auteur `Gclashuuui`, dépôt et
+  suivi des problèmes sur GitHub, licence actuelle `All-Rights-Reserved`.
 - **La rubrique « Il connaît » est faite** dans la page d'histoire du livre.
   Elle affiche les joueurs et les compagnons devenus familiers ; les UUID sont
   résolus côté serveur avant l'envoi au client.
