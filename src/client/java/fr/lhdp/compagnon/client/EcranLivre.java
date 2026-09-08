@@ -538,10 +538,39 @@ public class EcranLivre extends EcranCompagnon {
 	private void portrait(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
 		g.blit(CADRE_PORTRAIT, x, y, PAGE_LARGEUR, PORTRAIT,
 				0.0F, 0.0F, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE);
+		portraitVivant(g, x, y);
 		// Le dragonnet est tres long mais bas : on remonte son rendu. Surtout pas de
 		// zone de coupe ici, car ses ailes depassent naturellement du petit cadre.
 		Apercu.dessiner(g, x + 8, y + 2, PAGE_LARGEUR - 16, PORTRAIT - 4,
 				this.donnees.espece(), this.donnees.variante(), sourisX, sourisY);
+	}
+
+	/**
+	 * Une respiration lumineuse très discrète derrière le vrai modèle 3D.
+	 *
+	 * <p>Le portrait suivait déjà la souris ; ces quelques pixels donnent aussi
+	 * une présence quand elle ne bouge pas. La teinte vient de son état, donc le
+	 * cadre paraît chaud, heureux ou inquiet avant même de lire ses jauges.
+	 */
+	private void portraitVivant(GuiGraphics g, int x, int y) {
+		float faim = this.donnees.barres().getOrDefault(Barre.FAIM, 100.0F);
+		float energie = this.donnees.barres().getOrDefault(Barre.ENERGIE, 100.0F);
+		float complicite = this.donnees.barres().getOrDefault(Barre.COMPLICITE, 0.0F);
+		int couleur = Math.min(faim, energie) < 25.0F ? 0x478A2F2F
+				: complicite >= 75.0F ? 0x423F7A48 : 0x3CD89A23;
+		float souffle = (float) ((Math.sin(System.currentTimeMillis() / 520.0D) + 1.0D) * 0.5D);
+		int centre = x + PAGE_LARGEUR / 2;
+		int largeur = 28 + Math.round(10.0F * souffle);
+		g.fill(centre - largeur, y + PORTRAIT - 13, centre + largeur,
+				y + PORTRAIT - 11, couleur);
+
+		// Trois poussières d'encre dorée tournent lentement, sans texture animée.
+		for (int i = 0; i < 3; i++) {
+			double phase = System.currentTimeMillis() / 850.0D + i * 2.094D;
+			int px = centre + (int) Math.round(Math.cos(phase) * (44 + i * 4));
+			int py = y + 30 + (int) Math.round(Math.sin(phase) * (10 + i * 2));
+			g.fill(px, py, px + 2, py + 2, 0x58D89A23);
+		}
 	}
 
 	// --- Page 1, a droite : ce qui ne va pas, et ce qu'on a fait ----------------
@@ -807,11 +836,13 @@ public class EcranLivre extends EcranCompagnon {
 
 		y += objetPrefere(g, x, y);
 		y += goutsAlimentaires(g, x, y);
+		y += personnaliteDecouverte(g, x, y);
 
-		filet(g, x, y);
-		y += 7;
-
-		quiIlConnait(g, x, y);
+		if (y <= this.haut + HAUTEUR - 70) {
+			filet(g, x, y);
+			y += 7;
+			quiIlConnait(g, x, y);
+		}
 	}
 
 	/**
@@ -1016,10 +1047,11 @@ public class EcranLivre extends EcranCompagnon {
 			// Un fil et un point transforment une liste de dates en histoire. Les
 			// souvenirs restent dans le meme ordre, mais l'oeil comprend maintenant
 			// qu'ils appartiennent tous a la meme vie.
-			g.fill(x + 2, y + 4, x + 3, y + LIGNE + 2, FILET);
-			g.fill(x, y + 3, x + 5, y + 8, ENCRE_PALE);
+			g.fill(x + 4, y + 7, x + 5, y + LIGNE + 2, FILET);
+			g.drawString(this.font, Icones.de(iconeMoment(moment.cle())), x, y,
+					couleurMoment(moment.cle()), false);
 			String phrase = libelleMoment(moment.cle());
-			deuxColonnesDans(g, x + 9, y, PAGE_LARGEUR - 9,
+			deuxColonnesDans(g, x + 11, y, PAGE_LARGEUR - 11,
 					phrase, quand, ENCRE, ENCRE_PALE);
 			if (sourisX >= x && sourisX < x + PAGE_LARGEUR
 					&& sourisY >= y && sourisY < y + LIGNE) {
@@ -1027,6 +1059,59 @@ public class EcranLivre extends EcranCompagnon {
 			}
 			y += LIGNE;
 		}
+	}
+
+	/** Les habitudes n'apparaissent qu'après avoir été réellement observées. */
+	private int personnaliteDecouverte(GuiGraphics g, int x, int y) {
+		List<String> traits = new ArrayList<>();
+		for (int i = this.donnees.moments().size() - 1; i >= 0 && traits.size() < 2; i--) {
+			String cle = this.donnees.moments().get(i).cle();
+			if ((cle.startsWith("manie.") || cle.startsWith("defaut."))
+					&& !traits.contains(cle)) {
+				traits.add(cle);
+			}
+		}
+		if (traits.isEmpty()) {
+			return 0;
+		}
+		g.drawString(this.font, Component.translatable("livre.compagnon.personnalite"),
+				x, y, ENCRE, false);
+		int hauteur = LIGNE;
+		for (String trait : traits) {
+			String ligne = this.font.plainSubstrByWidth(libelleMoment(trait), PAGE_LARGEUR - 12);
+			g.drawString(this.font, Icones.de(Icones.COEUR), x, y + hauteur,
+					trait.startsWith("defaut.") ? ENCRE_ROUGE : ENCRE_VERTE, false);
+			g.drawString(this.font, ligne, x + 11, y + hauteur, ENCRE_PALE, false);
+			hauteur += LIGNE;
+		}
+		return hauteur + 4;
+	}
+
+	private static String iconeMoment(String cle) {
+		if (cle.startsWith("gout.") || cle.startsWith(PREFIXE_OBJET_PREFERE)) {
+			return Icones.FAIM;
+		}
+		if (cle.startsWith("manie.") || cle.startsWith("defaut.")) {
+			return Icones.COEUR;
+		}
+		if (cle.startsWith("mission.") || cle.contains("niveau")) {
+			return Icones.ETOILE;
+		}
+		if (cle.startsWith("reve.") || cle.contains("biome")) {
+			return Icones.PLUME;
+		}
+		return Icones.PATTE;
+	}
+
+	private static int couleurMoment(String cle) {
+		if (cle.startsWith("defaut.")) {
+			return ENCRE_ROUGE;
+		}
+		if (cle.startsWith("manie.")) {
+			return ENCRE_VERTE;
+		}
+		return cle.startsWith("mission.") || cle.contains("niveau")
+				? 0xFFD09A2E : ENCRE_PALE;
 	}
 
 	// --- Page 4 : ses missions ------------------------------------------------

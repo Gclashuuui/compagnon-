@@ -28,6 +28,16 @@ class CerveauComportementTest {
 				CerveauComportement.Noeud.JOUEUR));
 	}
 
+	@Test
+	void unePrioriteSynchroniseeRetrouveToujoursSonNoeud() {
+		for (CerveauComportement.Noeud noeud : CerveauComportement.Noeud.values()) {
+			assertEquals(noeud,
+					CerveauComportement.Noeud.depuisPriorite(noeud.priorite()));
+		}
+		assertEquals(CerveauComportement.Noeud.REPOS,
+				CerveauComportement.Noeud.depuisPriorite(Integer.MAX_VALUE));
+	}
+
 	private static boolean prioritaire(CerveauComportement.Noeud premier,
 			CerveauComportement.Noeud second) {
 		return premier.priorite() < second.priorite();

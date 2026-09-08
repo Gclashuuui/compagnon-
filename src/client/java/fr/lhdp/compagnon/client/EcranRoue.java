@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * La roue des actions : un anneau decoupe en parts.
@@ -117,6 +118,11 @@ public class EcranRoue extends EcranCompagnon {
 	private final String nomCompagnon;
 	private final int niveau;
 	private final List<EntreeRoue> entrees;
+	/** Pages séparées : ce qu'il sait faire d'abord, les promesses ensuite. */
+	private final List<List<EntreeRoue>> pages;
+	private final boolean present;
+	private final boolean fatigue;
+	private final boolean occupeAuDepart;
 
 	/**
 	 * Les noms de toutes ses betes, dans l'ordre du serveur.
@@ -193,7 +199,7 @@ public class EcranRoue extends EcranCompagnon {
 	private boolean survolApres;
 
 	public EcranRoue(int index, String nomCompagnon, int niveau, List<EntreeRoue> entrees,
-			List<String> compagnons) {
+			List<String> compagnons, boolean present, boolean fatigue, boolean occupe) {
 
 		super(Component.literal(nomCompagnon));
 		this.index = index;
@@ -201,6 +207,10 @@ public class EcranRoue extends EcranCompagnon {
 		this.niveau = niveau;
 		this.entrees = entrees;
 		this.compagnons = compagnons;
+		this.present = present;
+		this.fatigue = fatigue;
+		this.occupeAuDepart = occupe;
+		this.pages = organiserPages(entrees);
 	}
 
 	@Override
@@ -209,7 +219,7 @@ public class EcranRoue extends EcranCompagnon {
 	}
 
 	private int nombreDePages() {
-		return Math.max(1, (this.entrees.size() + PARTS - 1) / PARTS);
+		return this.pages.size();
 	}
 
 	/** L'entree posee sur la part {@code i} de la page courante, ou {@code null}. */
@@ -220,8 +230,30 @@ public class EcranRoue extends EcranCompagnon {
 		if (i < 0) {
 			return null;
 		}
-		int position = this.page * PARTS + i;
-		return position < this.entrees.size() ? this.entrees.get(position) : null;
+		List<EntreeRoue> courante = this.pages.get(Math.min(this.page, this.pages.size() - 1));
+		return i < courante.size() ? courante.get(i) : null;
+	}
+
+	private static List<List<EntreeRoue>> organiserPages(List<EntreeRoue> entrees) {
+		List<EntreeRoue> disponibles = entrees.stream().filter(EntreeRoue::debloque).toList();
+		List<EntreeRoue> avenir = entrees.stream().filter(e -> !e.debloque()).toList();
+		List<List<EntreeRoue>> resultat = new ArrayList<>();
+		ajouterPages(resultat, disponibles);
+		ajouterPages(resultat, avenir);
+		if (resultat.isEmpty()) {
+			resultat.add(List.of());
+		}
+		return List.copyOf(resultat);
+	}
+
+	private static void ajouterPages(List<List<EntreeRoue>> pages, List<EntreeRoue> groupe) {
+		for (int debut = 0; debut < groupe.size(); debut += PARTS) {
+			pages.add(List.copyOf(groupe.subList(debut, Math.min(debut + PARTS, groupe.size()))));
+		}
+	}
+
+	private boolean contexteBloque() {
+		return !this.present || this.fatigue || this.occupeAuDepart || occupe();
 	}
 
 	@Override
@@ -243,7 +275,7 @@ public class EcranRoue extends EcranCompagnon {
 		// CHAQUE PART AVANCE OU RECULE A SON RYTHME.
 		for (int i = 0; i < PARTS; i++) {
 			EntreeRoue entree = entreeDe(i);
-			boolean vivante = entree != null && entree.debloque() && !occupe();
+			boolean vivante = entree != null && entree.debloque() && !contexteBloque();
 			this.avancee[i] = Peinture.vers(this.avancee[i],
 				i == this.survolee && vivante ? 1.0F : 0.0F, 0.34F, partiel);
 		}
@@ -333,7 +365,7 @@ public class EcranRoue extends EcranCompagnon {
 		}
 		// Pendant qu il joue, toute la roue s eteint : on voit d un coup d oeil
 		// que ce n est pas le moment, sans avoir a cliquer pour se le faire dire.
-		if (occupe()) {
+		if (contexteBloque()) {
 			return new float[]{0.40F, 0.38F, 0.34F, 0.40F};
 		}
 		return survol
@@ -475,6 +507,8 @@ public class EcranRoue extends EcranCompagnon {
 			if (!regardee.debloque()) {
 				texteCentre(g, Component.translatable("roue.compagnon.verrouillee",
 						regardee.niveauRequis()), cx, cy - 11, TEXTE_VERROU);
+			} else if (contexteBloque()) {
+				texteCentre(g, etatDuContexte(), cx, cy - 11, TEXTE_NOUVEAU);
 			} else if (regardee.aUnMot()) {
 				texteCentre(g, Component.translatable("roue.compagnon.dire", regardee.mot()),
 						cx, cy - 11, TEXTE_NOUVEAU);
@@ -488,6 +522,14 @@ public class EcranRoue extends EcranCompagnon {
 			texteCentre(g, Component.translatable("roue.compagnon.vide"), cx, cy + 4, TEXTE_VERROU);
 			return;
 		}
+		if (regardee == null && contexteBloque()) {
+			texteCentre(g, etatDuContexte(), cx, cy - 2, TEXTE_NOUVEAU);
+		} else if (regardee == null) {
+			boolean disponibles = this.pages.get(this.page).stream().anyMatch(EntreeRoue::debloque);
+			texteCentre(g, Component.translatable(disponibles
+					? "roue.compagnon.contexte.disponibles"
+					: "roue.compagnon.contexte.avenir"), cx, cy - 2, TEXTE_VERROU);
+		}
 
 		if (nombreDePages() > 1) {
 			fleche(g, cx - 30, cy + 8, false, this.survolAvant ? TEXTE_TITRE : TEXTE_VERROU);
@@ -495,6 +537,13 @@ public class EcranRoue extends EcranCompagnon {
 		}
 		texteCentre(g, Component.literal((this.page + 1) + " / " + nombreDePages()),
 				cx, cy + 7, TEXTE);
+	}
+
+	private Component etatDuContexte() {
+		return Component.translatable(!this.present
+				? "roue.compagnon.contexte.absent"
+				: this.fatigue ? "roue.compagnon.contexte.fatigue"
+				: "roue.compagnon.contexte.occupe");
 	}
 
 	/**
@@ -717,7 +766,8 @@ public class EcranRoue extends EcranCompagnon {
 		EntreeRoue entree = this.survolee < 0 ? null : entreeDe(this.survolee);
 		// IL FINIT CE QU'IL A COMMENCE. Sauf pour aller lui apprendre un mot,
 		// qui n'est pas un ordre et ne coupe rien.
-		if (entree != null && entree.debloque() && occupe() && !this.modeApprentissage) {
+		if (entree != null && entree.debloque() && contexteBloque()
+				&& !this.modeApprentissage) {
 			refuser(this.survolee);
 			return true;
 		}

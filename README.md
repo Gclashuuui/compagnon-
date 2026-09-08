@@ -11,7 +11,9 @@ Le compagnon possede notamment :
 - des competences et des missions liees a la vie commune ;
 - des interactions avec les joueurs et les autres compagnons ;
 - des ordres vocaux hors ligne avec Plasmo Voice et Vosk ;
-- un livre, une roue d'actions et plusieurs especes configurees en JSON.
+- un livre vivant, une roue d'actions contextuelle et plusieurs especes configurees en JSON ;
+- un cerveau commun visible par un petit bandeau discret, avec diagnostic F8
+  pour relier intention, locomotion et animation pendant la creation d'une espece.
 
 ## Prerequis
 

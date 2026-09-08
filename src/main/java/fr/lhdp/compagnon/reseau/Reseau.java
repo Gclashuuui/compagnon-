@@ -406,8 +406,12 @@ public final class Reseau {
 		// Sous reserve qu il ne soit pas deja occupe : un geste en cours passe
 		// avant une politesse.
 		net.minecraft.server.level.ServerLevel ou = joueur.server.getLevel(fiche.dimension());
-		if (ou != null && ou.getEntity(fiche.id()) instanceof CompagnonEntity present
-				&& !present.occupe() && present.lesMainsVides()) {
+		Entity trouvee = ou == null ? null : ou.getEntity(fiche.id());
+		CompagnonEntity present = trouvee instanceof CompagnonEntity compagnon
+				? compagnon : null;
+		boolean etaitOccupe = present != null && present.occupe();
+		boolean fatigue = fiche.barre(Barre.ENERGIE) < table.action().energieMinimum();
+		if (present != null && !etaitOccupe && present.lesMainsVides()) {
 			present.getLookControl().setLookAt(joueur, 30.0F, 30.0F);
 			present.jouerActionPendant("@ecoute", 25);
 			// ET IL SE FAIT VOIR.
@@ -429,7 +433,8 @@ public final class Reseau {
 		}
 
 		ServerPlayNetworking.send(joueur, new PaquetDonneesRoue(
-				index, fiche.nom(), niveau, List.copyOf(entrees), List.copyOf(noms)));
+				index, fiche.nom(), niveau, List.copyOf(entrees), List.copyOf(noms),
+				present != null, fatigue, etaitOccupe));
 	}
 
 	/**

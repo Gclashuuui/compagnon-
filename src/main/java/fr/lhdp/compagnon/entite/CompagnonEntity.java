@@ -119,6 +119,10 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	private static final EntityDataAccessor<Integer> HUMEUR =
 			SynchedEntityData.defineId(CompagnonEntity.class, EntityDataSerializers.INT);
 
+	/** Le nœud comportemental actif, visible par l'interface et le diagnostic. */
+	private static final EntityDataAccessor<Integer> INTENTION =
+			SynchedEntityData.defineId(CompagnonEntity.class, EntityDataSerializers.INT);
+
 	private static final EntityDataAccessor<ItemStack> PORTE =
 			SynchedEntityData.defineId(CompagnonEntity.class, EntityDataSerializers.ITEM_STACK);
 
@@ -954,6 +958,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		constructeur.define(PORTE, ItemStack.EMPTY);
 		constructeur.define(ENVIE, "");
 		constructeur.define(HUMEUR, Humeur.MOYEN.ordinal());
+		constructeur.define(INTENTION, CerveauComportement.Noeud.REPOS.ordinal());
 	}
 
 	// --- L'espece et la variante sont des donnees, pas du code -----------------
@@ -1401,6 +1406,13 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 		super.tick();
 
+		// Le serveur expose la branche qui a gagne. Elle ne change presque jamais,
+		// SynchedEntityData n'enverra donc un paquet que lors d'une vraie transition.
+		if (!this.level().isClientSide()) {
+			this.entityData.set(INTENTION,
+					CerveauComportement.actif(this.goalSelector).ordinal());
+		}
+
 		// Des deux cotes : le client doit repousser lui aussi, sinon il traverserait
 		// puis serait remis en place par le serveur, et tu verrais un elastique.
 		if (Chrono.enMarche()) {
@@ -1631,6 +1643,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 */
 	private String especeLocomotionJouee = "";
 	private String roleLocomotionJoue = "";
+	private CerveauAnimation.Noeud noeudAnimationJoue = CerveauAnimation.Noeud.HUMEUR;
 	private RawAnimation sequenceLocomotion;
 
 	/**
@@ -1662,6 +1675,24 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		Humeur[] toutes = Humeur.values();
 		int rang = this.entityData.get(HUMEUR);
 		return rang >= 0 && rang < toutes.length ? toutes[rang] : Humeur.MOYEN;
+	}
+
+	/** La décision de comportement que le serveur a réellement prise. */
+	public CerveauComportement.Noeud intention() {
+		CerveauComportement.Noeud[] toutes = CerveauComportement.Noeud.values();
+		int rang = this.entityData.get(INTENTION);
+		return rang >= 0 && rang < toutes.length ? toutes[rang]
+				: CerveauComportement.Noeud.REPOS;
+	}
+
+	/** La branche visuelle choisie sur ce client, pour le mode diagnostic. */
+	public CerveauAnimation.Noeud noeudAnimationJoue() {
+		return this.noeudAnimationJoue;
+	}
+
+	/** Le rôle d'animation exact confié à GeckoLib sur ce client. */
+	public String roleLocomotionJoue() {
+		return this.roleLocomotionJoue;
 	}
 
 	/** Vrai s'il a envie de rester en l'air. */
@@ -1930,6 +1961,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 						humeur()),
 				roleTeste -> espece.animation(roleTeste) != null);
 		String role = decision.role();
+		this.noeudAnimationJoue = decision.noeud();
 
 		// Un role de pose que la fiche d'espece ne decrit pas retombe sur immobile,
 		// jamais sur rien : sans animation, les ailes se deploieraient.

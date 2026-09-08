@@ -77,6 +77,13 @@ public final class Touches {
 			GLFW.GLFW_KEY_K,
 			CATEGORIE);
 
+	/** Diagnostic facultatif du cerveau, surtout utile aux créateurs d'espèces. */
+	public static final KeyMapping DIAGNOSTIC = new KeyMapping(
+			"key.compagnon.diagnostic",
+			InputConstants.Type.KEYSYM,
+			GLFW.GLFW_KEY_F8,
+			CATEGORIE);
+
 	/**
 	 * Celui dont on ouvre le livre et la roue.
 	 *
@@ -136,6 +143,7 @@ public final class Touches {
 		KeyBindingHelper.registerKeyBinding(CARNET);
 		KeyBindingHelper.registerKeyBinding(PANNEAU);
 		KeyBindingHelper.registerKeyBinding(CLASSEMENT);
+		KeyBindingHelper.registerKeyBinding(DIAGNOSTIC);
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			// consumeClick vide la file : sans lui, maintenir la touche ouvrirait
@@ -158,6 +166,12 @@ public final class Touches {
 			while (CLASSEMENT.consumeClick()) {
 				if (client.player != null) {
 					ClientPlayNetworking.send(new PaquetClassement());
+				}
+			}
+			while (DIAGNOSTIC.consumeClick()) {
+				if (client.player != null) {
+					BandeauIntention.basculerDiagnostic();
+					client.player.displayClientMessage(BandeauIntention.motDeLEtat(), true);
 				}
 			}
 			// LE PILOTAGE D'UNE MONTURE.

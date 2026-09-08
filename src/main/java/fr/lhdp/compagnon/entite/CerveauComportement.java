@@ -35,7 +35,9 @@ public final class CerveauComportement {
 		FLANERIE(17),
 		REGARD_JOUEUR(18),
 		REGARD_OBJET(19),
-		REGARD_LIBRE(20);
+		REGARD_LIBRE(20),
+		/** Aucun but ne deplace la bete : elle profite simplement du moment. */
+		REPOS(21);
 
 		private final int priorite;
 
@@ -46,6 +48,15 @@ public final class CerveauComportement {
 		public int priorite() {
 			return this.priorite;
 		}
+
+		public static Noeud depuisPriorite(int priorite) {
+			for (Noeud noeud : values()) {
+				if (noeud.priorite == priorite) {
+					return noeud;
+				}
+			}
+			return REPOS;
+		}
 	}
 
 	private CerveauComportement() {
@@ -53,5 +64,22 @@ public final class CerveauComportement {
 
 	public static void ajouter(GoalSelector selecteur, Noeud noeud, Goal comportement) {
 		selecteur.addGoal(noeud.priorite(), comportement);
+	}
+
+	/**
+	 * Le nœud qui conduit réellement la bete à cet instant.
+	 *
+	 * <p>Plusieurs buts de regard peuvent tourner en même temps qu'un but de
+	 * déplacement. On retient donc le rang le plus fort, exactement comme le
+	 * sélecteur de Minecraft. L'interface ne raconte ainsi jamais « il regarde
+	 * autour de lui » pendant qu'il court répondre à un rappel.
+	 */
+	public static Noeud actif(GoalSelector selecteur) {
+		return selecteur.getAvailableGoals().stream()
+				.filter(net.minecraft.world.entity.ai.goal.WrappedGoal::isRunning)
+				.min(java.util.Comparator.comparingInt(
+						net.minecraft.world.entity.ai.goal.WrappedGoal::getPriority))
+				.map(but -> Noeud.depuisPriorite(but.getPriority()))
+				.orElse(Noeud.REPOS);
 	}
 }

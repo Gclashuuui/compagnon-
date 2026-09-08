@@ -21,9 +21,13 @@ import java.util.List;
  * @param niveau  son niveau, pour expliquer les cadenas
  * @param entrees toutes les cases
  * @param compagnons les noms de toutes ses betes, pour les onglets du haut
+ * @param present est-il réellement sorti dans ce monde
+ * @param fatigue est-il trop fatigué pour un geste volontaire
+ * @param occupe était-il déjà au milieu d'une action à l'ouverture
  */
 public record PaquetDonneesRoue(int index, String nom, int niveau,
-		List<EntreeRoue> entrees, List<String> compagnons)
+		List<EntreeRoue> entrees, List<String> compagnons,
+		boolean present, boolean fatigue, boolean occupe)
 		implements CustomPacketPayload {
 
 	public static final CustomPacketPayload.Type<PaquetDonneesRoue> TYPE =
@@ -47,6 +51,9 @@ public record PaquetDonneesRoue(int index, String nom, int niveau,
 			tampon.writeBoolean(entree.debloque());
 			tampon.writeUtf(entree.mot(), 64);
 		}
+		tampon.writeBoolean(this.present);
+		tampon.writeBoolean(this.fatigue);
+		tampon.writeBoolean(this.occupe);
 	}
 
 	private static PaquetDonneesRoue lire(FriendlyByteBuf tampon) {
@@ -67,7 +74,8 @@ public record PaquetDonneesRoue(int index, String nom, int niveau,
 		}
 
 		return new PaquetDonneesRoue(index, nom, niveau,
-				List.copyOf(entrees), List.copyOf(compagnons));
+				List.copyOf(entrees), List.copyOf(compagnons),
+				tampon.readBoolean(), tampon.readBoolean(), tampon.readBoolean());
 	}
 
 	@Override

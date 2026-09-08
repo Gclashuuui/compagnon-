@@ -87,7 +87,8 @@ public class CompagnonClient implements ClientModInitializer {
 					Touches.retenir(paquet.index());
 					Minecraft.getInstance().setScreen(new EcranRoue(
 							paquet.index(), paquet.nom(), paquet.niveau(),
-							paquet.entrees(), paquet.compagnons()));
+							paquet.entrees(), paquet.compagnons(),
+							paquet.present(), paquet.fatigue(), paquet.occupe()));
 				}));
 
 		// Le carnet. Si l'ecran est deja ouvert on remplace seulement ses donnees :
@@ -127,6 +128,7 @@ public class CompagnonClient implements ClientModInitializer {
 		HudRenderCallback.EVENT.register((graphismes, delta) -> {
 			Panneau.dessiner(graphismes, delta.getRealtimeDeltaTicks());
 			AnnonceNiveau.dessiner(graphismes, delta.getRealtimeDeltaTicks());
+			BandeauIntention.dessiner(graphismes, delta.getRealtimeDeltaTicks());
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -139,6 +141,7 @@ public class CompagnonClient implements ClientModInitializer {
 			// autre serveur en attendant le premier paquet du nouveau.
 			Panneau.oublier();
 			AnnonceNiveau.oublier();
+			BandeauIntention.oublier();
 			// Un pack de ressources a pu changer : on redemandera quelles variantes
 			// ont un calque lumineux.
 			CalqueLumineux.oublier();
