@@ -395,6 +395,9 @@ public final class EcouteVocale {
 
 		// Les gestes ne changent pas son mode : il fait la chose, et c'est fini.
 		if (ordre != null && ordre.geste() != null) {
+			// « J'écoute » ne doit pas rester au-dessus du geste demandé ni bloquer
+			// sa navigation. L'ordre compris prend la main immédiatement.
+			compagnon.annulerActionPourOrdre();
 			return geste(joueur, compagnon, appele, fiches, ordre.geste());
 		}
 
@@ -412,6 +415,7 @@ public final class EcouteVocale {
 			return new Resultat(false, appele.nom() + " fait la sourde oreille.");
 		}
 
+		compagnon.annulerActionPourOrdre();
 		appele.setMode(mode);
 		compagnon.appliquerMode(mode);
 		fiches.setDirty();

@@ -144,14 +144,6 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	private static final String CLE_ESPECE = "Espece";
 	private static final String CLE_VARIANTE = "Variante";
 
-	/** Deux seuils evitent que marche et course s'echangent a chaque image. */
-	private static final float SEUIL_COURSE_ENTREE = 0.68F;
-	private static final float SEUIL_COURSE_SORTIE = 0.46F;
-
-	/** Meme hysterese entre battement d'ailes et plane. */
-	private static final double SEUIL_PLANE_ENTREE = -0.075D;
-	private static final double SEUIL_PLANE_SORTIE = -0.015D;
-
 	/**
 	 * Un depart en promenade tous les N ticks au plus. Le double du reglage de
 	 * base : chaque depart coute un calcul de chemin, et mille compagnons dans un
@@ -239,6 +231,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * illisible. Voir {@link Attention}.
 	 */
 	private final Attention attention = new Attention();
+
+	/** L'arbre visuel universel qui arbitre locomotion, poses et environnement. */
+	private final CerveauAnimation cerveauAnimation = new CerveauAnimation();
 
 	/**
 	 * Ses manies et son defaut, recopies de la fiche a l'apparition.
@@ -352,7 +347,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		setPathfindingMalus(PathType.WATER, COUT_DE_L_EAU);
 		setPathfindingMalus(PathType.WATER_BORDER, COUT_DE_L_EAU / 2.0F);
 
-		this.goalSelector.addGoal(0, new FloatGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.SURVIE, new FloatGoal(this));
 		// Le suivi passe avant la promenade : quand on lui a dit de suivre, il suit.
 		// Un ordre passe avant tout le reste, meme avant suivre son maitre : on
 		// vient de le lui demander a voix haute.
@@ -360,56 +356,71 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// egales : deux buts de meme rang ne se remplacent jamais l'un l'autre, et
 		// « viens » restait donc sans effet tant qu'il etait parti chercher un
 		// objet. Un ordre de rappel doit toujours pouvoir interrompre le reste.
-		this.goalSelector.addGoal(1, new VenirIciGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.RAPPEL, new VenirIciGoal(this));
 		// Un meuble que le joueur vient de montrer est un ordre précis, au même
 		// niveau que le rappel : la vie ambiante ne doit pas pouvoir le détourner.
-		this.goalSelector.addGoal(2, new AllerAuPerchoirGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.DESTINATION_DEMANDEE,
+				new AllerAuPerchoirGoal(this));
 
 		// « Monte. » Un ordre, donc au-dessus du suivi et de la flanerie — mais
 		// sous « viens » : si on le rappelle, il redescend.
-		this.goalSelector.addGoal(2, new PlanerGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.VOL_DEMANDE, new PlanerGoal(this));
 
-		this.goalSelector.addGoal(3, new ChoperGoal(this));
-		this.goalSelector.addGoal(4, new SuivreProprietaireGoal(this));
-		this.goalSelector.addGoal(5, new AllerVoirGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.OBJET_DEMANDE, new ChoperGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.SUIVRE, new SuivreProprietaireGoal(this));
 		// Avant les gens et les amis : quand il a un objet dans la gueule, il va
 		// jusqu'au bout. Un compagnon qui abandonne un cadeau en chemin est triste.
 		// AVANT le glanage : une balle qu'on vient de lui lancer n'est pas un
 		// objet qui traine, et il ne doit pas hesiter entre les deux.
-		this.goalSelector.addGoal(5, new JouerGoal(this));
-		this.goalSelector.addGoal(6, new RapporterGoal(this));
-		this.goalSelector.addGoal(7, new AllerVersLesGensGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.JEU_DEMANDE, new JouerGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.ABRI, new AbriGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.REPAS, new MangerDansGamelleGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.SOMMEIL, new SiesteGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.HABITUDE, new AttendreLHeureGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.CURIOSITE, new AllerVoirGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.CADEAU_SPONTANE, new RapporterGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.JOUEUR, new AllerVersLesGensGoal(this));
 		// Il va voir les compagnons qu'il connait. Apres les gens : un ami de
 		// passage ne doit pas lui faire ignorer un joueur qui vient le caresser.
-		this.goalSelector.addGoal(8, new RetrouverGoal(this));
-		this.goalSelector.addGoal(9, new AbriGoal(this));
-		// Son coin sert vraiment : lorsqu'un repas l'attend dans la gamelle, il
-		// vient le manger sans qu'on ait besoin de cliquer directement sur lui.
-		this.goalSelector.addGoal(10, new MangerDansGamelleGoal(this));
-
-		// « Il t'attend. » Apres l'abri — il ne va pas se poster sous la pluie —
-		// et avant la flanerie, qu'il doit pouvoir interrompre pour y aller.
-		this.goalSelector.addGoal(10, new AttendreLHeureGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.AMI, new RetrouverGoal(this));
 
 		// « Il se souvient d'ici. » Juste avant la promenade : c'est un moment de
 		// flanerie, pas un ordre. Il ne doit jamais interrompre quoi que ce soit,
 		// et il ne coute rien tant qu'il fait autre chose.
-		this.goalSelector.addGoal(11, new SouvenirDuLieuGoal(this));
-
-		// LA SIESTE, tout en bas des priorites de vie propre mais au-dessus de la
-		// flanerie : une bete qui tombe de sommeil ne part pas se promener.
-		this.goalSelector.addGoal(12, new SiesteGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.SOUVENIR, new SouvenirDuLieuGoal(this));
 
 		// Deux betes qui se connaissent s'arretent une seconde en se croisant.
 		// Tout en bas : ca ne coupe jamais un ordre, une course, ni un repas.
-		this.goalSelector.addGoal(12, new SeSaluerGoal(this));
-		this.goalSelector.addGoal(13, promenade());
-		this.goalSelector.addGoal(14,
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.SALUT, new SeSaluerGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.FLANERIE, promenade());
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.REGARD_JOUEUR,
 				new LookAtPlayerGoal(this, Player.class, DISTANCE_REGARD, PROBABILITE_REGARD));
 		// Il regarde ce que tu tiens. Sur la couche du REGARD seulement : il ne
 		// quitte pas sa place, donc il peut cohabiter avec a peu pres tout.
-		this.goalSelector.addGoal(15, new RegarderCeQueTuTiensGoal(this));
-		this.goalSelector.addGoal(16, new RandomLookAroundGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.REGARD_OBJET,
+				new RegarderCeQueTuTiensGoal(this));
+		CerveauComportement.ajouter(this.goalSelector,
+				CerveauComportement.Noeud.REGARD_LIBRE,
+				new RandomLookAroundGoal(this));
 	}
 
 	// --- Le caractere ------------------------------------------------------------
@@ -504,7 +515,19 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 */
 	public boolean peutFaireUnPetitGeste() {
 		return this.ticksAction == 0 && !estMonte() && !mode().pose()
-			&& !dort() && lesMainsVides();
+			&& !dort() && lesMainsVides()
+			// Une reaction jouee pendant un trajet gagnait visuellement contre la
+			// marche : l'animal glissait. Les gestes attendent maintenant une vraie
+			// pause entre deux morceaux du chemin.
+			&& getDeltaMovement().horizontalDistanceSqr() < 0.0025D
+			&& getNavigation().isDone();
+	}
+
+	/** Un ordre compris remplace immédiatement la petite réaction « j'écoute ». */
+	public void annulerActionPourOrdre() {
+		if (!action().isEmpty()) {
+			jouerAction("");
+		}
 	}
 
 	public Attention attention() {
@@ -1599,10 +1622,6 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	/** Volait-il au tick precedent ? Sert a ne compter qu'un envol par envol. */
 	private boolean volaitAvant;
 
-	/** Etats visuels stables : ils ne sont pas sauvegardes et n'ont pas a l'etre. */
-	private boolean courseVisuelle;
-	private boolean planeVisuellement;
-
 	/**
 	 * La sequence de locomotion actuellement confiee a GeckoLib.
 	 *
@@ -1902,73 +1921,15 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			return PlayState.CONTINUE;
 		}
 
-		Mode mode = mode();
-		String role;
-
-		// LE VOL PASSE AVANT LES POSES, et ce n'est pas un detail d'ordre.
-		//
-		// Les poses venaient d'abord. Une bete a qui l'on avait dit « assis »,
-		// puis « monte », volait donc <b>en position assise</b> : pattes repliees,
-		// ailes fermees, glissant dans le ciel. On croyait a un probleme de vol
-		// alors que le vol marchait — c'est l'animation qui racontait autre chose.
-		//
-		// Une creature en l'air n'est assise sous aucun pretexte.
-		if (isInWater()) {
-			// A la surface, il flotte. Des qu'il avance, il nage pour de vrai au
-			// lieu de marcher sous l'eau. Les especes sans ces animations gardent
-			// leur attente ou leur marche ordinaires.
-			role = etat.isMoving()
-					? roleSiConnu(espece, Espece.NAGE, Espece.MARCHE)
-					: roleSiConnu(espece, Espece.FLOTTE, Espece.IMMOBILE);
-		} else if (enVol()) {
-			// Autour de zero la vitesse verticale oscille naturellement. Deux seuils
-			// empechent le controleur de relancer vol puis plane presque a chaque
-			// image, ce qui pliait les ailes dans des poses de transition incoherentes.
-			double verticale = getDeltaMovement().y;
-			if (this.planeVisuellement) {
-				this.planeVisuellement = verticale < SEUIL_PLANE_SORTIE;
-			} else {
-				this.planeVisuellement = verticale < SEUIL_PLANE_ENTREE;
-			}
-			role = this.planeVisuellement
-					? roleSiConnu(espece, Espece.PLANE, Espece.VOL)
-					: Espece.VOL;
-		} else if (dort()) {
-			// LA SIESTE PASSE AVANT LES POSES DEMANDEES.
-			//
-			// Une bete a qui on a dit « assis » et qui s'endort doit se coucher :
-			// c'est ce qu'on voit, et c'est ce qui rend la sieste visible. Elle ne
-			// desobeit pas pour autant — son mode n'a pas change, elle se releve
-			// assise.
-			role = Espece.COUCHE;
-		} else if (mode == Mode.ASSIS) {
-			role = Espece.ASSIS;
-		} else if (mode == Mode.COUCHE) {
-			role = Espece.COUCHE;
-		} else if (!etat.isMoving()) {
-			// Suivre contient de petites pauses : attente du prochain chemin, porte,
-			// virage du maitre. Elles restent une attente debout. Jouer « assis » ici
-			// donnait l'impression qu'un ordre « viens » avait ete compris de travers.
-			//
-			// SON HUMEUR SE VOIT ICI. Une bete qui ne fait rien est une bete qu'on
-			// regarde : c'est le meilleur moment pour qu'elle raconte comment elle
-			// va, sans un mot et sans ouvrir de page.
-			//
-			// Le role d'humeur retombe sur immobile si la fiche d'espece ne le
-			// decrit pas — voir animationOuImmobile. Une espece qui n'a qu'une
-			// animation d'attente se comporte donc exactement comme avant.
-			this.courseVisuelle = false;
-			role = roleDeLHumeur();
-		} else {
-			this.planeVisuellement = false;
-			float allure = etat.getLimbSwingAmount();
-			if (this.courseVisuelle) {
-				this.courseVisuelle = allure > SEUIL_COURSE_SORTIE;
-			} else {
-				this.courseVisuelle = allure > SEUIL_COURSE_ENTREE;
-			}
-			role = this.courseVisuelle ? Espece.COURSE : Espece.MARCHE;
-		}
+		// Un seul arbre, dans un seul ordre, pour toutes les espèces. Les fichiers
+		// gardent la liberté artistique ; le code décide seulement quel rôle a la
+		// priorité à cet instant.
+		CerveauAnimation.Decision decision = this.cerveauAnimation.choisir(
+				new CerveauAnimation.Observation(isInWater(), enVol(), dort(), mode(),
+						etat.isMoving(), etat.getLimbSwingAmount(), getDeltaMovement().y,
+						humeur()),
+				roleTeste -> espece.animation(roleTeste) != null);
+		String role = decision.role();
 
 		// Un role de pose que la fiche d'espece ne decrit pas retombe sur immobile,
 		// jamais sur rien : sans animation, les ailes se deploieraient.
@@ -2047,30 +2008,6 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		return Espece.MARCHE.equals(role) || Espece.COURSE.equals(role);
 	}
 
-	/** Le role fin s'il existe, sinon une allure universelle de repli. */
-	private static String roleSiConnu(Espece espece, String fin, String repli) {
-		return espece.animation(fin) != null ? fin : repli;
-	}
-
-	/**
-	 * Le role d'attente qui correspond a son humeur.
-	 *
-	 * <p>Trois seulement, et pas un par humeur : « il va mal », « il va bien »,
-	 * et entre les deux. Cinq animations d'attente par espece, ce serait cinq
-	 * fois le travail pour une nuance que personne ne verrait.
-	 *
-	 * <p>Une espece qui ne decrit pas ces roles retombe sur son animation
-	 * d'attente ordinaire — voir {@code Espece.animationOuImmobile}. Rien ne
-	 * casse pour celles qui n'ont qu'une pose.
-	 */
-	private String roleDeLHumeur() {
-		return switch (humeur()) {
-			case MISERE, TRISTE -> Espece.TRISTE;
-			case RAYONNANT -> Espece.JOYEUX;
-			default -> Espece.IMMOBILE;
-		};
-	}
-
 	/**
 	 * Vrai s'il est reellement en l'air.
 	 *
@@ -2083,6 +2020,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * decoller.
 	 */
 	private boolean enVol() {
+		if (!saitVoler()) {
+			return false;
+		}
 		// Un coup d'ailes demande compte tout de suite, avant meme d'avoir
 		// quitte le sol : sinon on le voit s'elever pendant deux ou trois ticks
 		// les pattes bien a plat, ce qui est exactement le contraire de l'effet
