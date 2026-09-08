@@ -1,1 +1,9 @@
-{"variants":{"":{"model":"compagnon:block/coussin"}}}
+{
+	"multipart":[
+		{"apply":{"model":"compagnon:block/coussin_centre"}},
+		{"when":{"north":"false"},"apply":{"model":"compagnon:block/coussin_bord"}},
+		{"when":{"east":"false"},"apply":{"model":"compagnon:block/coussin_bord","y":90}},
+		{"when":{"south":"false"},"apply":{"model":"compagnon:block/coussin_bord","y":180}},
+		{"when":{"west":"false"},"apply":{"model":"compagnon:block/coussin_bord","y":270}}
+	]
+}

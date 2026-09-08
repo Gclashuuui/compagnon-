@@ -71,4 +71,5 @@ nouvelles ; elles ne servent pas de tutoriel quotidien.
 - Des reactions differentes a table ; une preference n'apparait dans le carnet
   qu'apres avoir ete decouverte en donnant vraiment l'aliment.
 - Un coussin, une gamelle enchantee et un perchoir en vrais modeles posables,
-  disponibles dans l'onglet creatif du mod.
+  disponibles dans l'onglet creatif du mod. Les coussins assembles retirent leur
+  bordure commune pour former un grand coin de repos.

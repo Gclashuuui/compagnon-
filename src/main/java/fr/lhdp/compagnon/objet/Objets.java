@@ -72,8 +72,8 @@ public final class Objets {
 			new Item.Properties().stacksTo(1)));
 
 	/** Les trois meubles posables du coin personnel du compagnon. */
-	public static final Block COUSSIN = enregistrerBloc("coussin", new BlocCoin(
-			BlocCoin.Forme.COUSSIN, BlockBehaviour.Properties.of()
+	public static final Block COUSSIN = enregistrerBloc("coussin", new BlocCoussin(
+			BlockBehaviour.Properties.of()
 					.strength(0.3F).sound(SoundType.WOOL).noOcclusion()));
 	public static final Block GAMELLE = enregistrerBloc("gamelle", new BlocCoin(
 			BlocCoin.Forme.GAMELLE, BlockBehaviour.Properties.of()
