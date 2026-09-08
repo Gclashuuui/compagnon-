@@ -1558,6 +1558,17 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	private boolean planeVisuellement;
 
 	/**
+	 * La sequence de locomotion actuellement confiee a GeckoLib.
+	 *
+	 * <p>Elle est reconstruite uniquement lorsque le role change. La recreer a
+	 * chaque image ferait repartir une transition de son debut et le dragon ne
+	 * parviendrait jamais a sa boucle de marche, de vol ou de repos.
+	 */
+	private String especeLocomotionJouee = "";
+	private String roleLocomotionJoue = "";
+	private RawAnimation sequenceLocomotion;
+
+	/**
 	 * Combien de ticks il lui reste a planer parce qu'on le lui a demande.
 	 *
 	 * <p>Different de {@link #ticksDeVol} : celui-la est la <b>consequence</b>
@@ -1915,7 +1926,79 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 		// Un role de pose que la fiche d'espece ne decrit pas retombe sur immobile,
 		// jamais sur rien : sans animation, les ailes se deploieraient.
-		return etat.setAndContinue(RawAnimation.begin().thenLoop(espece.animationOuImmobile(role)));
+		if (!espece.nom().equals(this.especeLocomotionJouee)
+				|| !role.equals(this.roleLocomotionJoue)
+				|| this.sequenceLocomotion == null) {
+			String avant = this.roleLocomotionJoue;
+			this.especeLocomotionJouee = espece.nom();
+			this.roleLocomotionJoue = role;
+			this.sequenceLocomotion = sequenceLocomotion(espece, avant, role);
+			etat.resetCurrentAnimation();
+		}
+		return etat.setAndContinue(this.sequenceLocomotion);
+	}
+
+	/**
+	 * Une transition non bouclee, puis la locomotion stable qui lui succede.
+	 *
+	 * <p>Les transitions restent dans la fiche d'espece : une autre creature qui
+	 * ne les possede pas passe directement a sa boucle, sans nom d'animation
+	 * dragonnet ecrit dans le code.
+	 */
+	private static RawAnimation sequenceLocomotion(Espece espece, String avant, String apres) {
+		RawAnimation sequence = RawAnimation.begin();
+		String transition = transitionLocomotion(espece, avant, apres);
+		if (transition != null) {
+			sequence = sequence.thenPlay(transition);
+		}
+		return sequence.thenLoop(espece.animationOuImmobile(apres));
+	}
+
+	/** Choisit le passage le plus important entre les deux roles visuels. */
+	private static String transitionLocomotion(Espece espece, String avant, String apres) {
+		if (avant.isEmpty() || avant.equals(apres)) {
+			return null;
+		}
+
+		String role;
+		if (roleAerien(avant) && !roleAerien(apres)) {
+			role = Espece.ATTERRISSAGE;
+		} else if (!roleAerien(avant) && roleAerien(apres)) {
+			role = Espece.DECOLLAGE;
+		} else if (Espece.VOL.equals(avant) && Espece.PLANE.equals(apres)) {
+			role = Espece.VOL_VERS_PLANE;
+		} else if (Espece.PLANE.equals(avant) && Espece.VOL.equals(apres)) {
+			role = Espece.PLANE_VERS_VOL;
+		} else if (Espece.COUCHE.equals(avant)) {
+			role = Espece.REVEIL;
+		} else if (Espece.ASSIS.equals(avant)) {
+			role = Espece.VERS_DEBOUT;
+		} else if (Espece.COUCHE.equals(apres)) {
+			role = Espece.VERS_COUCHE;
+		} else if (Espece.ASSIS.equals(apres)) {
+			role = Espece.VERS_ASSIS;
+		} else if (Espece.MARCHE.equals(avant) && Espece.COURSE.equals(apres)) {
+			role = Espece.PASSAGE_COURSE;
+		} else if (Espece.COURSE.equals(avant) && !roleDeplacementAuSol(apres)) {
+			role = Espece.ARRET_COURSE;
+		} else if (roleDeplacementAuSol(avant) && !roleDeplacementAuSol(apres)) {
+			role = Espece.ARRET_MARCHE;
+		} else if (!roleDeplacementAuSol(avant) && roleDeplacementAuSol(apres)) {
+			role = Espece.DEPART_MARCHE;
+		} else {
+			return null;
+		}
+
+		String animation = espece.reaction(role);
+		return animation == null || animation.isBlank() ? null : animation;
+	}
+
+	private static boolean roleAerien(String role) {
+		return Espece.VOL.equals(role) || Espece.PLANE.equals(role);
+	}
+
+	private static boolean roleDeplacementAuSol(String role) {
+		return Espece.MARCHE.equals(role) || Espece.COURSE.equals(role);
 	}
 
 	/** Le role fin s'il existe, sinon une allure universelle de repli. */

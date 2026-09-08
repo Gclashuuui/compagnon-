@@ -165,6 +165,20 @@ public record Espece(
 	/** La celebration propre a une montee de niveau, entierement facultative. */
 	public static final String NIVEAU = "niveau";
 
+	// --- Roles optionnels : les transitions de locomotion ---
+	public static final String DEPART_MARCHE = "transition_depart_marche";
+	public static final String ARRET_MARCHE = "transition_arret_marche";
+	public static final String PASSAGE_COURSE = "transition_course";
+	public static final String ARRET_COURSE = "transition_arret_course";
+	public static final String VERS_ASSIS = "transition_assis";
+	public static final String VERS_DEBOUT = "transition_debout";
+	public static final String VERS_COUCHE = "transition_couche";
+	public static final String REVEIL = "transition_reveil";
+	public static final String DECOLLAGE = "transition_decollage";
+	public static final String ATTERRISSAGE = "transition_atterrissage";
+	public static final String VOL_VERS_PLANE = "transition_vol_plane";
+	public static final String PLANE_VERS_VOL = "transition_plane_vol";
+
 	/** Vrai si cette espece peut porter quelqu'un, a un niveau ou a un autre. */
 	public boolean seMonte() {
 		return this.monterAuNiveau > 0;

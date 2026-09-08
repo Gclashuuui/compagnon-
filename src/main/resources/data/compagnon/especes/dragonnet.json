@@ -66,7 +66,19 @@
 		"ambiance_2": "animation.dragonnet.look_sky",
 		"ambiance_3": "animation.dragonnet.stretch",
 		"ambiance_4": "animation.dragonnet.sneeze",
-		"mange": "animation.dragonnet.eat"
+		"mange": "animation.dragonnet.eat",
+		"transition_depart_marche": "animation.dragonnet.walk_start",
+		"transition_arret_marche": "animation.dragonnet.walk_stop",
+		"transition_course": "animation.dragonnet.walk_to_run",
+		"transition_arret_course": "animation.dragonnet.run_stop",
+		"transition_assis": "animation.dragonnet.sit_down",
+		"transition_debout": "animation.dragonnet.stand_up",
+		"transition_couche": "animation.dragonnet.lie_down",
+		"transition_reveil": "animation.dragonnet.wake_up",
+		"transition_decollage": "animation.dragonnet.takeoff",
+		"transition_atterrissage": "animation.dragonnet.landing",
+		"transition_vol_plane": "animation.dragonnet.fly_to_glide",
+		"transition_plane_vol": "animation.dragonnet.glide_to_fly"
 	},
 	"parties": [
 		{
