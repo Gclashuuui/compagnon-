@@ -178,7 +178,9 @@ disent ce que le serveur a **vraiment** chargé.
   affiche un titre, joue un son et entoure la bête d'un double halo lumineux qui
   monte, adapté à sa taille. Elle déclenche aussi le rôle optionnel
   `reactions.niveau` — ou `reactions.joie` en repli. Le sous-titre annonce les
-  gestes, points de compétence et la monte nouvellement débloqués.
+  gestes, points de compétence et la monte nouvellement débloqués. Le livre
+  affiche le niveau sans faux maximum et la jauge d'XP indique au survol ce
+  qu'il reste avant le suivant.
 - **L’animation `ramasse`** : le rôle `@ramasse` est appelé quand il baisse la
   tête pour prendre un objet. Case à remplir dans `reactions` du fichier
   d’espèce ; sans elle il ramasse quand même, sans le geste.

@@ -202,6 +202,9 @@ public class EcranLivre extends EcranCompagnon {
 
 		bordDePage(g);
 		clochette(g, sourisX, sourisY, partiel);
+		if (this.page == PAGE_IDENTITE) {
+			aideExperience(g, sourisX, sourisY);
+		}
 	}
 
 	// --- Page 1, a gauche : qui il est, et comment il va ------------------------
@@ -250,7 +253,7 @@ public class EcranLivre extends EcranCompagnon {
 
 		// Niveau et experience.
 		String titreNiveau = Component.translatable("livre.compagnon.niveau",
-				this.donnees.niveau(), this.donnees.niveauMax()).getString();
+				this.donnees.niveau()).getString();
 		String xp = this.donnees.xpDuSuivant() < 0
 				? Component.translatable("livre.compagnon.xp_max", this.donnees.xp()).getString()
 						: Component.translatable("livre.compagnon.xp",
@@ -275,6 +278,35 @@ public class EcranLivre extends EcranCompagnon {
 		g.drawString(this.font, this.donnees.humeurBouille(), x, y, ENCRE_PALE, false);
 		g.drawString(this.font, this.donnees.humeurLibelle(),
 				x + this.font.width(this.donnees.humeurBouille()) + 6, y, ENCRE, false);
+	}
+
+	/**
+	 * Dit ce qu'il reste vraiment a gagner quand la souris touche la jauge d'XP.
+	 *
+	 * <p>Le chiffre a droite est une experience totale. Sans cette aide, lire
+	 * « 1 240 / 1 500 » oblige a faire le calcul soi-meme, alors que la question
+	 * du joueur est simplement « combien me manque-t-il ? ».
+	 *
+	 * <p>Le texte est dessine a la fin de l'ecran pour rester devant le parchemin,
+	 * ses onglets et la clochette.
+	 */
+	private void aideExperience(GuiGraphics g, int sourisX, int sourisY) {
+		if (this.donnees.xpDuSuivant() < 0) {
+			return;
+		}
+		int x = this.gauche + PAGE_DROITE_X;
+		int y = this.haut + PAGE_Y + PORTRAIT + 10 + 7 + LIGNE + 1;
+		boolean dessus = sourisX >= x && sourisX < x + PAGE_LARGEUR
+				&& sourisY >= y && sourisY < y + HAUTEUR_JAUGE;
+		if (!dessus) {
+			return;
+		}
+
+		int restant = Math.max(0, this.donnees.xpDuSuivant() - this.donnees.xp());
+		Component texte = restant == 1
+				? Component.translatable("livre.compagnon.xp_restant")
+				: Component.translatable("livre.compagnon.xp_restants", restant);
+		g.renderTooltip(this.font, texte, sourisX, sourisY);
 	}
 
 	/**
