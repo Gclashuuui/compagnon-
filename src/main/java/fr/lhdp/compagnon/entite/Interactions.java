@@ -137,11 +137,14 @@ public final class Interactions {
 			return confier(compagnon, fiche, joueur, pile);
 		}
 
-		// IL DESCEND DE L'EPAULE.
+		// EPAULE, PUIS TETE, PUIS SOL.
 		//
-		// Avant tout le reste : quand une bete est posee sur toi, le seul geste
-		// que tu peux vouloir est de la faire descendre.
+		// Un seul bouton et trois positions faciles a retenir. La premiere fois,
+		// il quitte l'epaule pour le sommet de la tete ; la suivante, il redescend.
 		if (pile.isEmpty() && compagnon.estPerche()) {
+			if (!compagnon.estSurLaTete()) {
+				return monterSurLaTete(compagnon, fiche, joueur);
+			}
 			return descendreDeLEpaule(compagnon, fiche, joueur);
 		}
 
@@ -536,6 +539,7 @@ public final class Interactions {
 		// bete assise dans le vide.
 		fiche.setMode(Mode.SUIT);
 		compagnon.appliquerMode(Mode.SUIT);
+		compagnon.sePoserSurLaTete(false);
 		fiches.setDirty();
 
 		compagnon.startRiding(joueur, true);
@@ -545,10 +549,21 @@ public final class Interactions {
 		return InteractionResult.CONSUME;
 	}
 
+	/** De l'epaule au sommet de la tete, sans descendre du joueur. */
+	private static InteractionResult monterSurLaTete(CompagnonEntity compagnon,
+			FicheCompagnon fiche, ServerPlayer joueur) {
+
+		compagnon.sePoserSurLaTete(true);
+		Sons.jouer(compagnon, Sons.CONTENT, 0.65F);
+		dire(joueur, fiche.nom() + " se pose sur ta tete.", 0);
+		return InteractionResult.CONSUME;
+	}
+
 	/** Il redescend, et se remet a te suivre. */
 	private static InteractionResult descendreDeLEpaule(CompagnonEntity compagnon,
 			FicheCompagnon fiche, ServerPlayer joueur) {
 
+		compagnon.sePoserSurLaTete(false);
 		compagnon.stopRiding();
 		dire(joueur, fiche.nom() + " redescend.", 0);
 		return InteractionResult.CONSUME;

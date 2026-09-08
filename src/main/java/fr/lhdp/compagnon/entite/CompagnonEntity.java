@@ -129,6 +129,16 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	private static final EntityDataAccessor<Boolean> DORT =
 			SynchedEntityData.defineId(CompagnonEntity.class, EntityDataSerializers.BOOLEAN);
 
+	/**
+	 * Sur la tete plutot que sur l'epaule quand le joueur le porte.
+	 *
+	 * <p>Synchronise parce que le point d'accroche est calcule des deux cotes :
+	 * sans cette valeur, le serveur le poserait sur la tete et les autres joueurs
+	 * continueraient de le voir sur l'epaule.
+	 */
+	private static final EntityDataAccessor<Boolean> SUR_LA_TETE =
+			SynchedEntityData.defineId(CompagnonEntity.class, EntityDataSerializers.BOOLEAN);
+
 	private static final String CLE_ESPECE = "Espece";
 	private static final String CLE_VARIANTE = "Variante";
 
@@ -583,7 +593,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	}
 
 	/**
-	 * Une monture occupee ne se laisse pas bousculer.
+	 * Une monture occupee ou une petite bete perchee ne se laisse pas bousculer.
 	 *
 	 * <p>Sans cela, chaque bete qui passe deplace la monture, et le cavalier
 	 * avec elle : on glisse sur place sans avoir touche a rien. Une bete qu'on
@@ -595,7 +605,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 */
 	@Override
 	public boolean isPushable() {
-		return !estMonte() && super.isPushable();
+		return !estMonte() && !estPerche() && super.isPushable();
 	}
 
 	/**
@@ -860,6 +870,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	protected void defineSynchedData(SynchedEntityData.Builder constructeur) {
 		super.defineSynchedData(constructeur);
 		constructeur.define(DORT, false);
+		constructeur.define(SUR_LA_TETE, false);
 		// Vide veut dire "la premiere espece chargee" : aucun nom d'espece n'est
 		// ecrit en dur dans le code.
 		constructeur.define(ESPECE, "");
@@ -1040,6 +1051,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 */
 	private static final double EPAULE_EN_HAUT = 0.72D;
 
+	/** Plus haut et centre : le sommet du crane plutot que le cote du cou. */
+	private static final double TETE_EN_HAUT = 1.05D;
+
 	/** Assez petit pour tenir sur une epaule ? */
 	public boolean peutSePercher() {
 		Espece espece = Especes.get(espece());
@@ -1051,6 +1065,16 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	/** Vrai s'il est en ce moment sur l'epaule de quelqu'un. */
 	public boolean estPerche() {
 		return getVehicle() instanceof net.minecraft.world.entity.player.Player;
+	}
+
+	/** Vrai s'il a choisi le sommet de la tete plutot que l'epaule. */
+	public boolean estSurLaTete() {
+		return estPerche() && this.entityData.get(SUR_LA_TETE);
+	}
+
+	/** Choisit le point du perchoir ; l'entite reste passagere du joueur. */
+	public void sePoserSurLaTete(boolean surLaTete) {
+		this.entityData.set(SUR_LA_TETE, surLaTete);
 	}
 
 	/**
@@ -1074,6 +1098,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	public Vec3 getVehicleAttachmentPoint(Entity porteur) {
 		if (!(porteur instanceof net.minecraft.world.entity.player.Player)) {
 			return super.getVehicleAttachmentPoint(porteur);
+		}
+		if (this.entityData.get(SUR_LA_TETE)) {
+			return new Vec3(0.0D, -TETE_EN_HAUT, 0.0D);
 		}
 		// Cap zero regarde vers le sud : la droite du porteur est (cos, 0, sin).
 		float cap = porteur.getYRot() * net.minecraft.util.Mth.DEG_TO_RAD;

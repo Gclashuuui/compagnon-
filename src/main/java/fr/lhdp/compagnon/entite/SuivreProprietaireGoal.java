@@ -65,7 +65,7 @@ public class SuivreProprietaireGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		if (this.compagnon.mode() != Mode.SUIT) {
+		if (this.compagnon.mode() != Mode.SUIT || this.compagnon.estPerche()) {
 			return false;
 		}
 		LivingEntity maitre = this.compagnon.getOwner();
@@ -79,6 +79,7 @@ public class SuivreProprietaireGoal extends Goal {
 	@Override
 	public boolean canContinueToUse() {
 		return this.compagnon.mode() == Mode.SUIT
+				&& !this.compagnon.estPerche()
 				&& this.proprietaire != null
 				&& !this.proprietaire.isSpectator();
 	}

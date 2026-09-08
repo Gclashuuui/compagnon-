@@ -170,7 +170,10 @@ disent ce que le serveur a **vraiment** chargé.
 - **Les animations** — l'auteur les fait lui-même. Cases vides dans
   `especes/dragonnet.json` : `assis`, `reactions.caresse`.
 - **Le geste de caresse** — à refaire quand les animations existeront.
-- **Se percher** sur l'épaule et sur la tête.
+- **Le perchoir est fait** pour les petites espèces : assis puis clic droit les
+  fait monter sur l'épaule, un second clic les pose sur la tête, un troisième
+  les fait redescendre. Le point d'accroche est synchronisé pour que tous les
+  joueurs voient la même position.
 - **La table des niveaux** est vide sauf deux entrées de test.
 - **L’animation `ramasse`** : le rôle `@ramasse` est appelé quand il baisse la
   tête pour prendre un objet. Case à remplir dans `reactions` du fichier
