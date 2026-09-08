@@ -100,6 +100,8 @@ public class FicheCompagnon {
 	private static final String CLE_GESTE = "Geste";
 	private static final String CLE_CONNU = "Qui";
 	private static final String CLE_FOIS = "Fois";
+	private static final String CLE_GOUTS_PREFERES = "GoutsPreferes";
+	private static final String CLE_GOUT_BOUDE = "GoutBoude";
 
 	private final UUID id;
 	private final UUID proprietaire;
@@ -238,6 +240,9 @@ public class FicheCompagnon {
 	private final List<Moment> moments;
 	private final Map<String, Integer> compteurs;
 
+	/** Ses preferences, creees paresseusement puis figees dans la sauvegarde. */
+	private Gouts gouts;
+
 	public FicheCompagnon(UUID id, UUID proprietaire, String espece, String variante, String nom,
 			ResourceKey<Level> dimension, double x, double y, double z, float rotation,
 			long dateObtention, Progression table) {
@@ -257,6 +262,7 @@ public class FicheCompagnon {
 		this.vuLe = 0L;
 		this.moments = new ArrayList<>();
 		this.compteurs = new LinkedHashMap<>();
+		this.gouts = null;
 
 		this.barres = new EnumMap<>(Barre.class);
 		for (Barre barre : Barre.values()) {
@@ -306,6 +312,15 @@ public class FicheCompagnon {
 		CompoundTag compteursBalise = balise.getCompound(CLE_COMPTEURS);
 		for (String cle : compteursBalise.getAllKeys()) {
 			this.compteurs.put(cle, compteursBalise.getInt(cle));
+		}
+
+		if (balise.contains(CLE_GOUTS_PREFERES) || balise.contains(CLE_GOUT_BOUDE)) {
+			List<String> preferes = java.util.Arrays.stream(
+					balise.getString(CLE_GOUTS_PREFERES).split(","))
+					.map(String::trim).filter(s -> !s.isEmpty()).toList();
+			this.gouts = new Gouts(preferes, balise.getString(CLE_GOUT_BOUDE));
+		} else {
+			this.gouts = null;
 		}
 
 		// Une barre absente de la sauvegarde repart au maximum : une fiche ecrite
@@ -410,6 +425,12 @@ public class FicheCompagnon {
 		CompoundTag compteursBalise = new CompoundTag();
 		this.compteurs.forEach(compteursBalise::putInt);
 		balise.put(CLE_COMPTEURS, compteursBalise);
+
+		Gouts preferences = gouts();
+		if (!preferences.estVide()) {
+			balise.putString(CLE_GOUTS_PREFERES, String.join(",", preferences.preferes()));
+			balise.putString(CLE_GOUT_BOUDE, preferences.boude());
+		}
 
 		CompoundTag barresBalise = new CompoundTag();
 		this.barres.forEach((barre, valeur) -> barresBalise.putFloat(barre.cle(), valeur));
@@ -1074,5 +1095,23 @@ public class FicheCompagnon {
 
 	public Map<String, Integer> compteurs() {
 		return Map.copyOf(this.compteurs);
+	}
+
+	// --- Ses gouts --------------------------------------------------------------
+
+	/**
+	 * Ses preferences, choisies une seule fois puis sauvegardees.
+	 *
+	 * <p>Une vieille fiche n'a aucune de ces deux cles. Elle les recoit a sa
+	 * premiere lecture avec le contenu actuel, puis elles ne bougent plus jamais.
+	 */
+	public Gouts gouts() {
+		if (this.gouts == null || this.gouts.estVide()) {
+			Gouts choisis = Gouts.choisir(this.id, Contenu.nomsAliments());
+			if (!choisis.estVide()) {
+				this.gouts = choisis;
+			}
+		}
+		return this.gouts == null ? Gouts.VIDES : this.gouts;
 	}
 }

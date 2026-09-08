@@ -17,20 +17,14 @@ nouvelles ; elles ne servent pas de tutoriel quotidien.
 
 ## Prochaines idees, dans l'ordre
 
-### 1. Des preferences que l'on decouvre
-
-- Deux aliments favoris et un aliment qu'il boude, propres a chaque compagnon.
-- Pas de fiche revelee des le debut : sa reaction au repas permet de comprendre.
-- Le carnet ecrit la preference apres l'avoir observee plusieurs fois.
-
-### 2. Un coin a lui
+### 1. Un coin a lui
 
 - Lui faire choisir un endroit ou dormir et un endroit ou manger.
 - Afficher ces lieux comme de petits croquis dans son histoire.
 - Le voir retourner spontanement dans son coin a l'heure habituelle.
 - Ajouter coussin, gamelle et perchoir comme objets decoratifs, sans bonus oblige.
 
-### 3. Une complicite qui change les gestes
+### 2. Une complicite qui change les gestes
 
 - Au debut, il garde ses distances et hesite avant une caresse.
 - Ensuite, il reconnait les pas de son maitre, vient l'accueillir et s'endort pres
@@ -38,7 +32,7 @@ nouvelles ; elles ne servent pas de tutoriel quotidien.
 - A forte complicite, de nouveaux gestes relationnels remplacent les bonus de
   statistiques : poser la tete, suivre du regard, apporter un petit objet trouve.
 
-### 4. Des souvenirs racontes comme un album
+### 3. Des souvenirs racontes comme un album
 
 - Une petite vignette pour le premier vol, le premier orage, le premier soin et
   le premier ami.
@@ -46,7 +40,7 @@ nouvelles ; elles ne servent pas de tutoriel quotidien.
 - Une page annuelle avec trois moments importants choisis automatiquement.
 - Des surnoms de souvenirs, par exemple « celui qui a traverse l'orage ».
 
-### 5. Une interface plus vivante mais plus calme
+### 4. Une interface plus vivante mais plus calme
 
 - Le panneau du coin n'affiche un conseil que lorsqu'il y a vraiment un besoin.
 - Les jauges deviennent des mots quand elles sont critiques : « affame »,
@@ -55,7 +49,7 @@ nouvelles ; elles ne servent pas de tutoriel quotidien.
   dans une seconde couronne.
 - Un mode d'accessibilite remplace les seules couleurs par des motifs et symboles.
 
-### 6. Davantage de comportement naturel
+### 5. Davantage de comportement naturel
 
 - Tourner et sauter avec les animations v17 selon le vrai mouvement du terrain.
 - Chercher l'ombre quand il fait chaud, un abri quand il pleut et un endroit calme
@@ -72,4 +66,7 @@ nouvelles ; elles ne servent pas de tutoriel quotidien.
 - Une celebration discrete quand les trois attentions ont eu lieu.
 - Une demande de caresse rare quand la complicite est basse, modulee par son
   caractere calin.
-
+- Deux aliments favoris et un aliment boude, propres a chaque compagnon et
+  conserves dans sa sauvegarde.
+- Des reactions differentes a table ; une preference n'apparait dans le carnet
+  qu'apres avoir ete decouverte en donnant vraiment l'aliment.

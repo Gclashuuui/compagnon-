@@ -7,6 +7,7 @@ import fr.lhdp.compagnon.contenu.Donnable;
 import fr.lhdp.compagnon.fiche.Barre;
 import fr.lhdp.compagnon.fiche.FicheCompagnon;
 import fr.lhdp.compagnon.fiche.Fiches;
+import fr.lhdp.compagnon.fiche.Gouts;
 import fr.lhdp.compagnon.fiche.Mode;
 import fr.lhdp.compagnon.objet.Objets;
 import fr.lhdp.compagnon.progression.Niveaux;
@@ -47,6 +48,9 @@ public final class Interactions {
 
 	/** Complicite gagnee par caresse. Valeur inventee. */
 	private static final float COMPLICITE_PAR_CARESSE = 2.0F;
+
+	/** Petit bonus affectif d'un repas qu'il adore, sans accelerer fortement l'XP. */
+	private static final float COMPLICITE_REPAS_PREFERE = 2.0F;
 
 	/** Duree du geste de caresse, en ticks. Valeur inventee. */
 	private static final int DUREE_CARESSE = 45;
@@ -181,9 +185,18 @@ public final class Interactions {
 		}
 
 		Progression table = Niveaux.progression();
+		Gouts.Avis avis = fiche.gouts().avis(aliment.id());
 		appliquer(fiche, aliment.effets(), table);
+		if (avis == Gouts.Avis.PREFERE) {
+			fiche.ajouterBarre(Barre.COMPLICITE, COMPLICITE_REPAS_PREFERE, table);
+		}
 		fiche.incrementer(FicheCompagnon.REPAS);
 		fiche.marquer("premier_repas", System.currentTimeMillis());
+		if (avis == Gouts.Avis.PREFERE) {
+			fiche.marquer("gout.aime." + aliment.id(), System.currentTimeMillis());
+		} else if (avis == Gouts.Avis.BOUDE) {
+			fiche.marquer("gout.boude." + aliment.id(), System.currentTimeMillis());
+		}
 		// La ou on le nourrit d habitude : c est son coin.
 		retenirLeLieu(compagnon, fiche, "repas");
 		// ET A QUELLE HEURE. Trois repas a la meme heure font une habitude, et
@@ -191,11 +204,19 @@ public final class Interactions {
 		fiche.noterUnRepas(heureDuMonde(compagnon));
 
 		int gagne = fiche.gagnerXp(SourceXp.SOINS, table, System.currentTimeMillis());
-		leRepasSeVoit(compagnon, fiche, pile);
+		leRepasSeVoit(compagnon, fiche, pile, avis);
 		pile.shrink(1);
 		fiches.setDirty();
 
-		dire(joueur, fiche.nom() + " mange " + aliment.nom() + ".", gagne);
+		if (avis == Gouts.Avis.PREFERE) {
+			dire(joueur, Component.translatable("repas.compagnon.prefere",
+					fiche.nom(), aliment.nom()), gagne);
+		} else if (avis == Gouts.Avis.BOUDE) {
+			dire(joueur, Component.translatable("repas.compagnon.boude",
+					fiche.nom(), aliment.nom()), gagne);
+		} else {
+			dire(joueur, fiche.nom() + " mange " + aliment.nom() + ".", gagne);
+		}
 		return InteractionResult.CONSUME;
 	}
 
@@ -251,7 +272,7 @@ public final class Interactions {
 		fiche.noterUnRepas(heureDuMonde(compagnon));
 
 		int gagne = fiche.gagnerXp(SourceXp.SOINS, table, System.currentTimeMillis());
-		leRepasSeVoit(compagnon, fiche, pile);
+		leRepasSeVoit(compagnon, fiche, pile, Gouts.Avis.ORDINAIRE);
 		pile.shrink(1);
 		fiches.setDirty();
 
@@ -434,20 +455,26 @@ public final class Interactions {
 	 * plus de texture a montrer.
 	 */
 	private static void leRepasSeVoit(CompagnonEntity compagnon, FicheCompagnon fiche,
-			ItemStack pile) {
+			ItemStack pile, Gouts.Avis avis) {
 
 		// Si l'espece sait manger, elle joue toute l'animation ecrite dans son
 		// fichier. Une espece sans ce role garde simplement les miettes et le son.
 		compagnon.jouerActionPendant("@mange", 30);
 		Etincelles.miettes(compagnon, pile);
 		Sons.jouerCeSon(compagnon, net.minecraft.sounds.SoundEvents.GENERIC_EAT, 1.0F);
+		if (avis == Gouts.Avis.PREFERE) {
+			Sons.jouer(compagnon, Sons.CONTENT);
+			Etincelles.coeurs(compagnon, 4);
+		} else if (avis == Gouts.Avis.BOUDE) {
+			Etincelles.soupir(compagnon);
+		}
 
 		// RASSASIE, IL LE DIT.
 		//
 		// C'est le seul moyen de savoir qu'on peut arreter de le nourrir sans
 		// ouvrir son livre. Avant, on le decouvrait en recevant « il n'a plus
 		// faim » — c'est-a-dire une fois de trop.
-		if (fiche.barre(Barre.FAIM) >= Barre.MAXIMUM) {
+		if (fiche.barre(Barre.FAIM) >= Barre.MAXIMUM && avis != Gouts.Avis.PREFERE) {
 			Sons.jouer(compagnon, Sons.CONTENT);
 			Etincelles.coeurs(compagnon, 3);
 		}
@@ -620,8 +647,14 @@ public final class Interactions {
 	}
 
 	private static void dire(ServerPlayer joueur, String message, int xpGagne) {
-		String suffixe = xpGagne > 0 ? " (+" + xpGagne + " xp)" : "";
-		joueur.displayClientMessage(Component.literal(message + suffixe), true);
+		dire(joueur, Component.literal(message), xpGagne);
+	}
+
+	private static void dire(ServerPlayer joueur, Component message, int xpGagne) {
+		Component sortie = xpGagne > 0
+				? message.copy().append(Component.literal(" (+" + xpGagne + " xp)"))
+				: message;
+		joueur.displayClientMessage(sortie, true);
 	}
 
 	private static void echec(ServerPlayer joueur, String message) {

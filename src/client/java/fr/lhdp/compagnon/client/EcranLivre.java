@@ -21,6 +21,7 @@ import org.lwjgl.glfw.GLFW;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -788,8 +789,8 @@ public class EcranLivre extends EcranCompagnon {
 		g.drawString(this.font, duree(this.donnees.ticksEnsemble()), x, y, ENCRE_PALE, false);
 		y += LIGNE + 4;
 
-		objetPrefere(g, x, y);
-		y += 20;
+		y += objetPrefere(g, x, y);
+		y += goutsAlimentaires(g, x, y);
 
 		filet(g, x, y);
 		y += 7;
@@ -1437,6 +1438,8 @@ public class EcranLivre extends EcranCompagnon {
 	 */
 	/** Prefixe de la cle qui range son objet prefere. Voir RapporterGoal. */
 	private static final String PREFIXE_OBJET_PREFERE = "objet_prefere.";
+	private static final String PREFIXE_GOUT_AIME = "gout.aime.";
+	private static final String PREFIXE_GOUT_BOUDE = "gout.boude.";
 
 	/**
 	 * Le nom lisible d'un compteur.
@@ -1457,6 +1460,14 @@ public class EcranLivre extends EcranCompagnon {
 		String traduction = "moment.compagnon." + cle;
 		if (Language.getInstance().has(traduction)) {
 			return Component.translatable(traduction).getString();
+		}
+		if (cle.startsWith(PREFIXE_GOUT_AIME)) {
+			return Component.translatable("moment.compagnon.gout.aime",
+					nomAliment(cle.substring(PREFIXE_GOUT_AIME.length()))).getString();
+		}
+		if (cle.startsWith(PREFIXE_GOUT_BOUDE)) {
+			return Component.translatable("moment.compagnon.gout.boude",
+					nomAliment(cle.substring(PREFIXE_GOUT_BOUDE.length()))).getString();
 		}
 
 		// Son objet prefere porte le nom de l'objet dans sa propre cle, faute de
@@ -1543,7 +1554,7 @@ public class EcranLivre extends EcranCompagnon {
 	 * <p>C'est le premier objet qu'il t'a rapporte, et il le gardera toute sa vie.
 	 * Perdu au milieu de la liste des souvenirs, personne ne le remarquait.
 	 */
-	private void objetPrefere(GuiGraphics g, int x, int y) {
+	private int objetPrefere(GuiGraphics g, int x, int y) {
 		ItemStack prefere = ItemStack.EMPTY;
 		for (var moment : this.donnees.moments()) {
 			if (moment.cle().startsWith(PREFIXE_OBJET_PREFERE)) {
@@ -1552,11 +1563,46 @@ public class EcranLivre extends EcranCompagnon {
 			}
 		}
 		if (prefere.isEmpty()) {
-			return;
+			return 0;
 		}
 		g.renderItem(prefere, x, y);
 		g.drawString(this.font, Component.translatable("livre.compagnon.prefere"),
 				x + 20, y + 4, ENCRE_PALE, false);
+		return 20;
+	}
+
+	/** Les gouts n'apparaissent qu'apres que le joueur les a vus a table. */
+	private int goutsAlimentaires(GuiGraphics g, int x, int y) {
+		List<String> aimes = new ArrayList<>();
+		String boude = "";
+		for (var moment : this.donnees.moments()) {
+			if (moment.cle().startsWith(PREFIXE_GOUT_AIME)) {
+				aimes.add(nomAliment(moment.cle().substring(PREFIXE_GOUT_AIME.length())));
+			} else if (moment.cle().startsWith(PREFIXE_GOUT_BOUDE)) {
+				boude = nomAliment(moment.cle().substring(PREFIXE_GOUT_BOUDE.length()));
+			}
+		}
+		if (aimes.isEmpty() && boude.isEmpty()) {
+			return 0;
+		}
+
+		g.drawString(this.font, Component.translatable("livre.compagnon.gouts"),
+				x, y, ENCRE, false);
+		int hauteur = LIGNE;
+		if (!aimes.isEmpty()) {
+			String ligne = Component.translatable("livre.compagnon.aime",
+					String.join(", ", aimes)).getString();
+			g.drawString(this.font, this.font.plainSubstrByWidth(ligne, PAGE_LARGEUR),
+					x, y + hauteur, ENCRE_PALE, false);
+			hauteur += LIGNE;
+		}
+		if (!boude.isEmpty()) {
+			String ligne = Component.translatable("livre.compagnon.boude_aliment", boude).getString();
+			g.drawString(this.font, this.font.plainSubstrByWidth(ligne, PAGE_LARGEUR),
+					x, y + hauteur, ENCRE_PALE, false);
+			hauteur += LIGNE;
+		}
+		return hauteur + 4;
 	}
 
 	private static ItemStack pileDe(String identifiant) {
@@ -1578,6 +1624,13 @@ public class EcranLivre extends EcranCompagnon {
 		return BuiltInRegistries.ITEM.getOptional(quoi)
 				.map(objet -> new ItemStack(objet).getHoverName().getString())
 				.orElse(identifiant);
+	}
+
+	private static String nomAliment(String identifiant) {
+		String traduction = "item.compagnon.aliment." + identifiant;
+		return Language.getInstance().has(traduction)
+				? Component.translatable(traduction).getString()
+				: identifiant.replace('_', ' ');
 	}
 
 	// --- Outils -----------------------------------------------------------------
