@@ -53,8 +53,45 @@ public final class Etincelles {
 	 * quelques jours de jeu — il a le droit de se voir de loin.
 	 */
 	public static void montee(CompagnonEntity compagnon) {
-		semer(compagnon, ParticleTypes.END_ROD, 22, 0.9D);
+		haloDeMontee(compagnon);
 		semer(compagnon, ParticleTypes.HAPPY_VILLAGER, 14, 0.8D);
+	}
+
+	/**
+	 * Deux rubans de lumiere qui s'enroulent autour de la bete et montent.
+	 *
+	 * <p>Une bouffee aleatoire marque bien l'evenement, mais ne ressemble pas a
+	 * une petite animation. Ici les particules naissent deja en spirale et leur
+	 * vitesse les fait monter toutes seules : aucun compteur ne reste dans
+	 * l'entite et aucun travail ne se repete dans son {@code tick()}.
+	 *
+	 * <p>Le rayon et la hauteur viennent de la boite de la creature. Le meme effet
+	 * entoure donc le dragonnet sans le cacher et reste lisible autour des grandes
+	 * especes.
+	 */
+	private static void haloDeMontee(CompagnonEntity compagnon) {
+		if (!(compagnon.level() instanceof ServerLevel niveau)) {
+			return;
+		}
+		double rayon = Math.max(0.35D, compagnon.getBbWidth() * 0.7D);
+		double hauteur = Math.max(0.8D, compagnon.getBbHeight());
+		int points = 18;
+
+		for (int ruban = 0; ruban < 2; ruban++) {
+			for (int i = 0; i < points; i++) {
+				double avance = i / (double) (points - 1);
+				double angle = avance * Math.PI * 4.0D + ruban * Math.PI;
+				double x = compagnon.getX() + Math.cos(angle) * rayon;
+				double y = compagnon.getY() + hauteur * (0.12D + avance * 0.82D);
+				double z = compagnon.getZ() + Math.sin(angle) * rayon;
+
+				// Avec zero en quantite, Minecraft cree une particule et interprete
+				// les trois ecarts comme sa vitesse exacte. Elle monte donc au lieu
+				// d'exploser au hasard autour de son point de depart.
+				niveau.sendParticles(ParticleTypes.END_ROD, x, y, z,
+						0, 0.0D, 0.025D, 0.0D, 1.0D);
+			}
+		}
 	}
 
 	/** Un nuage sous les pattes : il vient de quitter le sol. */

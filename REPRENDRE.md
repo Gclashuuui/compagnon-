@@ -175,9 +175,10 @@ disent ce que le serveur a **vraiment** chargé.
   les fait redescendre. Le point d'accroche est synchronisé pour que tous les
   joueurs voient la même position.
 - **La table compte 50 niveaux** et se prolonge ensuite sans plafond. Une montée
-  affiche un titre, joue un son, répand des particules et déclenche le rôle
-  optionnel `reactions.niveau` — ou `reactions.joie` en repli. Le sous-titre
-  annonce les gestes, points de compétence et la monte nouvellement débloqués.
+  affiche un titre, joue un son et entoure la bête d'un double halo lumineux qui
+  monte, adapté à sa taille. Elle déclenche aussi le rôle optionnel
+  `reactions.niveau` — ou `reactions.joie` en repli. Le sous-titre annonce les
+  gestes, points de compétence et la monte nouvellement débloqués.
 - **L’animation `ramasse`** : le rôle `@ramasse` est appelé quand il baisse la
   tête pour prendre un objet. Case à remplir dans `reactions` du fichier
   d’espèce ; sans elle il ramasse quand même, sans le geste.
