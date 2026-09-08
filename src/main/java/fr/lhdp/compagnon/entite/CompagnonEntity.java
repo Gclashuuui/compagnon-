@@ -1214,6 +1214,12 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	public void appliquerMode(Mode mode) {
 		this.entityData.set(MODE, mode.name());
 		setInSittingPose(mode.pose());
+		// Un ordre interrompt la reaction en cours. C'est particulierement visible
+		// avec la voix : le petit geste « j'ecoute » immobilisait encore la bete
+		// presque une seconde apres « viens », puis la faisait partir en retard.
+		if (!this.entityData.get(ACTION).isEmpty()) {
+			jouerAction("");
+		}
 		if (mode.pose()) {
 			getNavigation().stop();
 		}
@@ -1883,8 +1889,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		} else if (mode == Mode.COUCHE) {
 			role = Espece.COUCHE;
 		} else if (!etat.isMoving()) {
-			// Quand il suit et que son maitre s'arrete, il s'assoit. Si la fiche
-			// d'espece ne decrit pas de pose assise, on retombe sur immobile.
+			// Suivre contient de petites pauses : attente du prochain chemin, porte,
+			// virage du maitre. Elles restent une attente debout. Jouer « assis » ici
+			// donnait l'impression qu'un ordre « viens » avait ete compris de travers.
 			//
 			// SON HUMEUR SE VOIT ICI. Une bete qui ne fait rien est une bete qu'on
 			// regarde : c'est le meilleur moment pour qu'elle raconte comment elle
@@ -1893,7 +1900,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			// Le role d'humeur retombe sur immobile si la fiche d'espece ne le
 			// decrit pas — voir animationOuImmobile. Une espece qui n'a qu'une
 			// animation d'attente se comporte donc exactement comme avant.
-			role = mode == Mode.SUIT ? Espece.ASSIS : roleDeLHumeur();
+			this.courseVisuelle = false;
+			role = roleDeLHumeur();
 		} else {
 			this.planeVisuellement = false;
 			float allure = etat.getLimbSwingAmount();
