@@ -11,6 +11,7 @@ import fr.lhdp.compagnon.progression.Niveaux;
 import fr.lhdp.compagnon.competence.Competence;
 import fr.lhdp.compagnon.competence.Competences;
 import fr.lhdp.compagnon.progression.Progression;
+import fr.lhdp.compagnon.progression.SourceXp;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -49,6 +50,9 @@ public final class Vie {
 	private static final int DECALAGE = 7;
 
 	private static final float MINUTES_PAR_HEURE = 60.0F;
+
+	/** Au-dela de cette distance, ils ne sont plus vraiment en balade ensemble. */
+	private static final double DISTANCE_DE_BALADE = 24.0D;
 
 	/**
 	 * Une manie tous les combien, en minutes de jeu, en moyenne.
@@ -129,7 +133,7 @@ public final class Vie {
 				quelqueChoseABouge |= Humeurs.regarderAutour(serveur, fiche);
 				quelqueChoseABouge |= Voisinages.seRemarquer(serveur, fiche);
 			quelqueChoseABouge |= sonCaractere(fiche);
-			quelqueChoseABouge |= compterLaBalade(fiche, proprietaire);
+			quelqueChoseABouge |= compterLaBalade(fiche, proprietaire, table);
 			quelqueChoseABouge |= Compteurs.releverLaMinute(serveur, fiche);
 			quelqueChoseABouge |= sesMissions(serveur, fiche, proprietaire, table);
 			quelqueChoseABouge |= fr.lhdp.compagnon.progression.Montee.regarder(
@@ -225,7 +229,8 @@ public final class Vie {
 	 * blocs demanderait de suivre la position a chaque tick, pour un chiffre
 	 * qui ne dirait rien de plus.
 	 */
-	private static boolean compterLaBalade(FicheCompagnon fiche, ServerPlayer proprietaire) {
+	private static boolean compterLaBalade(FicheCompagnon fiche, ServerPlayer proprietaire,
+			Progression table) {
 		// IL EST DEHORS AVEC TOI : IL NE T'ATTEND PAS.
 		//
 		// C'est ce qui fait que la prochaine sortie ne fetera pas des
@@ -238,7 +243,24 @@ public final class Vie {
 			|| proprietaire.getDeltaMovement().horizontalDistanceSqr() < 0.002D) {
 			return false;
 		}
+		// « Dehors » ne veut pas forcement dire « avec lui ». Si la bete est restee
+		// dans une autre dimension, un autre chunk ou a l'autre bout du chateau, la
+		// marche du joueur n'est pas leur balade. On exige l'entite chargee et proche.
+		if (proprietaire.serverLevel().getEntity(fiche.id())
+				instanceof CompagnonEntity compagnon) {
+			if (compagnon.distanceToSqr(proprietaire)
+					> DISTANCE_DE_BALADE * DISTANCE_DE_BALADE) {
+				return false;
+			}
+		} else {
+			return false;
+		}
 		fiche.incrementer(FicheCompagnon.BALADES);
+		// La source « balade » existait dans les reglages et dans le livre, mais
+		// personne ne lui accordait jamais son point. Une minute de marche vaut un
+		// point, avec le meme plafond journalier que les autres attentions : avancer
+		// ensemble compte, rester connecte sur place non.
+		fiche.gagnerXp(SourceXp.BALADE, table, System.currentTimeMillis());
 		return true;
 	}
 

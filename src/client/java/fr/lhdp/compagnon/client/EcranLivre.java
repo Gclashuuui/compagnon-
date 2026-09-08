@@ -1,9 +1,11 @@
 package fr.lhdp.compagnon.client;
 
 import fr.lhdp.compagnon.Compagnon;
+import fr.lhdp.compagnon.Icones;
 import fr.lhdp.compagnon.fiche.Barre;
 import fr.lhdp.compagnon.livre.DonneesLivre;
 import fr.lhdp.compagnon.livre.EntreeCompetence;
+import fr.lhdp.compagnon.progression.SourceXp;
 import fr.lhdp.compagnon.reseau.PaquetLivre;
 import fr.lhdp.compagnon.reseau.PaquetRoue;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -168,6 +170,9 @@ public class EcranLivre extends EcranCompagnon {
 	/** La vraie boite de la jauge d'XP, renseignee pendant le dessin. */
 	private int xpX, xpY, xpLargeur;
 
+	/** Le sceau quotidien sous la souris, ou {@code null}. */
+	private SourceXp rituelSurvole;
+
 	/** L'introduction ne se joue qu'a la premiere ouverture sur ce client. */
 	private boolean decouverte;
 	private long debutDecouverte;
@@ -217,7 +222,8 @@ public class EcranLivre extends EcranCompagnon {
 
 		if (this.page == PAGE_IDENTITE) {
 			pageIdentite(g, sourisX, sourisY);
-			pageAujourdhui(g);
+			this.rituelSurvole = null;
+			pageAujourdhui(g, sourisX, sourisY);
 		} else if (this.page == PAGE_HISTOIRE) {
 			pageHistoire(g);
 			pageMoments(g);
@@ -242,6 +248,7 @@ public class EcranLivre extends EcranCompagnon {
 		clochette(g, sourisX, sourisY, partiel);
 		if (this.page == PAGE_IDENTITE) {
 			aideExperience(g, sourisX, sourisY);
+			aideRituel(g, sourisX, sourisY);
 		}
 		dessinerDecouverte(g, sourisX, sourisY);
 	}
@@ -531,7 +538,7 @@ public class EcranLivre extends EcranCompagnon {
 
 	// --- Page 1, a droite : ce qui ne va pas, et ce qu'on a fait ----------------
 
-	private void pageAujourdhui(GuiGraphics g) {
+	private void pageAujourdhui(GuiGraphics g, int sourisX, int sourisY) {
 		int x = this.gauche + PAGE_DROITE_X;
 		int y = this.haut + PAGE_Y;
 
@@ -540,21 +547,33 @@ public class EcranLivre extends EcranCompagnon {
 		y += LIGNE + 3;
 		priorite(g, x, y);
 
-		y = this.haut + PAGE_Y + 67;
+		y = this.haut + PAGE_Y + 62;
 		filet(g, x, y);
 		y += 7;
 		g.drawString(this.font, Component.translatable("livre.compagnon.rituels"),
 				x, y, ENCRE, false);
-		y += LIGNE + 2;
+		String faits = this.donnees.rituelsAccomplis() + " / " + SourceXp.values().length;
+		g.drawString(this.font, faits, x + PAGE_LARGEUR - this.font.width(faits), y,
+				this.donnees.rituelsAccomplis() == SourceXp.values().length
+						? ENCRE_VERTE : ENCRE_PALE, false);
+		y += LIGNE + 1;
+		rituelsDuJour(g, x, y, sourisX, sourisY);
+
+		y += 28;
+		filet(g, x, y);
+		y += 7;
+		g.drawString(this.font, Component.translatable("livre.compagnon.a_faire_ensemble"),
+				x, y, ENCRE, false);
+		y += LIGNE;
 
 		int montrees = 0;
 		for (var mission : this.donnees.missions()) {
-			if (mission.longue() || montrees >= 2) {
+			if (mission.longue() || montrees >= 1) {
 				continue;
 			}
-			int limite = this.haut + HAUTEUR - 87;
+			int limite = this.haut + HAUTEUR - 74;
 			if (y + hauteurMission(mission, PAGE_LARGEUR) > limite) {
-				break;
+				continue;
 			}
 			y = uneMission(g, x, y, PAGE_LARGEUR, mission);
 			montrees++;
@@ -566,7 +585,7 @@ public class EcranLivre extends EcranCompagnon {
 
 		// La prochaine recompense reste a la meme place : la page ne saute pas
 		// quand un enonce de mission prend une ligne de plus.
-		y = this.haut + HAUTEUR - 83;
+		y = this.haut + HAUTEUR - 74;
 		filet(g, x, y);
 		y += 7;
 		g.drawString(this.font, Component.translatable("livre.compagnon.prochaine_etape"),
@@ -589,6 +608,72 @@ public class EcranLivre extends EcranCompagnon {
 				ENCRE_PALE, ENCRE_PALE);
 		y += LIGNE;
 		jauge(g, x, y, this.donnees.avancementDuNiveau(), 0xFFB17B28);
+	}
+
+	/**
+	 * Trois petits sceaux : une attention suffit pour marquer la journee.
+	 *
+	 * <p>Ce ne sont pas trois nouvelles quetes. Le soin, l'affection et la sortie
+	 * existaient deja ; le carnet les rassemble pour qu'un nouveau joueur sache
+	 * naturellement comment vivre avec sa bete. Un sceau rempli est une trace
+	 * d'encre, pas une recompense artificielle a reclamer.
+	 */
+	private void rituelsDuJour(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
+		int ecart = 3;
+		int large = (PAGE_LARGEUR - ecart * 2) / 3;
+		carteRituel(g, x, y, large, SourceXp.SOINS, Icones.SOIN,
+				"livre.compagnon.rituel.soins", sourisX, sourisY);
+		carteRituel(g, x + large + ecart, y, large, SourceXp.AFFECTION, Icones.COEUR,
+				"livre.compagnon.rituel.affection", sourisX, sourisY);
+		carteRituel(g, x + (large + ecart) * 2, y, large, SourceXp.BALADE, Icones.PLUME,
+				"livre.compagnon.rituel.balade", sourisX, sourisY);
+	}
+
+	private void carteRituel(GuiGraphics g, int x, int y, int large, SourceXp source,
+			String icone, String cle, int sourisX, int sourisY) {
+		boolean fait = this.donnees.rituelAccompli(source);
+		int fond = fait ? 0x243F6B37 : 0x147A6A55;
+		boolean tous = this.donnees.rituelsAccomplis() == SourceXp.values().length;
+		float lueur = (float) (Math.sin(System.currentTimeMillis() / 420.0D) * 0.5D + 0.5D);
+		int bord = tous ? Peinture.melanger(0xAA3F6B37, 0xCCB17B28, lueur)
+				: fait ? 0xAA3F6B37 : 0x667A6A55;
+
+		// Un petit carton aux coins coupes, comme une etiquette collee dans le livre.
+		g.fill(x + 1, y, x + large - 1, y + 24, fond);
+		g.fill(x, y + 1, x + large, y + 23, fond);
+		g.fill(x + 1, y, x + large - 1, y + 1, bord);
+		g.fill(x + 1, y + 23, x + large - 1, y + 24, bord);
+
+		g.drawString(this.font, Icones.de(icone), x + 4, y + 4,
+				fait ? ENCRE_VERTE : ENCRE_PALE, false);
+		if (fait) {
+			g.drawString(this.font, Component.literal("✔"), x + large - 11, y + 3,
+					ENCRE_VERTE, false);
+		}
+		String nom = Component.translatable(cle).getString();
+		nom = this.font.plainSubstrByWidth(nom, large - 6);
+		g.drawString(this.font, nom, x + (large - this.font.width(nom)) / 2, y + 14,
+				fait ? ENCRE_VERTE : ENCRE_PALE, false);
+
+		if (sourisX >= x && sourisX < x + large && sourisY >= y && sourisY < y + 24) {
+			this.rituelSurvole = source;
+		}
+	}
+
+	/** Explique le geste du sceau sans charger la page de texte permanent. */
+	private void aideRituel(GuiGraphics g, int sourisX, int sourisY) {
+		if (this.rituelSurvole == null) {
+			return;
+		}
+		String suffixe = switch (this.rituelSurvole) {
+			case SOINS -> "soins";
+			case AFFECTION -> "affection";
+			case BALADE -> "balade";
+		};
+		String etat = this.donnees.rituelAccompli(this.rituelSurvole)
+				? ".fait" : ".aide";
+		g.renderTooltip(this.font, Component.translatable(
+				"livre.compagnon.rituel." + suffixe + etat), sourisX, sourisY);
 	}
 
 	/** Le besoin le plus urgent, ecrit comme une intention et non comme un tableau. */

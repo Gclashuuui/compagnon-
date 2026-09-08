@@ -77,6 +77,12 @@ public final class Presence {
 	/** Un gourmand remendie au bout d'une minute. */
 	private static final int AVANT_DE_REMENDIER = 20 * 60;
 
+	/** En dessous, il peut chercher une attention plutot que rester indifferent. */
+	private static final float COMPLICITE_QUI_RECLAME = 35.0F;
+
+	/** Une demande de caresse doit rester un petit evenement, pas devenir un tic. */
+	private static final int AVANT_DE_RECLAMER_UNE_CARESSE = 20 * 120;
+
 	/** A quelle distance il faut que son maitre soit pour qu'il le previenne. */
 	private static final double PORTEE_DU_MAITRE = 12.0D;
 
@@ -130,6 +136,9 @@ public final class Presence {
 			}
 		}
 		if (ilTePrevient(compagnon, maitre, attention)) {
+			return;
+		}
+		if (ilReclameUneCaresse(compagnon, maitre, attention)) {
 			return;
 		}
 		if (ilReclame(compagnon, maitre, attention)) {
@@ -245,6 +254,34 @@ public final class Presence {
 		}
 		compagnon.getLookControl().setLookAt(maitre, 30.0F, 30.0F);
 		compagnon.jouerActionPendant("@ecoute", 25);
+		return true;
+	}
+
+	/**
+	 * Quand le lien est encore fragile, il cherche parfois le regard de son maitre.
+	 *
+	 * <p>Il ne fait apparaitre ni texte ni ordre : il se tourne, incline la tete et,
+	 * s'il est naturellement calin, fait quelques pas. Le joueur apprend ainsi a
+	 * lire son besoin avant meme d'ouvrir le carnet. Deux minutes entre deux
+	 * demandes, et uniquement quand le maitre est immobile, gardent le geste rare.
+	 */
+	private static boolean ilReclameUneCaresse(CompagnonEntity compagnon,
+			LivingEntity maitre, Attention attention) {
+
+		if (maitre == null || compagnon.complicite() > COMPLICITE_QUI_RECLAME
+				|| compagnon.distanceToSqr(maitre) > PORTEE_DU_REGARD * PORTEE_DU_REGARD
+				|| maitre.getDeltaMovement().horizontalDistanceSqr() >= 0.002D) {
+			return false;
+		}
+		if (!attention.permet("reclame_caresse", AVANT_DE_RECLAMER_UNE_CARESSE)) {
+			return false;
+		}
+
+		compagnon.getLookControl().setLookAt(maitre, 30.0F, 30.0F);
+		compagnon.jouerActionPendant("@ecoute", 28);
+		if (compagnon.caractere().calin() >= 0.50F) {
+			compagnon.serrerLeMaitre();
+		}
 		return true;
 	}
 

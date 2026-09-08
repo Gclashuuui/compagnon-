@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import fr.lhdp.compagnon.fiche.Humeur;
 import fr.lhdp.compagnon.fiche.Moment;
 import fr.lhdp.compagnon.progression.Progression;
+import fr.lhdp.compagnon.progression.SourceXp;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -38,6 +39,12 @@ public record DonneesLivre(
 		int xpDuNiveau,
 		/** Experience du palier suivant, ou {@code -1} au dernier. */
 		int xpDuSuivant,
+
+		/**
+		 * Les trois attentions deja partagees aujourd'hui, rangees dans trois bits.
+		 * L'ordre est celui de {@link SourceXp} : soin, affection, balade.
+		 */
+		int rituelsDuJour,
 
 		Map<Barre, Float> barres,
 
@@ -169,6 +176,26 @@ public record DonneesLivre(
 		return Math.max(0.0F, Math.min(1.0F, (this.xp - this.xpDuNiveau) / (float) etendue));
 	}
 
+	/** Cette sorte d'attention a-t-elle deja eu lieu aujourd'hui ? */
+	public boolean rituelAccompli(SourceXp source) {
+		return (this.rituelsDuJour & (1 << source.ordinal())) != 0;
+	}
+
+	/** Combien des trois attentions du jour ont deja eu lieu. */
+	public int rituelsAccomplis() {
+		return Integer.bitCount(this.rituelsDuJour);
+	}
+
+	private static int rituelsDuJour(FicheCompagnon fiche, Progression table, long maintenant) {
+		int faits = 0;
+		for (SourceXp source : SourceXp.values()) {
+			if (fiche.aGagneAujourdhui(source, table, maintenant)) {
+				faits |= 1 << source.ordinal();
+			}
+		}
+		return faits;
+	}
+
 	/**
 	 * Les noms de ceux qu'il connait assez pour aller les voir.
 	 *
@@ -232,6 +259,7 @@ public record DonneesLivre(
 
 	public static DonneesLivre de(FicheCompagnon fiche, Progression table, MinecraftServer serveur) {
 		int niveau = fiche.niveau(table);
+		long maintenant = System.currentTimeMillis();
 
 		Map<Barre, Float> barres = new EnumMap<>(Barre.class);
 		for (Barre barre : Barre.values()) {
@@ -261,6 +289,7 @@ public record DonneesLivre(
 				fiche.nom(), fiche.espece(), fiche.variante(),
 				niveau, table.niveauMaximum(), fiche.xp(),
 				table.xpDu(niveau), table.xpDuSuivant(niveau),
+				rituelsDuJour(fiche, table, maintenant),
 				Map.copyOf(barres),
 				humeur.libelle(), humeur.bouille(),
 				fiche.mode().cleDeTraduction(),

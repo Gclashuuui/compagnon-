@@ -978,6 +978,13 @@ public class FicheCompagnon {
 		return Math.max(0, reglage.plafondParJour() - this.xpDuJour.getOrDefault(source, 0));
 	}
 
+	/** A-t-on deja partage cette sorte d'attention pendant la journee reelle ? */
+	public boolean aGagneAujourdhui(SourceXp source, Progression table, long maintenant) {
+		majJour(maintenant);
+		return table.sources().containsKey(source)
+				&& this.xpDuJour.getOrDefault(source, 0) > 0;
+	}
+
 	/** Remet les compteurs du jour a zero quand on change de jour reel. */
 	private void majJour(long maintenant) {
 		long jourCourant = maintenant / MILLIS_PAR_JOUR;

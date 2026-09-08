@@ -10,6 +10,7 @@ import fr.lhdp.compagnon.fiche.Barre;
 import fr.lhdp.compagnon.fiche.FicheCompagnon;
 import fr.lhdp.compagnon.fiche.Fiches;
 import fr.lhdp.compagnon.progression.Niveaux;
+import fr.lhdp.compagnon.progression.SourceXp;
 import fr.lhdp.compagnon.fiche.Humeur;
 import fr.lhdp.compagnon.fiche.Mode;
 import net.minecraft.core.BlockPos;
@@ -270,6 +271,12 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * absurde. On la garde sous la main, elle ne change pas plus vite que ca.
 	 */
 	private float energieConnue = Barre.MAXIMUM;
+
+	/** Sa complicite, relue au meme rythme lent que son humeur. */
+	private float compliciteConnue = Barre.MAXIMUM;
+
+	/** Les attentions du jour deja vues ; -1 evite de feter un chargement. */
+	private int rituelsConnus = -1;
 
 	/**
 	 * Les gens qu'il connait assez pour aller vers eux de lui-meme.
@@ -814,6 +821,11 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		return this.energieConnue;
 	}
 
+	/** Sa proximite avec son maitre, de zero a cent. */
+	public float complicite() {
+		return this.compliciteConnue;
+	}
+
 	/**
 	 * Relit l'humeur dans la fiche, de temps en temps.
 	 *
@@ -834,11 +846,39 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		float part = rangs == 0 ? 1.0F : (float) fiche.humeur().ordinal() / rangs;
 		this.entrain = 0.25F + 0.75F * part;
 		this.energieConnue = fiche.barre(Barre.ENERGIE);
+		this.compliciteConnue = fiche.barre(Barre.COMPLICITE);
+		celebrerLesRituels(fiche);
 
 		// Et on l'envoie au client, qui n'a aucun autre moyen de la connaitre.
 		// Sur le meme rythme que l'entrain : l'humeur ne change pas plus vite.
 		if (this.entityData.get(HUMEUR) != fiche.humeur().ordinal()) {
 			this.entityData.set(HUMEUR, fiche.humeur().ordinal());
+		}
+	}
+
+	/** Fete une seule fois le moment ou les trois attentions du jour se rejoignent. */
+	private void celebrerLesRituels(FicheCompagnon fiche) {
+		int faits = 0;
+		long maintenant = System.currentTimeMillis();
+		for (SourceXp source : SourceXp.values()) {
+			if (fiche.aGagneAujourdhui(source, Niveaux.progression(), maintenant)) {
+				faits |= 1 << source.ordinal();
+			}
+		}
+		int tous = (1 << SourceXp.values().length) - 1;
+		boolean vientDEtreComplet = this.rituelsConnus >= 0
+				&& this.rituelsConnus != tous && faits == tous;
+		this.rituelsConnus = faits;
+		if (!vientDEtreComplet) {
+			return;
+		}
+
+		jouerActionPendant("@joie", DUREE_REACTION);
+		Etincelles.progres(this, 10);
+		Sons.jouer(this, Sons.CONTENT, 0.9F);
+		if (getOwner() instanceof ServerPlayer joueur) {
+			joueur.displayClientMessage(Component.translatable(
+					"rituel.compagnon.complet", fiche.nom()), true);
 		}
 	}
 

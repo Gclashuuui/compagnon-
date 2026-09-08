@@ -54,6 +54,7 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 		tampon.writeVarInt(d.xp());
 		tampon.writeVarInt(d.xpDuNiveau());
 		tampon.writeInt(d.xpDuSuivant());
+		tampon.writeByte(d.rituelsDuJour());
 
 		for (Barre barre : Barre.values()) {
 			tampon.writeFloat(d.barres().getOrDefault(barre, 0.0F));
@@ -137,6 +138,7 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 		int xp = tampon.readVarInt();
 		int xpDuNiveau = tampon.readVarInt();
 		int xpDuSuivant = tampon.readInt();
+		int rituelsDuJour = tampon.readUnsignedByte();
 
 		Map<Barre, Float> barres = new EnumMap<>(Barre.class);
 		for (Barre barre : Barre.values()) {
@@ -201,7 +203,7 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 
 		return new PaquetDonneesLivre(combien, index, new DonneesLivre(
 				nom, espece, variante,
-				niveau, niveauMax, xp, xpDuNiveau, xpDuSuivant,
+				niveau, niveauMax, xp, xpDuNiveau, xpDuSuivant, rituelsDuJour,
 				Map.copyOf(barres),
 				humeurLibelle, humeurBouille, mode,
 				boboNom, boboDescription, boboRemede,
