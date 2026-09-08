@@ -1,0 +1,8 @@
+{
+	"nom": "Cristal de glace",
+	"effets": {
+		"sante": 25,
+		"energie": 20
+	},
+	"modele": 18
+}

@@ -1,0 +1,114 @@
+{
+	"titre": "Dragonnet",
+	"geometrie": "compagnon:geo/dragonnet.geo.json",
+	"animations": "compagnon:animations/dragonnet.animation.json",
+	"taille": {
+		"largeur": 0.9,
+		"hauteur": 1
+	},
+	"vole": true,
+	"nom_a_la_voix": "dragon",
+	"variante_par_defaut": "noir",
+	"variantes": {
+		"noir": "compagnon:textures/entity/dragonnet_noir.png",
+		"blanc": "compagnon:textures/entity/dragonnet_blanc.png"
+	},
+	"_comment_sons": [
+		"Sa voix, empruntee aux sons du jeu.",
+		"",
+		"Aucun fichier son n'est livre avec le mod : le jeu en a des centaines, dont",
+		"des dizaines de cris d'animaux. Une mouette qui emprunte la voix du",
+		"perroquet sonne tres bien, et le mod ne grossit pas d'un octet.",
+		"",
+		"La hauteur du son depend en plus de CHAQUE compagnon : deux betes de la",
+		"meme espece ne crient pas pareil, et on reconnait la sienne a l'oreille.",
+		"",
+		"Les roles :",
+		"  ambiance : de temps en temps, sans raison. Sa presence sonore.",
+		"  content  : une caresse, un repas, une reussite.",
+		"  mal      : il a mal, ou il va tres mal.",
+		"  envol    : il quitte le sol.",
+		"  alerte   : il a repere quelque chose et te le signale.",
+		"",
+		"Une cle absente = silence pour ce role. Une espece sans cette section reste",
+		"entierement muette, exactement comme avant."
+	],
+	"sons": {
+		"ambiance": "minecraft:entity.fox.ambient",
+		"content": "minecraft:entity.fox.eat",
+		"mal": "minecraft:entity.fox.hurt",
+		"envol": "minecraft:entity.phantom.flap",
+		"alerte": "minecraft:entity.wolf.growl"
+	},
+	"locomotion": {
+		"immobile": "animation.dragonnet.idle",
+		"marche": "animation.dragonnet.walk",
+		"course": "animation.dragonnet.walk_fast",
+		"vol": "animation.dragonnet.fly",
+		"assis": "",
+		"couche": "animation.dragonnet.lie_down"
+	},
+	"reactions": {
+		"caresse": "",
+		"joyeux": "",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "",
+		"salut": "",
+		"reconnait": "",
+		"ramasse": ""
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0,
+				0
+			],
+			"largeur": 0.85,
+			"hauteur": 1
+		},
+		{
+			"nom": "cou",
+			"decalage": [
+				0,
+				0.25,
+				0.45
+			],
+			"largeur": 0.45,
+			"hauteur": 0.6
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				0.2,
+				0.95
+			],
+			"largeur": 0.65,
+			"hauteur": 0.6
+		},
+		{
+			"nom": "queue",
+			"decalage": [
+				0,
+				0.05,
+				-0.7
+			],
+			"largeur": 0.45,
+			"hauteur": 0.4
+		},
+		{
+			"nom": "queue_bout",
+			"decalage": [
+				0,
+				0.05,
+				-1.25
+			],
+			"largeur": 0.3,
+			"hauteur": 0.3
+		}
+	]
+}

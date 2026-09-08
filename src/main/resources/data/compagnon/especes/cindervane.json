@@ -1,0 +1,77 @@
+{
+	"_comment": [
+		"Un bebe dragon aile, encore incapable de voler.",
+		"",
+		"C'est le BEBE de l'espece. L'adulte fait entre seize et soixante blocs",
+		"d'envergure : c'est un boss, pas un compagnon. Le bebe a son propre",
+		"modele, ses propres animations et ses propres textures.",
+		"",
+		"Il ne vole pas : le bebe n'a aucune animation de vol.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Bébé Cindervane",
+	"geometrie": "compagnon:geo/baby_cindervane.geo.json",
+	"animations": "compagnon:animations/baby_cindervane.animation.json",
+	"taille": {
+		"largeur": 0.8,
+		"hauteur": 0.6
+	},
+	"vole": false,
+	"nom_a_la_voix": "cindervane",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/baby_cindervane.png",
+		"femelle": "compagnon:textures/entity/baby_cindervane_female.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, en attendant mieux : les vrais fichiers son",
+		"de cette bete existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes — deux especes qui",
+		"parlent pareil sont deux especes qu'on confond."
+	],
+	"sons": {
+		"ambiance": "entity.blaze.ambient",
+		"content": "entity.blaze.burn",
+		"mal": "entity.blaze.hurt",
+		"alerte": "entity.blaze.shoot"
+	},
+	"_comment_roles": [
+		"Les roles vides sont des roles qu'on n'a pas encore remplis : le modele",
+		"n'a pas d'animation honnete pour eux. Un role vide ne joue rien, ce qui",
+		"vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.cindervane.idle",
+		"marche": "animation.cindervane.walk",
+		"course": "animation.cindervane.run",
+		"vol": "",
+		"assis": "animation.cindervane.sit",
+		"couche": "animation.cindervane.sleep"
+	},
+	"reactions": {
+		"caresse": "",
+		"joyeux": "animation.cindervane.dance",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.cindervane.dance",
+		"salut": "",
+		"reconnait": "",
+		"ramasse": "animation.cindervane.eat",
+		"reveil": "animation.cindervane.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.3,
+				0
+			],
+			"largeur": 0.8,
+			"hauteur": 0.48
+		}
+	]
+}

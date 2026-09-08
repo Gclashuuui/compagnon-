@@ -1,0 +1,9 @@
+{
+	"nom": "Larmes de phénix",
+	"effets": {
+		"sante": 100,
+		"energie": 25,
+		"complicite": 10
+	},
+	"modele": 21
+}

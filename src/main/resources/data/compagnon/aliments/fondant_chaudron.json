@@ -1,0 +1,8 @@
+{
+	"nom": "Fondant du Chaudron",
+	"effets": {
+		"faim": 25,
+		"complicite": 14
+	},
+	"modele": 34
+}

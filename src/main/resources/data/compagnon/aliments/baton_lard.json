@@ -1,0 +1,8 @@
+{
+	"nom": "Tranche de lard",
+	"effets": {
+		"faim": 20,
+		"energie": 25
+	},
+	"modele": 15
+}

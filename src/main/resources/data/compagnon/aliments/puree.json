@@ -1,0 +1,8 @@
+{
+	"nom": "Purée nappée de sauce",
+	"effets": {
+		"faim": 28,
+		"energie": 15
+	},
+	"modele": 5
+}

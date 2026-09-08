@@ -1,0 +1,8 @@
+{
+	"nom": "Serpent noir",
+	"effets": {
+		"faim": 35,
+		"energie": 15
+	},
+	"modele": 19
+}

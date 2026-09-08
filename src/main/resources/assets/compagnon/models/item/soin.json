@@ -1,0 +1,188 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+		"layer0": "compagnon:item/soin"
+	},
+	"overrides": [
+		{
+			"predicate": {
+				"custom_model_data": 1
+			},
+			"model": "compagnon:item/bandage_rouleau"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 2
+			},
+			"model": "compagnon:item/compresses"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 3
+			},
+			"model": "compagnon:item/pansement"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 4
+			},
+			"model": "compagnon:item/attelle"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 5
+			},
+			"model": "compagnon:item/echarpe"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 6
+			},
+			"model": "compagnon:item/pince_epine"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 7
+			},
+			"model": "compagnon:item/antiseptique"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 8
+			},
+			"model": "compagnon:item/fil_suture"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 9
+			},
+			"model": "compagnon:item/ciseaux"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 10
+			},
+			"model": "compagnon:item/trousse_secours"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 11
+			},
+			"model": "compagnon:item/essence_dictame"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 12
+			},
+			"model": "compagnon:item/poudre_bicorne"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 13
+			},
+			"model": "compagnon:item/sirop_toux"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 14
+			},
+			"model": "compagnon:item/onguent"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 15
+			},
+			"model": "compagnon:item/antivenin"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 16
+			},
+			"model": "compagnon:item/gouttes_yeux"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 17
+			},
+			"model": "compagnon:item/poudre_antiparasite"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 18
+			},
+			"model": "compagnon:item/pastilles_fievre"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 19
+			},
+			"model": "compagnon:item/baume_chauffant"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 20
+			},
+			"model": "compagnon:item/panacee"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 21
+			},
+			"model": "compagnon:item/larmes_phenix"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 22
+			},
+			"model": "compagnon:item/bezoard"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 23
+			},
+			"model": "compagnon:item/cataplasme"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 24
+			},
+			"model": "compagnon:item/ecaille_dragon"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 25
+			},
+			"model": "compagnon:item/brule_encens"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 26
+			},
+			"model": "compagnon:item/brosse"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 27
+			},
+			"model": "compagnon:item/savon_herbes"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 28
+			},
+			"model": "compagnon:item/huile_lustrante"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 29
+			},
+			"model": "compagnon:item/clochette"
+		},
+		{
+			"predicate": {
+				"custom_model_data": 30
+			},
+			"model": "compagnon:item/cristal_runique"
+		}
+	]
+}

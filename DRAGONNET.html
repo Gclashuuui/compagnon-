@@ -1,0 +1,767 @@
+<title>Cahier du dragonnet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+	/* La palette vient de la texture du dragon : ardoise, bleu de nuit, teal.
+	   L'accent est le plasma — la seule chose froide et vive sur une bete sombre. */
+	:root {
+		--fond:       #EBEEF2;
+		--creux:      #DFE4EA;
+		--carte:      #F7F9FB;
+		--encre:      #131922;
+		--encre-2:    #46505E;
+		--encre-3:    #78838F;
+		--trait:      #C7CFD8;
+		--trait-fort: #93A0AD;
+
+		--ardoise:    #283848;
+		--nuit:       #182828;
+		--plasma:     #1195A8;
+		--plasma-pale:#D3EEF2;
+		--manque:     #A6321F;
+		--manque-fond:#F7E2DE;
+		--ok:         #2C6B52;
+
+		--rail: 96px;
+		--lecture: 70ch;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) {
+			--fond:       #10151C;
+			--creux:      #0A0E13;
+			--carte:      #182028;
+			--encre:      #E7ECF2;
+			--encre-2:    #A6B2C0;
+			--encre-3:    #6F7C8A;
+			--trait:      #26303C;
+			--trait-fort: #3A4655;
+
+			--ardoise:    #7E97B0;
+			--nuit:       #8AA8A8;
+			--plasma:     #4FD1E0;
+			--plasma-pale:#123138;
+			--manque:     #F0836C;
+			--manque-fond:#2E1714;
+			--ok:         #6FC79B;
+		}
+	}
+
+	:root[data-theme="dark"] {
+		--fond:       #10151C;
+		--creux:      #0A0E13;
+		--carte:      #182028;
+		--encre:      #E7ECF2;
+		--encre-2:    #A6B2C0;
+		--encre-3:    #6F7C8A;
+		--trait:      #26303C;
+		--trait-fort: #3A4655;
+
+		--ardoise:    #7E97B0;
+		--nuit:       #8AA8A8;
+		--plasma:     #4FD1E0;
+		--plasma-pale:#123138;
+		--manque:     #F0836C;
+		--manque-fond:#2E1714;
+		--ok:         #6FC79B;
+	}
+
+	* { box-sizing: border-box; }
+
+	body {
+		background: var(--fond);
+		color: var(--encre);
+		font-family: "Newsreader", Georgia, serif;
+		font-size: 17px;
+		line-height: 1.6;
+		margin: 0;
+		padding: 0 20px 120px;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.page { max-width: 960px; margin: 0 auto; }
+
+	h1, h2, h3, .mono, .os, .rail, th, .code { font-family: "Bricolage Grotesque", sans-serif; }
+	.mono, .os, .rail b, .code, .num { font-family: "DM Mono", ui-monospace, Menlo, monospace; }
+
+	/* ---------- En-tete ---------- */
+	header { padding: 84px 0 36px; border-bottom: 3px solid var(--encre); }
+
+	.sur-titre {
+		font-family: "DM Mono", monospace;
+		font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+		color: var(--plasma); margin: 0 0 20px;
+	}
+
+	h1 {
+		font-size: clamp(44px, 8.5vw, 84px); font-weight: 800;
+		line-height: .94; letter-spacing: -.035em; margin: 0 0 22px; text-wrap: balance;
+	}
+
+	.chapeau {
+		font-size: 21px; line-height: 1.5; color: var(--encre-2);
+		max-width: 60ch; margin: 0; font-weight: 300;
+	}
+
+	/* ---------- Chiffres ---------- */
+	.constat {
+		display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+		gap: 1px; background: var(--trait); border: 1px solid var(--trait); margin: 40px 0;
+	}
+	.chiffre { background: var(--carte); padding: 20px 18px; }
+	.chiffre .num { display: block; font-size: 38px; line-height: 1; letter-spacing: -.04em; margin-bottom: 8px; }
+	.chiffre.mal .num { color: var(--manque); }
+	.chiffre p { margin: 0; font-size: 14.5px; line-height: 1.45; color: var(--encre-2); }
+
+	/* ---------- Sections ---------- */
+	section { margin: 72px 0 0; }
+	h2 {
+		font-size: clamp(27px, 4.2vw, 38px); font-weight: 800;
+		letter-spacing: -.028em; line-height: 1.05; margin: 0 0 10px; text-wrap: balance;
+	}
+	h2 .index {
+		font-family: "DM Mono", monospace; font-size: 13px; font-weight: 400;
+		letter-spacing: .08em; color: var(--plasma); display: block; margin-bottom: 12px;
+	}
+	h3 { font-size: 19px; font-weight: 600; margin: 40px 0 6px; letter-spacing: -.01em; }
+	p { max-width: var(--lecture); }
+	.intro { color: var(--encre-2); max-width: var(--lecture); }
+
+	/* ---------- Os ---------- */
+	.os, .code {
+		font-size: 12px; padding: 2px 7px; background: var(--creux);
+		border: 1px solid var(--trait); color: var(--encre-2); white-space: nowrap;
+		font-family: "DM Mono", monospace;
+	}
+	.os.neuf { background: var(--manque-fond); border-color: var(--manque); color: var(--manque); font-weight: 500; }
+	.os.neuf::before { content: "+ "; }
+	.os-liste { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 5px; }
+
+	/* ---------- Fiches d'animation ---------- */
+	.fiche {
+		display: grid; grid-template-columns: var(--rail) 1fr; gap: 20px;
+		padding: 18px 0; border-top: 1px solid var(--trait); align-items: start;
+	}
+	.fiche:last-child { border-bottom: 1px solid var(--trait); }
+
+	.rail { font-family: "DM Mono", monospace; font-size: 11.5px; color: var(--encre-3); line-height: 1.55; padding-top: 3px; }
+	.rail b { display: block; color: var(--plasma); font-weight: 500; font-size: 12px; word-break: break-all; }
+	.rail i { font-style: normal; display: block; }
+
+	.corps > :first-child { margin-top: 0; }
+	.corps > :last-child { margin-bottom: 0; }
+	.nom { font-family: "Bricolage Grotesque", sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -.012em; margin: 0 0 6px; }
+	.fiche p { margin: 0 0 8px; font-size: 16px; }
+
+	.detail { margin: 8px 0 0; padding: 0; list-style: none; font-size: 15px; }
+	.detail li { padding: 3px 0 3px 15px; position: relative; color: var(--encre-2); }
+	.detail li::before { content: "—"; position: absolute; left: 0; color: var(--trait-fort); }
+	.detail b { color: var(--encre); font-weight: 600; }
+
+	.pourquoi {
+		font-size: 15px; color: var(--encre-2); border-left: 2px solid var(--plasma);
+		padding-left: 13px; margin: 10px 0 0; font-style: italic;
+	}
+	.pourquoi b { font-style: normal; font-weight: 600; color: var(--encre); }
+
+	/* ---------- Tableaux ---------- */
+	.defile { overflow-x: auto; margin: 22px 0; }
+	table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 540px; }
+	th {
+		text-align: left; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+		color: var(--encre-3); font-weight: 600; padding: 0 16px 9px 0; border-bottom: 1.5px solid var(--trait-fort);
+	}
+	td { padding: 10px 16px 10px 0; border-bottom: 1px solid var(--trait); vertical-align: top; }
+	td:first-child { white-space: nowrap; }
+
+	/* ---------- Encadres ---------- */
+	.note { background: var(--carte); border: 1px solid var(--trait); border-left: 3px solid var(--encre); padding: 20px 22px; margin: 28px 0; }
+	.note.rouge { border-left-color: var(--manque); }
+	.note.plasma { border-left-color: var(--plasma); }
+	.note h3 { margin: 0 0 8px; font-size: 17px; }
+	.note p { margin: 0 0 10px; font-size: 16px; }
+	.note p:last-child { margin-bottom: 0; }
+
+	.regle {
+		font-family: "Bricolage Grotesque", sans-serif; font-size: clamp(20px, 3.2vw, 28px);
+		font-weight: 600; line-height: 1.28; letter-spacing: -.02em; max-width: 32ch;
+		margin: 32px 0; text-wrap: balance;
+	}
+
+	ol.pas, ul.pas { max-width: var(--lecture); padding-left: 22px; }
+	ol.pas li, ul.pas li { margin-bottom: 12px; }
+
+	pre {
+		background: var(--creux); border: 1px solid var(--trait); border-left: 3px solid var(--plasma);
+		padding: 16px 18px; overflow-x: auto; font-family: "DM Mono", monospace;
+		font-size: 13px; line-height: 1.6; margin: 20px 0; color: var(--encre-2);
+	}
+
+	footer { margin-top: 88px; padding-top: 24px; border-top: 3px solid var(--encre); font-size: 14.5px; color: var(--encre-3); }
+
+	@media (max-width: 640px) {
+		body { font-size: 16px; padding: 0 16px 80px; }
+		:root { --rail: 76px; }
+		.fiche { gap: 12px; }
+		header { padding-top: 52px; }
+	}
+</style>
+
+<div class="page">
+
+<header>
+	<p class="sur-titre">Compagnon · cahier des charges d'animation · dragonnet</p>
+	<h1>Cahier du dragonnet</h1>
+	<p class="chapeau">Tout ce qu'il reste à animer sur le modèle final, os par os, avec ce que le mod attend exactement et ce qu'il faut ajouter pour le plasma.</p>
+</header>
+
+<section>
+	<h2><span class="index">00 — L'état des lieux</span>Le plus beau modèle du mod est celui qui fait le moins</h2>
+
+	<p class="intro">Chiffres relevés dans le <span class="mono">.bbmodel</span> et dans la fiche d'espèce du mod, pas d'estimation.</p>
+
+	<div class="constat">
+		<div class="chiffre"><span class="num">91</span><p>os articulés, 97 cubes. Texture 512×512 en espace UV 128.</p></div>
+		<div class="chiffre mal"><span class="num">7</span><p>animations livrées. Marcher, courir, voler, dormir, s'allonger, respirer, bâiller.</p></div>
+		<div class="chiffre mal"><span class="num">0</span><p>réaction. Les <b>neuf</b> rôles que le mod appelle sont vides.</p></div>
+		<div class="chiffre mal"><span class="num">0</span><p>animation assise. Le mod a un mode « assis » qu'il ne peut pas jouer.</p></div>
+	</div>
+
+	<h3>Le mod l'appelle déjà, et il ne répond pas</h3>
+
+	<p>Ce n'est pas une liste de souhaits : ce sont des <b>cases vides dans un fichier</b>. Le mod déclenche déjà ces rôles — quand tu le caresses, quand tu ouvres sa roue, quand tu reviens après une semaine — et il ne se passe rien, uniquement parce que la case est vide.</p>
+
+	<div class="defile">
+		<table>
+			<thead><tr><th>Case vide</th><th>Le mod l'appelle quand…</th></tr></thead>
+			<tbody>
+				<tr><td class="mono">locomotion.assis</td><td>tu lui dis « assis » au clic droit</td></tr>
+				<tr><td class="mono">reactions.caresse</td><td>tu le caresses</td></tr>
+				<tr><td class="mono">reactions.ecoute</td><td>tu ouvres sa roue, tu lui parles, il te prévient d'un danger</td></tr>
+				<tr><td class="mono">reactions.joie</td><td>il te retrouve après une longue absence, il joue sous la pluie</td></tr>
+				<tr><td class="mono">reactions.joyeux</td><td>il se colle à toi quand tu t'arrêtes</td></tr>
+				<tr><td class="mono">reactions.triste</td><td>il déteste la pluie, il va mal</td></tr>
+				<tr><td class="mono">reactions.salut</td><td>il salue un compagnon qu'il connaît, il salue le jour</td></tr>
+				<tr><td class="mono">reactions.tourne</td><td>il tourne sur lui-même quand tu t'arrêtes</td></tr>
+				<tr><td class="mono">reactions.reconnait</td><td>il repasse à un endroit où vous avez vécu quelque chose</td></tr>
+				<tr><td class="mono">reactions.ramasse</td><td>il ramasse un objet tombé</td></tr>
+				<tr><td class="mono">reactions.reveil</td><td>tu te lèves du lit, il se réveille avec toi</td></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<p class="regle">Onze animations courtes, et le dragonnet passe de décor à personnage. Avant toute chose spéciale.</p>
+</section>
+
+<section>
+	<h2><span class="index">01 — Les règles</span>Ce qui n'est pas négociable</h2>
+
+	<ol class="pas">
+		<li><b>Un seul fichier.</b> Tout va dans <span class="mono">dragonnet.animation.json</span>, nommé <span class="mono">animation.dragonnet.&lt;nom&gt;</span>. Le mod ne lit rien d'autre.</li>
+
+		<li><b>La durée est obligatoire</b> sur tout ce qui n'est pas une boucle. Le mod <b>lit <span class="mono">animation_length</span> dans le fichier</b> pour savoir combien de temps immobiliser la bête. Une animation sans durée est jouée 2,5 s par défaut : trop court pour un rugissement, trop long pour un clin d'œil.</li>
+
+		<li><b>Trois familles.</b> Un état qui dure → <span class="mono">"loop": true</span>. Un geste qui se joue une fois → pas de loop. Une pose qui doit tenir → <span class="mono">"loop": "hold_on_last_frame"</span>.</li>
+
+		<li><b>Les pattes ne glissent jamais.</b> C'est la règle qui sépare une animation d'amateur d'une vraie. Un pied posé garde <b>exactement</b> la même position monde tant qu'il est au sol : on pose une clé au moment du contact, une clé identique au moment du décollage, et on ne touche à rien entre les deux. Sur une marche à 2,7 s, ça veut dire quatre appuis dont chacun tient une demi-seconde sans bouger d'un pixel.</li>
+
+		<li><b>Rien n'est jamais complètement immobile.</b> Même dans <span class="mono">idle</span>, trois couches se superposent : la <b>respiration</b> (le torse, 4 à 6 s par cycle), la <b>dérive</b> (le cou et la queue, un cycle plus long et non multiple du premier, pour que ça ne se répète jamais à l'identique) et les <b>micro-gestes</b> (une oreille qui pivote, une paupière, un orteil qui se serre). Trois périodes premières entre elles = une boucle qu'on ne reconnaît pas.</li>
+
+		<li><b>Les os <span class="mono">_act</span> sont réservés au code.</b> <span class="mono">neck_act</span>, <span class="mono">neck2_act</span>, <span class="mono">head_act</span>, <span class="mono">jaw_act</span>, <span class="mono">tail_act</span> ont le même pivot que leur jumeau. L'animateur anime <b>le jumeau sans suffixe</b> et laisse les <span class="mono">_act</span> à zéro. C'est ce qui permettra au code de faire tourner la tête vers le joueur <b>par-dessus</b> l'animation, sans que les deux se battent.</li>
+
+		<li><b>On ne déplace pas <span class="mono">root</span> ni <span class="mono">worldbody</span>.</b> C'est le jeu qui déplace la bête dans le monde. Une translation là-dessus la fait patiner.</li>
+
+		<li><b>Les sons et les particules se posent dans l'animation.</b> Le mod écoute les images-clés de son et de particule de Blockbench. Un son écrit <span class="mono">@content</span>, <span class="mono">@ambiance</span>, <span class="mono">@alerte</span>, <span class="mono">@mal</span> ou <span class="mono">@envol</span> prend la voix de l'espèce ; un son écrit <span class="mono">minecraft:block.sand.step</span> joue exactement celui-là. Une particule prend un identifiant du jeu (<span class="mono">minecraft:cloud</span>) et un mot de position : <span class="mono">pattes</span>, <span class="mono">tete</span>, ou rien pour le milieu du corps. <b>Ça ne coûte rien sur le réseau</b> — chaque client joue déjà l'animation.</li>
+	</ol>
+
+	<div class="note rouge">
+		<h3>Un point à vérifier côté code, pas côté animateur</h3>
+		<p>Aujourd'hui, <b>rien ne fait tourner la tête du dragonnet vers le joueur</b>. Le mod demande bien « regarde-le », mais le modèle ne suit pas : c'est tout le corps qui pivote lentement. Il manque une dizaine de lignes dans le rendu pour appliquer l'orientation de la tête à l'os <span class="mono">head_act</span>. À faire avant les animations de réaction, sinon « il te regarde » ne se verra jamais.</p>
+	</div>
+</section>
+
+<section>
+	<h2><span class="index">02 — La carte des os</span>Ce que ce corps sait faire</h2>
+
+	<p class="intro">91 os, et chacun ouvre quelque chose. Ce tableau est la boîte à outils : quand une idée d'animation manque de vie, la réponse est presque toujours dans une ligne qu'on n'a pas encore utilisée.</p>
+
+	<div class="defile">
+		<table>
+			<thead><tr><th>Groupe</th><th>Os</th><th>Ce que ça permet</th></tr></thead>
+			<tbody>
+				<tr><td><b>Les yeux</b></td><td class="mono">eye_l/r, pupil_l/r</td><td>Regarder de côté <b>sans tourner la tête</b>. Loucher. Dilater la pupille dans le noir, la réduire à un trait au soleil ou dans la colère.</td></tr>
+				<tr><td><b>Les paupières</b></td><td class="mono">eyelid_up/low_l/r</td><td>Cligner d'un œil avant l'autre. Le demi-sommeil. Plisser les yeux. Fermer par le bas comme un reptile.</td></tr>
+				<tr><td><b>Les sourcils</b></td><td class="mono">brow_l, brow_r</td><td><b>L'expression.</b> Aucune autre bête du mod n'a ça. Un sourcil levé = un avis.</td></tr>
+				<tr><td><b>La gueule</b></td><td class="mono">jaw, tongue, teeth_upper, teeth_lower</td><td>Bâiller, haleter, tirer la langue, se lécher les babines, montrer les dents sans ouvrir.</td></tr>
+				<tr><td><b>Les oreilles</b></td><td class="mono">ear_l/r, ear_l/r_tip</td><td>S'orienter vers un bruit <b>avant</b> la tête. Se replier en arrière (peur, bâillement). La pointe qui frémit toute seule.</td></tr>
+				<tr><td><b>Les cornes</b></td><td class="mono">nub_l, nub_r</td><td>Presque rien à animer, mais elles suivent la tête et donnent du poids au mouvement.</td></tr>
+				<tr><td><b>Le cou</b></td><td class="mono">neck, neck2 (+ head)</td><td>Trois segments : un « S » de reptile, un huit lent, une avance de la tête sans le corps.</td></tr>
+				<tr><td><b>La colonne</b></td><td class="mono">spine_ridge, spine_ridge_low</td><td>La crête dorsale. Se hérisse (menace, excitation), se couche (soumission, sommeil). 7 cubes en tout : une vague peut la parcourir.</td></tr>
+				<tr><td><b>Le torse</b></td><td class="mono">torso_up, torso_low</td><td>La respiration. Le dos creusé ou rond. La torsion quand il se retourne.</td></tr>
+				<tr><td><b>La queue</b></td><td class="mono">tail1 → tail6, tail_fin_l/r</td><td>Six segments. Un frisson peut la parcourir <b>segment par segment</b>. Elle balaie, elle s'enroule, elle se raidit. C'est elle qui dit l'humeur avant la tête.</td></tr>
+				<tr><td><b>Les ailes</b></td><td class="mono">wing_*_fore, _f3, _f2, _tip + _bar + _mem</td><td>Quatre articulations par aile, chacune avec sa membrane séparée. On peut plier le doigt 2 sans plier le doigt 3, et faire vibrer une membrane seule.</td></tr>
+				<tr><td><b>Les pattes</b></td><td class="mono">leg_*, *_shin, foot_*, toe0/1/2_*</td><td>Trois orteils par patte, sur quatre pattes. Serrer les griffes, s'ancrer avant un effort, gratter le sol, se lécher une patte.</td></tr>
+			</tbody>
+		</table>
+	</div>
+</section>
+
+<section>
+	<h2><span class="index">03 — Les animations de base</span>La vie de tous les jours</h2>
+
+	<p class="intro">Les quatre premières existent déjà et sont à <b>reprendre</b> avec les règles ci-dessus, pas à refaire de zéro. Les autres sont neuves.</p>
+
+	<div class="fiche">
+		<div class="rail"><b>idle</b><i>6 s · boucle</i><i>existe</i></div>
+		<div class="corps">
+			<p class="nom">Il respire</p>
+			<ul class="detail">
+				<li><b>Respiration</b> : <span class="mono">torso_up</span> et <span class="mono">torso_low</span> montent et descendent de 1 à 2°, cycle de 5 s. Les narines suivent.</li>
+				<li><b>Dérive</b> : <span class="mono">neck</span> et <span class="mono">neck2</span> sur un cycle de 7 s, jamais synchrone avec la respiration. <span class="mono">tail1→6</span> sur 9 s, amplitude croissante vers la pointe.</li>
+				<li><b>Micro</b> : une oreille pivote de 15° toutes les 2 à 3 s, jamais les deux ensemble. Un clignement <b>asymétrique</b> (l'œil gauche se ferme une image avant le droit). Un orteil se serre puis se relâche.</li>
+				<li><b>Poids</b> : le corps se pose alternativement sur l'avant-main et l'arrière-main, très légèrement — 0,3 unité de translation sur <span class="mono">body</span>, cycle de 11 s.</li>
+			</ul>
+			<p class="pourquoi"><b>Le test :</b> laisse tourner 40 secondes. Si tu reconnais le moment où ça recommence, les périodes sont trop proches.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>walk</b><i>2,7 s · boucle</i><i>existe</i></div>
+		<div class="corps">
+			<p class="nom">Il marche</p>
+			<ul class="detail">
+				<li><b>L'allure</b> : un quadrupède marche en diagonale — avant-gauche et arrière-droit ensemble, décalés d'une demi-période des deux autres. Jamais les deux pattes d'un même côté en même temps (c'est l'amble, et ça donne un chameau).</li>
+				<li><b>Contact</b> : à chaque pose de pied, une clé ; au décollage, la <b>même</b> valeur. Zéro glissement entre les deux.</li>
+				<li><b>Les orteils</b> : ils s'écartent à la pose et se referment au décollage. C'est le détail qui fait qu'une patte a un poids.</li>
+				<li><b>Le corps</b> : la croupe monte et descend d'une demi-période par rapport aux épaules. Le cou compense le tangage — la tête reste à peu près à la même hauteur, comme chez un oiseau qui marche.</li>
+				<li><b>La queue</b> : un balancier lent, en retard d'un quart de cycle sur le corps, chaque segment en retard sur le précédent.</li>
+				<li><b>Son</b> : une image-clé de son <span class="mono">minecraft:entity.polar_bear.step</span> à chaque contact de patte avant.</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>walk_fast</b><i>1,86 s · boucle</i><i>existe</i></div>
+		<div class="corps">
+			<p class="nom">Il trotte</p>
+			<p>Même allure diagonale, plus ample : les jarrets se replient davantage, le dos ondule, la queue monte à l'horizontale au lieu de traîner. <b>Ce n'est pas le walk accéléré</b> — les appuis sont plus courts et le corps a une phase de suspension très brève.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>run</b><i>~1,1 s · boucle</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il galope</p>
+			<p>La troisième allure, celle qui manque. Un galop, pas un trot rapide : les deux antérieurs ensemble, puis les deux postérieurs, avec un <b>temps de suspension</b> où les quatre pattes quittent le sol. Le dos se creuse et se rond alternativement. Les ailes s'entrouvrent pour l'équilibre — sans battre.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>sit</b><i>~5 s · boucle</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il est assis</p>
+			<p><b>La case la plus urgente</b> : le mod a un mode « assis » et le dragonnet ne sait pas s'asseoir.</p>
+			<ul class="detail">
+				<li>Arrière-train posé, jarrets repliés sur le côté. Antérieurs tendus, orteils écartés au sol.</li>
+				<li><span class="mono">tail_act</span> enroulée autour des pattes avant, la pointe qui bat lentement.</li>
+				<li>Respiration plus ample qu'en <span class="mono">idle</span> — au repos, on souffle plus fort.</li>
+				<li>La tête tourne de temps en temps pour regarder autour, oreilles indépendantes.</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>sit_down</b><br><b>stand_up</b><i>1,2 s · 1 s</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il s'assoit, il se relève</p>
+			<p>Les transitions. <b>Sans elles, il se téléporte d'une pose à l'autre</b>, et c'est le défaut qu'on remarque le plus vite. En s'asseyant : il recule d'un demi-pas, plie les postérieurs, laisse tomber la croupe, puis ramène la queue. En se relevant : il pousse sur les antérieurs, la croupe monte en dernier, et il s'ébroue une fois.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>lie_down</b><i>7 s · boucle</i><i>existe</i></div>
+		<div class="corps">
+			<p class="nom">Il est couché</p>
+			<p>Couché sur le ventre, tête haute ou posée sur les pattes avant selon le moment. À revoir surtout pour la queue : elle doit être <b>enroulée</b>, pas tendue derrière.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>sleep</b><i>8 s · boucle</i><i>existe</i></div>
+		<div class="corps">
+			<p class="nom">Il dort</p>
+			<p>Respiration très lente et très ample (7 s par cycle). Paupières fermées <b>par le bas</b>. Une oreille qui frémit de temps en temps — un animal qui dort écoute encore. Et une fois par boucle, un soubresaut minuscule : il rêve.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>gotosleep</b><br><b>wakeup</b><i>1,5 s · 2,5 s</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il s'endort, il se réveille</p>
+			<p><span class="mono">wakeup</span> sert au rôle <b><span class="mono">reactions.reveil</span></b> : le mod le joue quand tu sors du lit le matin. Il ouvre un œil, puis l'autre, bâille à moitié, s'étire sur place, secoue la tête, et se relève.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>yawn</b><i>2,2 s</i><i>existe</i></div>
+		<div class="corps">
+			<p class="nom">Il bâille</p>
+			<p>Existe, mais <b>n'utilise que 5 os</b> sur 91. À reprendre : voir « le bâillement à trois étages » plus bas.</p>
+		</div>
+	</div>
+</section>
+
+<section>
+	<h2><span class="index">04 — Le vol</span>Ce qu'une bête qui vole fait vraiment</h2>
+
+	<p class="intro">Une seule animation de vol aujourd'hui. Il en faut huit pour que voler ait l'air d'un métier.</p>
+
+	<div class="fiche">
+		<div class="rail"><b>fly</b><i>2,4 s · boucle</i><i>existe</i></div>
+		<div class="corps">
+			<p class="nom">Le vol battu</p>
+			<p>À reprendre pour la mécanique de l'aile : la <b>descente est rapide et puissante</b>, la remontée lente et repliée. Les quatre articulations ne bougent pas ensemble — le poignet est en retard sur le coude, la pointe en retard sur le poignet. C'est ce décalage qui fait une aile plutôt qu'une planche. Les membranes se tendent à la descente, se creusent à la remontée. Les pattes sont repliées sous le corps, pas pendantes.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>glide</b><i>4 s · boucle</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il plane</p>
+			<p>Ailes tendues, immobiles. Tout le mouvement est dans les <b>micro-corrections</b> : les pointes qui montent et descendent de 2°, une membrane qui ondule au vent, la queue qui sert de gouvernail. La tête reste parfaitement stable pendant que le corps oscille — c'est ce qui donne l'impression de maîtrise.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>takeoff</b><i>1,6 s</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il décolle</p>
+			<p><b>Le trou le plus visible aujourd'hui : il passe du sol au vol sans un battement.</b> Trois temps : il s'accroupit sur les quatre pattes (griffes serrées, crête baissée), il déploie d'un coup en poussant, puis deux battements puissants où les ailes descendent plus bas que le corps. Particule <span class="mono">minecraft:cloud</span> sur <span class="mono">pattes</span> à l'image de la poussée, son <span class="mono">@envol</span> au même moment.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>land</b><i>1,8 s</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il se pose</p>
+			<p>Il cabre — ailes en cuillère vers l'avant pour freiner, corps redressé à 40°, pattes tendues vers le sol. Contact des postérieurs d'abord, puis des antérieurs. Les jarrets amortissent. Les ailes se replient <b>en trois temps</b> (avant-bras, doigts, pointe), et il s'ébroue une fois.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>fly_fast</b><i>1,4 s · boucle</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il fonce</p>
+			<p>Battements courts et serrés, corps allongé, cou tendu vers l'avant, queue droite comme une flèche. Les oreilles plaquées en arrière par la vitesse.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>fly_up</b><br><b>fly_down</b><i>2 s · boucle</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il monte, il descend</p>
+			<p>En montée : battements plus amples et plus lents, corps redressé, tête vers le haut, queue qui pend. En descente : ailes à demi repliées, corps piqué vers l'avant, la queue qui remonte pour équilibrer.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>fly_tired</b><i>2,8 s · boucle</i><i class="mono" style="color:var(--manque)">à créer</i></div>
+		<div class="corps">
+			<p class="nom">Il n'en peut plus</p>
+			<p>À jouer quand son énergie tombe bas. Battements irréguliers, un temps mort entre deux, le corps qui perd de l'altitude entre chaque poussée. La tête basse, la langue à moitié sortie. <b>C'est la seule information de santé qu'on lit sur la bête et pas dans un menu.</b></p>
+		</div>
+	</div>
+</section>
+
+<section>
+	<h2><span class="index">05 — Les réactions</span>Les onze cases que le mod appelle déjà</h2>
+
+	<p class="intro">Courtes — une à trois secondes. Ce sont elles qui font la différence entre un modèle et un animal, et elles coûtent bien moins cher que les spéciales.</p>
+
+	<div class="fiche">
+		<div class="rail"><b>caresse</b><i>2 s</i></div>
+		<div class="corps">
+			<p class="nom">Il en redemande</p>
+			<p>Il pousse la tête <b>contre</b> la main au lieu de la subir : <span class="mono">neck</span> avance de 2 unités, <span class="mono">head</span> s'incline, les paupières descendent à mi-hauteur, la crête se couche, et <span class="mono">tail_act</span> s'enroule d'un cran. Un souffle par les narines à la fin.</p>
+			<p class="pourquoi"><b>La différence :</b> « il accepte » et « il en redemande » tiennent dans deux os.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>ecoute</b><i>1,5 s</i><i>tenue</i></div>
+		<div class="corps">
+			<p class="nom">Il t'écoute</p>
+			<p>Les oreilles se dressent et pivotent vers l'avant, les pupilles se braquent, un sourcil monte, la tête s'incline de 12°. <b>Le corps ne bouge pas.</b> Il n'a pas encore tourné la tête et tu sais déjà qu'il t'écoute.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>salut</b><i>2 s</i></div>
+		<div class="corps">
+			<p class="nom">Il salue</p>
+			<p>Une inclinaison de tout l'avant-corps : antérieurs qui plient, poitrail vers le sol, croupe haute, tête basse, <b>et les yeux qui restent levés vers toi</b>. Une aile s'entrouvre légèrement. C'est le salut d'un chat qui s'étire et d'un chevalier à la fois.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>joie</b><i>2,5 s</i></div>
+		<div class="corps">
+			<p class="nom">Il explose de joie</p>
+			<p>Deux petits bonds sur place, les quatre pattes qui quittent le sol de 2 unités, la crête dressée, les ailes qui s'ouvrent à demi et claquent, la queue qui fouette. La gueule ouverte, la langue qui sort. Particule <span class="mono">minecraft:happy_villager</span> et son <span class="mono">@content</span>.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>joyeux</b><i>3 s · boucle</i></div>
+		<div class="corps">
+			<p class="nom">Il est de bonne humeur</p>
+			<p>Un <span class="mono">idle</span> plus vif : queue plus rapide, crête à moitié dressée, oreilles en avant, tête plus haute. Ce n'est pas un geste, c'est une <b>humeur</b> — elle remplace l'idle quand tout va bien.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>triste</b><i>4 s · boucle</i></div>
+		<div class="corps">
+			<p class="nom">Il va mal</p>
+			<p>L'inverse exact, os par os : tête basse, cou fléchi, crête complètement couchée, oreilles en arrière, queue au sol qui ne bouge presque plus, paupières à mi-hauteur, ailes qui pendent d'un cran. La respiration plus lente.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>tourne</b><i>1,8 s</i></div>
+		<div class="corps">
+			<p class="nom">Il fait un tour sur lui-même</p>
+			<p>Un tour complet, en pas croisés, la queue qui traîne en retard et fouette à la fin. La tête garde le regard sur toi le plus longtemps possible avant de rattraper le corps — comme une danseuse.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>reconnait</b><i>2,5 s</i></div>
+		<div class="corps">
+			<p class="nom">Il reconnaît l'endroit</p>
+			<p>Il s'arrête, renifle le sol deux fois (tête qui descend, narines, oreilles qui pivotent vers le bas), puis relève la tête et regarde autour de lui, lentement. <b>Rien d'autre.</b> C'est au joueur de se souvenir de ce qui s'est passé ici.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>ramasse</b><i>1,5 s</i></div>
+		<div class="corps">
+			<p class="nom">Il ramasse</p>
+			<p>Tête et cou qui descendent au sol, gueule qui s'ouvre puis se referme, tête qui remonte avec un petit mouvement pour caler l'objet. <b>Le mod accroche l'objet à l'os de la gueule</b> : il suivra tout seul.</p>
+		</div>
+	</div>
+</section>
+
+<section>
+	<h2><span class="index">06 — Les quinze spéciales</span>Celles qu'on débloque</h2>
+
+	<p class="intro">Le critère : est-ce que le joueur peut la <b>raconter</b> à quelqu'un qui ne l'a pas vue ? « Il tire la langue et il l'oublie » se raconte. « Il lève la patte » ne se raconte pas.</p>
+
+	<div class="fiche">
+		<div class="rail"><b>01 · plasma</b><i>6 s</i><i class="mono" style="color:var(--manque)">modèle</i></div>
+		<div class="corps">
+			<p class="nom">Le crachat de plasma</p>
+			<p>La grande. En cinq temps, et chacun compte :</p>
+			<ul class="detail">
+				<li><b>0,0 → 1,2 s — l'ancrage.</b> Les quatre pattes s'écartent et se plantent, les douze orteils se serrent au sol, la croupe s'abaisse. La crête se hérisse de la nuque à la queue, segment par segment.</li>
+				<li><b>1,2 → 2,8 s — la charge.</b> Il inspire : le torse se gonfle. Une lueur monte dans la gorge, <b>cube par cube</b> — poitrail, puis <span class="mono">neck2</span>, puis <span class="mono">neck</span>, puis <span class="mono">head</span>. Les pupilles se réduisent à un trait. Un grondement grave qui monte.</li>
+				<li><b>2,8 → 3,1 s — l'ouverture.</b> La mâchoire s'ouvre en grand d'un seul coup, la langue se plaque au fond, la bouche s'illumine de l'intérieur.</li>
+				<li><b>3,1 → 4,3 s — le tir.</b> La boule sort et part droit devant sur trois blocs, en grossissant puis en se dissipant. La tête recule sous le choc (<span class="mono">head</span> de +8°), les pattes avant reculent d'une demi-unité, les ailes claquent en arrière.</li>
+				<li><b>4,3 → 6,0 s — l'après.</b> La gueule reste ouverte, de la fumée sort des narines pendant deux secondes, il cligne, referme, se lèche les babines, et la crête retombe.</li>
+			</ul>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la seule qui a l'air dangereuse en ne faisant absolument aucun dégât. Et la fumée d'après vaut le souffle lui-même.</p>
+			<div class="os-liste">
+				<span class="os">toe0/1/2 ×4</span><span class="os">spine_ridge</span><span class="os">jaw</span><span class="os">pupil_l/r</span>
+				<span class="os neuf">gorge_lueur</span><span class="os neuf">bouche_lueur</span><span class="os neuf">boule</span><span class="os neuf">naseau_l/r</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>02 · braise</b><i>4 s</i><i class="mono" style="color:var(--manque)">modèle</i></div>
+		<div class="corps">
+			<p class="nom">La braise</p>
+			<p>La petite sœur du plasma, débloquée bien avant. Même charge dans la gorge, mais au lieu du tir : il expire un nuage d'étincelles qui retombe et s'éteint au sol. Rien ne brûle. C'est la <b>première fois qu'on voit quelque chose se passer à l'intérieur de la bête</b>, et c'est ça qui donne envie du niveau suivant.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>03 · blep</b><i>8 s</i></div>
+		<div class="corps">
+			<p class="nom">Le blep</p>
+			<p>Il bâille, referme la bouche… <b>et la langue reste dehors.</b> Elle reste sortie six secondes pendant qu'il regarde ailleurs, cligne, bouge une oreille — l'air parfaitement normal. Puis il la rentre d'un coup, avec un petit sursaut de la tête, l'air surpris.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> deux os qui existent déjà, et c'est la chose la plus attachante que ce modèle puisse produire. C'est celle-là qu'on met en capture d'écran.</p>
+			<div class="os-liste"><span class="os">tongue</span><span class="os">jaw</span></div>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>04 · jugement</b><i>4 s</i><i>tenue</i></div>
+		<div class="corps">
+			<p class="nom">Le regard qui juge</p>
+			<p>Un sourcil monte de 20°, l'autre descend de 5°. Les pupilles se rétrécissent. La tête s'incline de 15°. Il te regarde. <b>Rien d'autre ne bouge pendant quatre secondes</b> — même la queue s'arrête. Puis un seul clignement très lent, et il détourne la tête.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la première fois qu'un compagnon a un avis sur toi.</p>
+			<div class="os-liste"><span class="os">brow_l</span><span class="os">brow_r</span><span class="os">pupil_l/r</span><span class="os">head</span></div>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>05 · etirement</b><i>4,5 s</i></div>
+		<div class="corps">
+			<p class="nom">L'étirement du chat</p>
+			<p>Pattes avant tendues loin devant, griffes qui labourent le sol, dos creusé au maximum, croupe en l'air, queue droite vers le ciel — <b>et un frisson qui part de la nuque et descend jusqu'à la pointe de la queue, segment par segment</b>, avec un décalage de deux images entre chaque. Un long soupir sonore à la fin, et il se remet sur ses pattes.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> un dragon qui s'étire comme un chat, c'est exactement le décalage qui fait qu'on s'attache. Et les six segments de queue servent enfin.</p>
+			<div class="os-liste"><span class="os">leg_fl/fr</span><span class="os">toe0/1/2</span><span class="os">torso_up/low</span><span class="os">tail1 → tail6</span></div>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>06 · baillement</b><i>5 s</i></div>
+		<div class="corps">
+			<p class="nom">Le bâillement à trois étages</p>
+			<p>La mâchoire s'ouvre. Elle s'ouvre <b>encore</b>. Puis <b>encore</b> — trois paliers, chacun plus lent que le précédent. La langue s'enroule vers le haut, les oreilles se replient complètement en arrière, les yeux se ferment en se plissant, la queue tremble jusqu'au bout, et tout le corps se tasse. Puis la gueule claque, il cligne, et il secoue la tête.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est contagieux. Entre dragonnets, et probablement entre joueurs.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>07 · tresor</b><i>6 s</i></div>
+		<div class="corps">
+			<p class="nom">Le trésor</p>
+			<p>Il pousse du museau un objet invisible, le fait rouler sur deux unités, le renifle, s'assoit dessus, enroule sa queue tout autour — <b>puis il relève la tête et te regarde</b>, sourcils bas, l'air de dire que c'est à lui.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> il défend quelque chose qui n'existe pas, et le regard final te désigne comme la menace.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>08 · vrombissement</b><i>4 s</i></div>
+		<div class="corps">
+			<p class="nom">Le vrombissement</p>
+			<p>Les membranes des ailes vibrent comme celles d'une libellule, de plus en plus vite — <b>seuls les os <span class="mono">_mem</span> bougent</b>, l'armature reste immobile. Le son monte. Les pattes s'ancrent, la poussière se soulève. <b>Il ne décolle jamais.</b></p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> tout dit qu'il va décoller. Il ne décolle pas.</p>
+			<div class="os-liste"><span class="os">wing_l_mem</span><span class="os">wing_r_mem</span><span class="os">wing_*_f2/f3_mem</span></div>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>09 · mue</b><i>7 s</i></div>
+		<div class="corps">
+			<p class="nom">La mue de l'aile</p>
+			<p>Il déplie une aile en grand et l'examine, <b>articulation par articulation</b> : il regarde l'avant-bras, puis le doigt 3, puis le doigt 2, puis la pointe — la tête suit le regard à chaque fois. Il trouve une membrane qui ne va pas, la secoue, la mordille. Puis il replie en trois temps.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> personne n'a jamais vu une aile de dragon être <b>vérifiée</b>. C'est du réalisme là où on n'en attendait pas.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>10 · rugissement</b><i>4,5 s</i></div>
+		<div class="corps">
+			<p class="nom">Le rugissement</p>
+			<p>Il inspire en reculant la tête, puis projette tout l'avant-corps vers l'avant : gueule grande ouverte, langue plaquée, crête hérissée d'un bout à l'autre, oreilles rabattues, ailes ouvertes à 70 %, les quatre pattes ancrées. Le cou vibre. À la fin, la tête retombe et il souffle.</p>
+			<p class="pourquoi"><b>À faire répondre les autres dragonnets à dix blocs.</b> Dans une cour, ça devient un événement.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>11 · queue</b><i>6 s</i></div>
+		<div class="corps">
+			<p class="nom">La chasse à la queue</p>
+			<p>Il aperçoit sa propre queue, se fige, la pupille dilatée. Puis il tourne — deux tours de plus en plus vite, la tête qui essaie de rattraper la pointe, les orteils qui dérapent. Au troisième, il perd l'équilibre, s'assoit lourdement, secoue la tête, et regarde ailleurs comme si de rien n'était.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> le regard d'après. C'est la gêne qui est drôle, pas la chute.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>12 · frisson</b><i>2,5 s</i></div>
+		<div class="corps">
+			<p class="nom">Il s'ébroue</p>
+			<p>Une onde de torsion qui part de la tête et descend jusqu'à la pointe de la queue, à haute fréquence — la tête tourne trois fois d'un côté puis de l'autre, le cou suit avec un tour de retard, le torse deux, la queue trois. Les ailes claquent. <b>À jouer après l'eau, après le sommeil, après une frayeur.</b></p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>13 · menace</b><i>5 s</i><i>tenue</i></div>
+		<div class="corps">
+			<p class="nom">La posture de menace</p>
+			<p>Corps très bas, poitrail presque au sol, croupe haute. La crête hérissée. Les ailes à demi ouvertes pour paraître plus gros. Les babines retroussées — <b><span class="mono">teeth_upper</span> visibles sans ouvrir la gueule</b>. Les pupilles en fente. La queue qui bat au sol, lentement, comme un chat.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> il ne fait rien. C'est une posture, et elle est plus impressionnante qu'une attaque.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>14 · decollage</b><i>2 s</i></div>
+		<div class="corps">
+			<p class="nom">Le décollage vertical</p>
+			<p>Il se ramasse complètement — les quatre jarrets pliés au maximum, le corps à quelques unités du sol, les ailes fermées contre le corps — puis <b>tout se détend en trois images</b> : les pattes poussent, les ailes s'ouvrent d'un coup et frappent vers le bas. Il monte droit.</p>
+		</div>
+	</div>
+
+	<div class="fiche">
+		<div class="rail"><b>15 · dormir</b><i>tenue</i></div>
+		<div class="corps">
+			<p class="nom">Le sommeil du dragon</p>
+			<p>Il s'enroule complètement sur lui-même : la queue fait un tour entier autour du corps, la tête vient se poser sur sa propre queue, et <b>une aile se rabat par-dessus comme une couverture</b>. Puis plus rien qu'une respiration très lente et une pointe d'oreille qui frémit.</p>
+			<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la seule qui ne s'arrête pas toute seule. Tu peux le laisser dormir dans un coin de ta chambre et revenir demain.</p>
+		</div>
+	</div>
+</section>
+
+<section>
+	<h2><span class="index">07 — Le modèle 3D</span>Ce qu'il faut ajouter, et pourquoi</h2>
+
+	<p class="intro">Sept ajouts. Aucun ne change la silhouette : tous sont à l'échelle zéro au repos et n'apparaissent que pendant une animation.</p>
+
+	<div class="defile">
+		<table>
+			<thead><tr><th>À ajouter</th><th>Où</th><th>Ce que ça débloque</th></tr></thead>
+			<tbody>
+				<tr><td class="mono"><b>gorge_lueur</b></td><td>3 petits cubes émissifs, enfants de <span class="mono">torso_up</span>, <span class="mono">neck2</span> et <span class="mono">neck</span></td><td><b>La lueur qui monte dans la gorge</b>, cube après cube. C'est ça qui fait la charge, et c'est ça qui fait retenir son souffle avant le souffle.</td></tr>
+				<tr><td class="mono"><b>bouche_lueur</b></td><td>1 cube émissif derrière <span class="mono">teeth_lower</span></td><td>La bouche qui s'allume de l'intérieur. Invisible tant que la mâchoire est fermée : aucun coût quand ce n'est pas le moment.</td></tr>
+				<tr><td class="mono"><b>boule</b></td><td>un cube au bout de <span class="mono">jaw</span>, échelle 0</td><td><b>La boule de plasma.</b> Elle grossit dans la gueule, puis on la translate vers l'avant sur trois blocs en la faisant grandir et disparaître.</td></tr>
+				<tr><td class="mono"><b>naseau_l / naseau_r</b></td><td>deux os vides, sans cube, sur <span class="mono">head</span></td><td>Deux points d'accroche pour que la fumée sorte des narines et non du milieu de la tête. Coût nul.</td></tr>
+				<tr><td class="mono"><b>voile_l / voile_r</b></td><td>un plan translucide devant chaque œil</td><td>La <b>membrane nictitante</b> : un troisième voile qui passe sur l'œil en vol rapide et pendant le sommeil. C'est ce que font les vrais reptiles, et ça ne se voit que là.</td></tr>
+				<tr><td class="mono"><b>langue2</b></td><td>enfant de <span class="mono">tongue</span></td><td>Une deuxième articulation de langue, pour qu'elle <b>s'enroule</b> au lieu de pivoter en bloc. Le blep et le bâillement en dépendent.</td></tr>
+				<tr><td class="mono">bord_membrane <span style="color:var(--encre-3)">(facultatif)</span></td><td>un liseré émissif sur les <span class="mono">_mem</span></td><td>Les membranes qui s'éclairent à contre-jour. Purement décoratif, très beau au coucher du soleil.</td></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="note plasma">
+		<h3>La règle qui décide entre géométrie et particule</h3>
+		<p><b>La géométrie pour ce qui dure, la particule pour ce qui claque.</b> Une lueur qui grandit par l'échelle d'un os coûte zéro paquet réseau et se voit de loin. Une particule coûte un paquet par joueur qui regarde.</p>
+		<p>Donc : la charge dans la gorge, la boule, le voile → <b>de la géométrie</b>. Les étincelles qui retombent, la poussière du décollage, la fumée des narines → <b>des particules</b>, posées en images-clés dans l'animation.</p>
+	</div>
+
+	<div class="note rouge">
+		<h3>La limite à connaître avant de commencer le plasma</h3>
+		<p>Une animation ne peut déplacer un os que <b>par rapport au corps</b>. La boule reste donc accrochée à la tête : si le dragon tourne pendant le tir, elle tourne avec. C'est parfait pour un crachat court et droit — <b>trois blocs, une seconde</b>.</p>
+		<p>Si un jour tu veux un vrai projectile qui part loin, qui touche un bloc et qui explose ailleurs, ce n'est plus de l'animation : c'est une entité, et c'est du code. <b>Ne perds pas de temps à essayer de le faire dans Blockbench.</b></p>
+	</div>
+</section>
+
+<section>
+	<h2><span class="index">08 — Le récapitulatif</span>Dans quel ordre</h2>
+
+	<div class="defile">
+		<table>
+			<thead><tr><th>Vague</th><th>Quoi</th><th>Combien</th></tr></thead>
+			<tbody>
+				<tr><td><b>1</b></td><td><span class="mono">sit</span>, <span class="mono">sit_down</span>, <span class="mono">stand_up</span>, <span class="mono">takeoff</span>, <span class="mono">land</span> — les trous qui se voient tout de suite</td><td>5</td></tr>
+				<tr><td><b>2</b></td><td>Les onze réactions que le mod appelle déjà dans le vide</td><td>11</td></tr>
+				<tr><td><b>3</b></td><td>Le vol : <span class="mono">glide</span>, <span class="mono">fly_fast</span>, <span class="mono">fly_up</span>, <span class="mono">fly_down</span>, <span class="mono">fly_tired</span>, <span class="mono">run</span></td><td>6</td></tr>
+				<tr><td><b>4</b></td><td>Reprendre les 7 existantes avec les règles (pattes au sol, trois couches)</td><td>7</td></tr>
+				<tr><td><b>5</b></td><td>Les spéciales sans ajout de modèle : 03 à 15</td><td>13</td></tr>
+				<tr><td><b>6</b></td><td>Le modèle, puis <span class="mono">braise</span> et <span class="mono">plasma</span></td><td>2</td></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<p class="regle">Quarante-quatre animations. Mais les seize premières changent déjà tout.</p>
+</section>
+
+<footer>
+	<p>Compagnon — cahier des charges du dragonnet. Les os, les pivots et les durées sont relevés dans <span class="mono">dragonnet.animation.bbmodel</span> et dans <span class="mono">data/compagnon/especes/dragonnet.json</span> du dépôt. Modèle final : 91 os, 97 cubes, texture 512×512 en espace UV 128.</p>
+</footer>
+
+</div>

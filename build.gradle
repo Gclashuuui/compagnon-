@@ -1,0 +1,101 @@
+// Loom se declare ici en "fabric-loom-remap" et non en "fabric-loom" : depuis la
+// generation 1.14, "fabric-loom" ne sait plus travailler que sur les versions de
+// Minecraft deja deobfusquees (26.x). Pour la 1.21.1, qui a besoin d'un remap,
+// c'est cette variante-la. C'est aussi celle de "mods secret".
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+	maven {
+		name = 'GeckoLib'
+		url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+	}
+	// Plasmo Voice : l'API du chat vocal, pour entendre les ordres donnes a la voix.
+	maven {
+		name = 'PlasmoVerse'
+		url = 'https://repo.plasmoverse.com/releases'
+	}
+}
+
+loom {
+	// Separe le code serveur (src/main) du code client (src/client). Le compilateur
+	// refuse alors d'appeler une classe client depuis le serveur : c'est ce qui
+	// garantit mecaniquement que le serveur reste seul maitre des donnees.
+	splitEnvironmentSourceSets()
+
+	mods {
+		"compagnon" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	// Mappings officiels Mojang : les noms utilises dans tout le code du mod.
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// GeckoLib : geometrie et animations. Pas de "include" — c'est une dependance
+	// installee a cote du mod, comme sur le serveur.
+	modImplementation "software.bernie.geckolib:geckolib-fabric-${project.minecraft_version}:${project.geckolib_version}"
+
+	// Plasmo Voice : on compile contre son API, mais on ne l'embarque pas et on ne
+	// l'exige pas. "compileOnly" est deliberé : sur un serveur sans chat vocal, le
+	// mod demarre normalement et se contente de dire dans le log que les ordres a
+	// la voix sont indisponibles. Aucune classe du chemin principal ne la nomme.
+	compileOnly "su.plo.voice.api:server:${project.plasmo_voice_version}"
+
+	// Vosk : la reconnaissance vocale. Embarquee, car sans elle il n'y a rien a
+	// entendre — contrairement a Plasmo, qui est une integration optionnelle.
+	implementation "com.alphacephei:vosk:${project.vosk_version}"
+	include "com.alphacephei:vosk:${project.vosk_version}"
+	// JNA porte les appels natifs de Vosk. "include" n'embarque que l'artefact
+	// nomme, jamais ses dependances : il faut donc la nommer soi-meme, sinon le
+	// mod compile, se charge, et echoue au premier mot prononce.
+	implementation "net.java.dev.jna:jna:${project.jna_version}"
+	include "net.java.dev.jna:jna:${project.jna_version}"
+	implementation "net.java.dev.jna:jna-platform:${project.jna_version}"
+	include "net.java.dev.jna:jna-platform:${project.jna_version}"
+
+	// Les tests. Ils ne lancent jamais Minecraft : ils verifient la logique pure —
+	// la mise en forme des mots pour le moteur vocal, le reechantillonnage du son —
+	// et la COHERENCE DES DONNEES, ce qui est le plus rentable des deux.
+	testImplementation platform("org.junit:junit-bom:${project.junit_version}")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "failed"
+		exceptionFormat "full"
+	}
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+	it.options.encoding = 'UTF-8'
+	it.options.compilerArgs << '-Xlint:deprecation'
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}

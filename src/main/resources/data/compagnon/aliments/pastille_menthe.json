@@ -1,0 +1,8 @@
+{
+	"nom": "Bonbon à la menthe",
+	"effets": {
+		"faim": 5,
+		"complicite": 10
+	},
+	"modele": 17
+}

@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "compagnon",
+	"version": "${version}",
+	"name": "Compagnon",
+	"description": "Chaque joueur a un compagnon vivant : il continue d'exister quand on ne le regarde pas, il ne se repete pas, et il change avec le temps.",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"fr.lhdp.compagnon.Compagnon"
+		],
+		"client": [
+			"fr.lhdp.compagnon.client.CompagnonClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "compagnon.client.mixins.json",
+			"environment": "client"
+		}
+	],
+
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*",
+		"geckolib": ">=4.8.4"
+	},
+
+	"suggests": {
+		"plasmovoice": "*"
+	},
+
+	"custom": {
+		"compagnon:pourquoi_suggests": [
+			"Plasmo Voice est le chat vocal. Il n'est PAS exige : sans lui le mod",
+			"demarre normalement et les compagnons n'obeissent simplement pas a la",
+			"voix. On ne le met donc pas dans depends — ce serait empecher de jouer",
+			"pour une fonction en plus."
+		]
+	}
+}

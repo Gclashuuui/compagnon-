@@ -1,0 +1,8 @@
+{
+	"nom": "Trousse de secours",
+	"effets": {
+		"sante": 60,
+		"complicite": 5
+	},
+	"modele": 10
+}

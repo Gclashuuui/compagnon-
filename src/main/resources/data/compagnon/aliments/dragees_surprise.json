@@ -1,0 +1,8 @@
+{
+	"nom": "Dragées surprise",
+	"effets": {
+		"faim": 10,
+		"complicite": 10
+	},
+	"modele": 32
+}

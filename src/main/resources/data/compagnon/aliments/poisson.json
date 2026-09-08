@@ -1,0 +1,8 @@
+{
+	"nom": "Poisson argenté",
+	"effets": {
+		"faim": 25,
+		"energie": 15
+	},
+	"modele": 14
+}

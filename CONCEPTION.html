@@ -1,0 +1,1521 @@
+<title>Ce qui fait un compagnon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+:root {
+	--fond: #E7EAE4;
+	--surface: #F6F8F3;
+	--surface-2: #DFE4DC;
+	--encre: #182028;
+	--douce: #5A6672;
+	--trait: #C6CDC3;
+	--accent: #2E6B58;
+	--accent-pale: #D6E4DD;
+	--laiton: #8C6D18;
+	--laiton-pale: #EFE4C4;
+	--brique: #8E3F30;
+	--brique-pale: #F0DCD6;
+	--ombre: 0 1px 0 rgba(24,32,40,.06), 0 8px 24px -18px rgba(24,32,40,.5);
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--fond: #0F1519;
+		--surface: #171F24;
+		--surface-2: #202A30;
+		--encre: #DCE4E1;
+		--douce: #94A39D;
+		--trait: #2C383E;
+		--accent: #6DC3A5;
+		--accent-pale: #17302A;
+		--laiton: #D2B05A;
+		--laiton-pale: #2E2717;
+		--brique: #D08872;
+		--brique-pale: #34201B;
+		--ombre: 0 1px 0 rgba(0,0,0,.3), 0 8px 24px -18px rgba(0,0,0,.9);
+	}
+}
+:root[data-theme="dark"] {
+	--fond: #0F1519;
+	--surface: #171F24;
+	--surface-2: #202A30;
+	--encre: #DCE4E1;
+	--douce: #94A39D;
+	--trait: #2C383E;
+	--accent: #6DC3A5;
+	--accent-pale: #17302A;
+	--laiton: #D2B05A;
+	--laiton-pale: #2E2717;
+	--brique: #D08872;
+	--brique-pale: #34201B;
+	--ombre: 0 1px 0 rgba(0,0,0,.3), 0 8px 24px -18px rgba(0,0,0,.9);
+}
+
+* { box-sizing: border-box; }
+
+body {
+	margin: 0;
+	background: var(--fond);
+	color: var(--encre);
+	font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+	font-size: 15px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+.page { max-width: 1080px; margin: 0 auto; padding: 0 24px 96px; }
+
+/* --- En-tete --- */
+
+header.tete {
+	padding: 72px 0 40px;
+	border-bottom: 1px solid var(--trait);
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+.eyebrow {
+	font-family: "IBM Plex Mono", ui-monospace, monospace;
+	font-size: 11px;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+	color: var(--accent);
+	margin: 0;
+}
+h1 {
+	font-family: "IBM Plex Serif", Georgia, serif;
+	font-weight: 600;
+	font-size: clamp(34px, 6vw, 56px);
+	line-height: 1.04;
+	letter-spacing: -.02em;
+	margin: 0;
+	text-wrap: balance;
+}
+.chapeau {
+	font-family: "IBM Plex Serif", Georgia, serif;
+	font-size: clamp(17px, 2.2vw, 20px);
+	line-height: 1.5;
+	color: var(--douce);
+	max-width: 62ch;
+	margin: 0;
+}
+.socle-note {
+	background: var(--surface);
+	border: 1px solid var(--trait);
+	border-left: 3px solid var(--laiton);
+	padding: 16px 20px;
+	max-width: 74ch;
+	font-size: 14px;
+	color: var(--douce);
+}
+.socle-note strong { color: var(--encre); font-weight: 600; }
+
+/* --- Sections --- */
+
+section { padding-top: 56px; }
+h2 {
+	font-family: "IBM Plex Serif", Georgia, serif;
+	font-size: clamp(24px, 3.4vw, 32px);
+	font-weight: 600;
+	letter-spacing: -.015em;
+	margin: 0 0 6px;
+	text-wrap: balance;
+}
+h2 .num {
+	font-family: "IBM Plex Mono", monospace;
+	font-size: .5em;
+	font-weight: 500;
+	color: var(--accent);
+	vertical-align: 6px;
+	margin-right: 10px;
+	letter-spacing: .1em;
+}
+.sous { color: var(--douce); max-width: 68ch; margin: 0 0 28px; }
+
+/* --- Principes --- */
+
+.principes { display: grid; gap: 2px; background: var(--trait); border: 1px solid var(--trait); }
+.principe { background: var(--surface); padding: 22px 24px; display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: start; }
+.principe .p-num { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--accent); font-weight: 600; padding-top: 2px; }
+.principe h3 { margin: 0 0 6px; font-size: 16px; font-weight: 600; font-family: "IBM Plex Sans", sans-serif; }
+.principe p { margin: 0; color: var(--douce); font-size: 14px; max-width: 70ch; }
+
+/* --- Socle technique --- */
+
+.socles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.socle {
+	background: var(--surface);
+	border: 1px solid var(--trait);
+	padding: 22px;
+	display: flex; flex-direction: column; gap: 10px;
+	box-shadow: var(--ombre);
+}
+.socle .code { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.socle h3 { margin: 0; font-size: 18px; font-family: "IBM Plex Serif", serif; font-weight: 600; }
+.socle p { margin: 0; font-size: 14px; color: var(--douce); }
+.socle .cout { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--encre); border-top: 1px solid var(--trait); padding-top: 10px; margin-top: auto; }
+
+/* --- Barre de filtres --- */
+
+.filtres {
+	position: sticky; top: 0; z-index: 20;
+	background: var(--fond);
+	border-bottom: 1px solid var(--trait);
+	padding: 14px 0 12px;
+	display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+	margin-bottom: 24px;
+}
+#recherche {
+	flex: 1 1 220px; min-width: 180px;
+	background: var(--surface);
+	border: 1px solid var(--trait);
+	color: var(--encre);
+	padding: 9px 12px;
+	font: inherit; font-size: 14px;
+	border-radius: 2px;
+}
+#recherche:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.puce {
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 12px;
+	background: var(--surface);
+	border: 1px solid var(--trait);
+	color: var(--douce);
+	padding: 7px 11px;
+	cursor: pointer;
+	border-radius: 2px;
+	letter-spacing: .04em;
+}
+.puce:hover { border-color: var(--accent); color: var(--encre); }
+.puce[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--fond); font-weight: 600; }
+.puce.or[aria-pressed="true"] { background: var(--laiton); border-color: var(--laiton); }
+.compte { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--douce); margin-left: auto; white-space: nowrap; }
+
+/* --- Catalogue --- */
+
+.famille { margin-bottom: 44px; }
+.famille > h3 {
+	font-family: "IBM Plex Serif", serif;
+	font-size: 21px; font-weight: 600; margin: 0 0 2px;
+	display: flex; align-items: baseline; gap: 12px;
+}
+.famille > h3 .lettre {
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 12px; font-weight: 600;
+	background: var(--accent); color: var(--fond);
+	padding: 3px 8px; letter-spacing: .1em;
+}
+.famille > .desc { color: var(--douce); font-size: 14px; margin: 0 0 18px; }
+
+.entrees { display: grid; gap: 14px; }
+.entree {
+	background: var(--surface);
+	border: 1px solid var(--trait);
+	padding: 20px 22px;
+	box-shadow: var(--ombre);
+	scroll-margin-top: 84px;
+}
+.entree.top { border-left: 3px solid var(--laiton); }
+.entree:target { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-pale); }
+.e-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.e-id { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: .06em; }
+.e-titre { font-family: "IBM Plex Serif", serif; font-size: 18px; font-weight: 600; margin: 0; flex: 1 1 auto; min-width: 220px; text-wrap: balance; }
+.tag {
+	font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .1em;
+	text-transform: uppercase; padding: 3px 7px; border: 1px solid var(--trait); color: var(--douce);
+}
+.tag.neuf { color: var(--accent); border-color: var(--accent); }
+.tag.etend { color: var(--laiton); border-color: var(--laiton); background: var(--laiton-pale); }
+.tag.top { color: var(--fond); background: var(--laiton); border-color: var(--laiton); font-weight: 600; }
+
+.rubriques { display: grid; grid-template-columns: 86px 1fr; gap: 4px 16px; align-items: baseline; }
+.rub {
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+	color: var(--douce); padding-top: 4px;
+}
+.val { font-size: 14.5px; margin: 0; max-width: 74ch; }
+.val.sec { color: var(--douce); font-size: 14px; }
+.jauge { font-family: "IBM Plex Mono", monospace; font-size: 13px; letter-spacing: .12em; color: var(--accent); }
+.jauge span { color: var(--trait); }
+.jauge em { font-style: normal; color: var(--douce); font-size: 12px; letter-spacing: 0; margin-left: 8px; font-family: "IBM Plex Sans", sans-serif; }
+.liens a {
+	font-family: "IBM Plex Mono", monospace; font-size: 12px;
+	color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-pale);
+	margin-right: 8px;
+}
+.liens a:hover { border-bottom-color: var(--accent); }
+
+/* --- Classement --- */
+
+.classement { display: grid; gap: 2px; background: var(--trait); border: 1px solid var(--trait); }
+.rang { background: var(--surface); padding: 18px 22px; display: grid; grid-template-columns: 44px 92px 1fr; gap: 16px; align-items: baseline; }
+.rang .n { font-family: "IBM Plex Serif", serif; font-size: 26px; font-weight: 600; color: var(--laiton); line-height: 1; }
+.rang .ref { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--accent); text-decoration: none; }
+.rang .ref:hover { text-decoration: underline; }
+.rang h4 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+.rang p { margin: 0; color: var(--douce); font-size: 14px; max-width: 72ch; }
+
+/* --- Interdits --- */
+
+.interdits { display: grid; gap: 12px; }
+.interdit {
+	background: var(--surface); border: 1px solid var(--trait);
+	border-left: 3px solid var(--brique);
+	padding: 16px 20px;
+}
+.interdit h4 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+.interdit p { margin: 0; color: var(--douce); font-size: 14px; max-width: 74ch; }
+
+/* --- Vagues --- */
+
+.vagues { display: grid; gap: 16px; }
+.vague { background: var(--surface); border: 1px solid var(--trait); padding: 22px; box-shadow: var(--ombre); }
+.vague .v-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.vague .v-num { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fond); background: var(--accent); padding: 3px 8px; }
+.vague h4 { font-family: "IBM Plex Serif", serif; font-size: 19px; font-weight: 600; margin: 0; }
+.vague > p { color: var(--douce); font-size: 14px; margin: 0 0 12px; max-width: 74ch; }
+.refs { display: flex; flex-wrap: wrap; gap: 6px; }
+.refs a {
+	font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+	background: var(--surface-2); border: 1px solid var(--trait);
+	color: var(--encre); text-decoration: none; padding: 3px 7px;
+}
+.refs a:hover { border-color: var(--accent); color: var(--accent); }
+
+footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--trait); color: var(--douce); font-size: 13px; }
+
+@media (max-width: 620px) {
+	.rubriques { grid-template-columns: 1fr; gap: 2px 0; }
+	.rub { padding-top: 10px; }
+	.rang { grid-template-columns: 32px 1fr; }
+	.rang .ref { grid-column: 2; }
+	.principe { grid-template-columns: 1fr; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="page">
+
+<header class="tete">
+	<p class="eyebrow">Mod Compagnon — note de conception</p>
+	<h1>Ce qui fait un compagnon</h1>
+	<p class="chapeau">Cent dix-huit propositions pour qu'au bout de cent heures, deux joueurs qui ont la même espèce n'aient pas le même animal. Un éthogramme : un catalogue de comportements, pas une liste de fonctionnalités.</p>
+	<div class="socle-note">
+		<strong>Ce sur quoi je m'appuie.</strong> J'ai relu le code avant d'écrire. Le mod possède déjà : les fiches et leurs jauges, le caractère en cinq penchants tiré à la naissance, les moments datés, la curiosité aux blocs posés, la désobéissance liée à la complicité, les voisinages entre compagnons, les bobos et les rêves, les lieux, les mots appris, les compétences, la voix, le livre, la roue, le carnet et le panneau. Chaque entrée est donc marquée <span class="tag neuf">neuf</span> ou <span class="tag etend">étend</span> — et dans le second cas, je dis sur quoi elle se greffe.
+	</div>
+</header>
+
+<section>
+	<h2><span class="num">I</span>Six principes</h2>
+	<p class="sous">Ce ne sont pas des vœux pieux : chacun sert de test. Une idée qui en viole un est une idée à jeter, même bonne.</p>
+	<div class="principes">
+		<div class="principe"><div class="p-num">01</div><div>
+			<h3>Le joueur voit d'abord, il lit ensuite</h3>
+			<p>Un comportement doit se remarquer en jeu. Le livre ne fait que le nommer après coup — il confirme, il n'annonce pas. Une mécanique qui n'existe que dans une interface n'existe pas.</p>
+		</div></div>
+		<div class="principe"><div class="p-num">02</div><div>
+			<h3>La différence s'accumule, elle ne se tire pas au sort</h3>
+			<p>Le hasard ne donne qu'une graine minuscule. Tout le reste vient de ce qui a été vécu. Sinon deux compagnons sont différents le premier jour et rigoureusement identiques le centième.</p>
+		</div></div>
+		<div class="principe"><div class="p-num">03</div><div>
+			<h3>Jamais de corvée, jamais de perte</h3>
+			<p>Un compagnon négligé devient distant, jamais mort, jamais perdu. La peur de perdre fabrique de l'obligation, pas de l'affection. Le mod le fait déjà bien — il ne faut rien ajouter qui le trahisse.</p>
+		</div></div>
+		<div class="principe"><div class="p-num">04</div><div>
+			<h3>Un compagnon qui obéit toujours est une fonction</h3>
+			<p>Il faut de l'erreur, de l'hésitation, du refus. Rare, et <b>toujours explicable</b> : un joueur pardonne un refus dont il comprend la cause, jamais un refus gratuit.</p>
+		</div></div>
+		<div class="principe"><div class="p-num">05</div><div>
+			<h3>Cinquante détails valent mieux qu'un système</h3>
+			<p>Le coût d'une idée n'est pas son code, c'est ce qu'elle oblige le joueur à comprendre. Un comportement de vingt lignes qu'on remarque sans explication vaut mieux qu'un menu de trente boutons.</p>
+		</div></div>
+		<div class="principe"><div class="p-num">06</div><div>
+			<h3>Ne jamais récompenser l'affection en statistiques</h3>
+			<p>Le jour où être gentil donne +10 % de vitesse, le joueur cesse d'aimer et commence à optimiser. Les récompenses de la relation doivent être des <b>possibilités</b> et des <b>moments</b>, jamais des chiffres.</p>
+		</div></div>
+	</div>
+</section>
+
+<section>
+	<h2><span class="num">II</span>Le socle : trois pièces qui rendent tout le reste presque gratuit</h2>
+	<p class="sous">C'est la partie qu'on oublie toujours dans les mods de familiers, et c'est celle qui décide si le reste tient ou pas. Trois structures, quelques centaines d'octets par compagnon, et quarante idées de ce catalogue deviennent des greffes de vingt lignes.</p>
+	<div class="socles">
+		<div class="socle">
+			<div class="code">Pièce 1</div>
+			<h3>Les compteurs</h3>
+			<p>Une simple table <em>nom → nombre</em> sur la fiche. Tout s'y incrémente : blocs posés près de lui, nuits passées dehors, caresses, poissons mangés, blocs parcourus ensemble, fois où il a désobéi. Les habitudes, les jalons, les vocations et les manies ne sont plus que des <b>seuils</b> sur ces compteurs.</p>
+			<div class="cout">≈ 40 entrées max · quelques centaines d'octets · zéro coût en tick</div>
+		</div>
+		<div class="socle">
+			<div class="code">Pièce 2</div>
+			<h3>Le journal</h3>
+			<p>Les moments existent déjà, mais ne portent qu'une clé et une date. Leur ajouter <b>un lieu, une dimension et éventuellement un témoin</b> transforme une liste technique en récit : « le 14<sup>e</sup> jour, près de la rivière, il a vu la mer pour la première fois ». C'est ce qui écrit le livre tout seul.</p>
+			<div class="cout">extension de Moment · plafond de 40 · rotation des plus vieux</div>
+		</div>
+		<div class="socle">
+			<div class="code">Pièce 3</div>
+			<h3>Le budget d'attention</h3>
+			<p>Un seul ordonnanceur décide quel petit comportement a le droit de se jouer, au plus un toutes les <em>n</em> secondes, avec des priorités et un délai avant répétition. <b>Sans lui, trente bonnes idées font un compagnon épileptique</b> qui joue quatre animations à la fois et ne veut plus rien dire.</p>
+			<div class="cout">une classe · un entier par compagnon · à écrire en premier</div>
+		</div>
+	</div>
+</section>
+
+<section id="catalogue">
+	<h2><span class="num">III</span>Le catalogue</h2>
+	<p class="sous">118 entrées en 15 familles. Chacune porte les six rubriques que tu as demandées, un coût de développement en cinq crans, et ses liens vers les autres. Les 17 entrées au trait doré sont celles par lesquelles je commencerais.</p>
+
+	<div class="filtres">
+		<input id="recherche" type="search" placeholder="Chercher : coin, peur, orage, oubli…" aria-label="Chercher dans le catalogue">
+		<button class="puce or" id="f-top" aria-pressed="false">★ prioritaires</button>
+		<button class="puce" id="f-neuf" aria-pressed="false">neuf</button>
+		<button class="puce" id="f-simple" aria-pressed="false">peu coûteux</button>
+		<span class="compte" id="compte"></span>
+	</div>
+
+	<div id="sortie"></div>
+</section>
+
+<section>
+	<h2><span class="num">IV</span>Les quatorze qui comptent</h2>
+	<p class="sous">Si tu ne devais en faire que quatorze, celles-ci. Le critère n'est pas « la plus impressionnante » mais <b>le rapport entre ce que ça change et ce que ça coûte</b> — et surtout : est-ce qu'un joueur le remarquerait sans qu'on le lui dise ?</p>
+	<div class="classement" id="classement"></div>
+</section>
+
+<section>
+	<h2><span class="num">V</span>Ce qu'il ne faut surtout pas faire</h2>
+	<p class="sous">Les pièges classiques du genre. J'ai vu chacun d'eux tuer un mod de familiers.</p>
+	<div class="interdits">
+		<div class="interdit"><h4>Pas de mort, pas de fugue définitive, pas de faim qui tue</h4><p>Le mod tient déjà cette ligne. Un compagnon qu'on peut perdre transforme l'affection en anxiété, et le joueur finit par le laisser rangé « pour ne pas risquer ».</p></div>
+		<div class="interdit"><h4>Pas de chiffre affiché pour la relation</h4><p>Dès qu'on montre 73/100, le joueur optimise 73 au lieu de vivre avec sa bête. Un mot, une phrase, une nuance de comportement — jamais un nombre.</p></div>
+		<div class="interdit"><h4>Pas de notification</h4><p>Une pastille discrète sur le livre, jamais un message dans le chat. Sur un serveur à mille joueurs, un mod qui parle est un mod qu'on désinstalle.</p></div>
+		<div class="interdit"><h4>Rien qui dépende de l'heure réelle</h4><p>Les gens jouent à trois heures du matin. Tout doit se compter en temps de jeu ensemble, jamais en jours de calendrier.</p></div>
+		<div class="interdit"><h4>Pas deux systèmes qui disent la même chose</h4><p>Humeur, complicité, énergie, fatigue : si deux barres montent et descendent ensemble, il n'y en a qu'une. Chaque jauge doit pouvoir contredire les autres, sinon elle est décorative.</p></div>
+		<div class="interdit"><h4>Pas de personnalité figée à la naissance</h4><p>C'est le défaut le plus courant du genre, et le mod y est aujourd'hui exposé : cinq penchants tirés au sort et jamais retouchés donnent l'illusion de la variété pendant deux heures, puis plus rien.</p></div>
+		<div class="interdit"><h4>Pas de comportement « vivant » qui coûte une recherche par tick</h4><p>À mille compagnons chargés, une seule requête au monde par tick et par bête coûte plus cher que tout le reste du mod. Tout ce qui regarde autour doit passer par un intervalle, ou par un événement.</p></div>
+		<div class="interdit"><h4>Pas de liste de boutons</h4><p>Chaque interaction ajoutée à la roue doit en remplacer une, ou n'apparaître que là où elle a un sens. Une roue à vingt entrées est une roue qu'on n'ouvre plus.</p></div>
+		<div class="interdit"><h4>Pas d'aléatoire sans cause visible</h4><p>Un refus, une bêtise, une fuite : tous doivent avoir une raison que le joueur peut deviner. Sinon ce n'est pas un caractère, c'est un bug.</p></div>
+		<div class="interdit"><h4>Pas de contenu qu'il faut écrire à la main pour chaque espèce</h4><p>Tout ce qui est ajouté doit avoir un comportement par défaut correct quand la fiche d'espèce ne dit rien. Sinon chaque nouvelle bête devient un chantier.</p></div>
+	</div>
+</section>
+
+<section>
+	<h2><span class="num">VI</span>Un ordre de marche</h2>
+	<p class="sous">Quatre vagues. Chacune est jouable et se remarque toute seule — on ne construit jamais une fondation dont l'effet n'arrive qu'à la vague suivante.</p>
+	<div class="vagues" id="vagues"></div>
+</section>
+
+<footer>
+	<p>Note de conception — mod Compagnon · serveur RP Poudlard · Fabric 1.21.1. Le catalogue est fait pour être découpé : chaque entrée est autonome et porte son coût.</p>
+</footer>
+
+</div>
+
+<script>
+const CATS = {
+	T: ["Tempérament", "Ce qui fait qu'il est lui, et pas un autre de la même espèce"],
+	I: ["Intelligence", "Ce qu'il remarque, et ce qu'il en fait"],
+	R: ["Relation", "Ce qui se construit entre vous deux, et rien qu'entre vous deux"],
+	P: ["Progression", "Grandir sans monter de niveau"],
+	A: ["Apprentissage", "Ce que tu lui apprends — et ce qu'il apprend sans toi"],
+	V: ["Vie autour de toi", "Comment il habite ton monde quand il n'a rien à faire"],
+	M: ["Le monde", "Ce que les lieux, le temps et les saisons lui font"],
+	Q: ["Les missions", "De quoi gagner de l’expérience sans jamais farmer"],
+	C: ["Le classement", "Se montrer, sans que ça pourrisse le reste"],
+	S: ["Les autres", "Les autres joueurs, et les autres compagnons"],
+	E: ["Les espèces", "Ce qui ne doit surtout pas se ressembler"],
+	L: ["Le livre", "Une fiche de vie, pas un tableau de chiffres"],
+	U: ["Les interfaces", "Ce qu'on a envie de rouvrir après cent heures"],
+	X: ["Les imprévus", "Ce qu'on raconte aux autres le lendemain"],
+	H: ["Le temps", "Ce que seule la durée peut fabriquer"]
+};
+
+const COUTS = ["", "une soirée", "deux ou trois soirées", "une semaine", "deux semaines", "un chantier"];
+
+const E = [
+
+/* ---------- T — Tempérament ---------- */
+{id:"T-01",c:"T",s:"etend",top:1,t:"Il finit par te ressembler",
+ i:"Le caractère est tiré au sort à la naissance et ne bouge plus jamais. Qu'il dérive, très lentement, vers la manière de jouer de son maître : un joueur qui court partout fabrique une bête nerveuse, un joueur qui construit six heures d'affilée fabrique une bête posée.",
+ j:"Rien à faire, c'est le point. Au bout de quelques dizaines d'heures, le livre écrit une phrase : « Il a pris ton rythme. »",
+ p:"Son caractère cesse d'être un dé pour devenir une trace.",
+ a:"C'est la seule mécanique du catalogue qui rend un compagnon littéralement impossible à reproduire chez quelqu'un d'autre — il faudrait jouer comme toi.",
+ x:2, l:["T-02","H-05","L-01","P-05"],
+ b:"se greffe sur Caractere : quatre compteurs et une dérive plafonnée à ±0,15 par penchant"},
+
+{id:"T-02",c:"T",s:"etend",t:"Le caractère se révèle, il ne s'affiche pas",
+ i:"Ne jamais montrer les cinq penchants en chiffres. Le livre écrit une phrase par penchant dominant, et seulement une fois qu'on a assez d'heures ensemble pour l'affirmer.",
+ j:"Les premières heures, la page est vague : « Encore difficile à dire. » Puis les phrases apparaissent une à une.",
+ p:"Il devient quelqu'un qu'on découvre au lieu d'une fiche technique qu'on lit.",
+ a:"Découvrir est infiniment plus fort que consulter. Et une phrase qui apparaît un jour se retient ; un chiffre, non.",
+ x:1, l:["T-01","L-02","L-01"],
+ b:"Caractere existe, il ne manque que la mise en phrases et le seuil d'heures"},
+
+{id:"T-03",c:"T",s:"neuf",top:2,t:"Les manies",
+ i:"Chaque compagnon prend une à trois petites manies dans un réservoir d'une vingtaine — mais le réservoir est <b>filtré par ce qu'il a vécu</b>. Celui qui a beaucoup traîné près de l'eau secoue ses plumes. Celui qu'on a beaucoup nourri fixe tes mains dès que tu ouvres ton inventaire. Celui qui a dormi dehors gratte le sol avant de se coucher.",
+ j:"On ne fait rien. On finit par le remarquer, puis par le guetter.",
+ p:"C'est le plus court chemin entre un mob et une bête : un geste inutile, répété, qui n'appartient qu'à elle.",
+ a:"C'est exactement ce qu'on raconte d'un vrai animal. On ne dit pas « il a 80 d'affection », on dit « il fait toujours ce truc-là avant de se coucher ».",
+ x:2, l:["T-04","X-03","L-04","S-08"],
+ b:"une animation d'inactivité de plus, tirée dans une liste conditionnée par les compteurs"},
+
+{id:"T-04",c:"T",s:"neuf",top:3,t:"Un défaut, un seul, et pour toujours",
+ i:"Chaque compagnon reçoit exactement un défaut qui ne se corrige jamais : il mendie à table, il ne résiste pas à une poule, il est jaloux des autres compagnons, il éternue dans la poussière, il refuse de marcher dans l'eau. On peut apprendre à faire avec, jamais à le supprimer.",
+ j:"Ça se manifeste tout seul, aux mauvais moments. Le livre finit par le nommer, avec humour.",
+ p:"Un être sans défaut n'est pas un être, c'est un service.",
+ a:"On s'attache aux défauts, pas aux qualités. Et un défaut définitif est la seule chose du mod que le joueur ne peut pas améliorer — donc la seule qu'il devra accepter.",
+ x:2, l:["T-03","M-02","X-01","L-04"],
+ b:"un fichier de données par défaut, comme les bobos et les caractères"},
+
+{id:"T-05",c:"T",s:"neuf",t:"Sa voix n'est pas celle des autres",
+ i:"Le ton de ses sons dérive d'une graine propre à chaque compagnon, modulée par l'humeur et l'âge. Deux mouettes ne crient pas pareil.",
+ j:"Rien. On l'entend.",
+ p:"L'identité passe par l'oreille autant que par l'œil, et c'est le canal le moins cher.",
+ a:"On reconnaît son animal au bruit avant de le voir. C'est très puissant dans une salle commune pleine.",
+ x:1, l:["T-03","S-08","E-03"],
+ b:"un décalage de hauteur au moment de jouer le son"},
+
+{id:"T-06",c:"T",s:"neuf",t:"Les petites asymétries",
+ i:"De quel côté il se met par rapport à toi, sur quelle patte il s'assoit, dans quel sens il s'enroule pour dormir. Purement décoratif, tiré une fois pour toutes.",
+ j:"Rien.",
+ p:"La symétrie parfaite est le signe le plus sûr qu'une créature est un objet.",
+ a:"Le joueur ne le remarque pas consciemment — il remarque juste que ça a l'air vrai.",
+ x:1, l:["T-03","V-01"],
+ b:"un bit de la graine, lu au moment de choisir la pose"},
+
+{id:"T-07",c:"T",s:"neuf",t:"L'heure où il est le plus lui",
+ i:"Chaque compagnon a un moment de la journée où il est nettement plus vif : l'aube, le crépuscule, le milieu de nuit. C'est là qu'il joue, qu'il réclame, qu'il fait des bêtises.",
+ j:"On finit par jouer avec lui à cette heure-là, sans se l'être dit.",
+ p:"Ça donne une horloge intérieure qui ne dépend pas du joueur.",
+ a:"Il fait quelque chose à un moment que tu n'as pas choisi. C'est le début de l'idée qu'il existe indépendamment de toi.",
+ x:1, l:["H-01","H-04","X-04"],
+ b:"réutilise la machinerie des heures de repas"},
+
+/* ---------- I — Intelligence ---------- */
+{id:"I-01",c:"I",s:"neuf",top:4,t:"Il anticipe tes gestes",
+ i:"Quand tu as fait la même chose au même endroit assez souvent — ouvrir ce coffre-là, descendre par cette échelle-là — il y va <b>avant toi</b> et t'y attend.",
+ j:"Un jour tu arrives à ton coffre et il est déjà assis dessus. Personne ne t'a rien annoncé.",
+ p:"C'est le passage de « il me suit » à « il me connaît ».",
+ a:"C'est la mécanique la plus forte du catalogue, et de loin. Elle produit littéralement la phrase que tu veux entendre : « il sait où je vais ».",
+ x:3, l:["I-02","V-01","H-02","L-05"],
+ b:"étend les lieux : ajouter un compteur de visites par lieu et un seuil"},
+
+{id:"I-02",c:"I",s:"neuf",t:"Il prend la tête sur les chemins qu'il connaît",
+ i:"Sur un trajet parcouru souvent, il cesse de suivre et se met à précéder — en s'arrêtant régulièrement pour vérifier que tu suis.",
+ j:"On le laisse faire, ou on le double.",
+ p:"Marcher devant est le signe le plus lisible d'un animal qui sait où il va.",
+ a:"Le regard en arrière est ce qui vend tout : il te précède <b>et il t'attend</b>.",
+ x:3, l:["I-01","H-02","V-04"],
+ b:"nouveau but de déplacement, prioritaire sur le suivi ordinaire"},
+
+{id:"I-03",c:"I",s:"neuf",top:5,t:"Il rend le regard",
+ i:"Si le joueur le fixe plus de deux secondes sans rien faire d'autre, il réagit — inclinaison de tête, il s'approche, ou il détourne les yeux, selon son caractère.",
+ j:"Il suffit de le regarder. C'est le geste le plus courant du jeu et il ne produisait rien.",
+ p:"L'attention devient réciproque. C'est le minimum vital d'un être vivant.",
+ a:"Presque gratuit, et le joueur l'essaie mille fois. Rapport effet/coût imbattable.",
+ x:1, l:["I-08","R-09","T-02"],
+ b:"un test d'angle de vue côté serveur, toutes les dix ticks"},
+
+{id:"I-04",c:"I",s:"neuf",t:"Il te prévient",
+ i:"Il repère un monstre avant toi et te le signale : il fixe la direction, se raidit, émet un son. Aucun combat — juste l'alerte. La portée dépend de l'espèce.",
+ j:"On apprend à faire confiance à sa direction de regard.",
+ p:"Il devient utile sans devenir une arme.",
+ a:"Un compagnon qui te protège sans se battre est plus attachant qu'un compagnon qui tue à ta place.",
+ x:2, l:["I-08","E-06","M-07"],
+ b:"une recherche toutes les vingt ticks, dans un petit rayon"},
+
+{id:"I-05",c:"I",s:"neuf",t:"Il n'aime pas l'endroit où tu es mort",
+ i:"Le lieu de ta mort est retenu. Il y retourne, il le regarde, il y est mal à l'aise pendant plusieurs jours de jeu.",
+ j:"Tu repasses par là et tu vois qu'il ralentit.",
+ p:"Il partage tes mauvais souvenirs, pas seulement les bons.",
+ a:"C'est du deuil miniature, et ça n'existe nulle part ailleurs dans Minecraft.",
+ x:2, l:["M-02","L-05","L-03"],
+ b:"un lieu de plus, avec une clé « peur » et une décroissance"},
+
+{id:"I-06",c:"I",s:"neuf",t:"Il désobéit pour une raison qu'on peut deviner",
+ i:"La désobéissance existe déjà et dépend de la complicité. Lui donner des <b>causes visibles</b> : il est épuisé, il a faim, il a peur de ce qui est devant, il a un bobo. Et une seule ligne dans la barre d'action qui dit laquelle.",
+ j:"On comprend, on le nourrit, et il obéit.",
+ p:"Le refus devient une information au lieu d'un échec.",
+ a:"C'est la différence entre « ce mod bugue » et « il ne veut pas y aller, et je vois bien pourquoi ».",
+ x:2, l:["I-07","R-01","M-02"],
+ b:"étend Obeissance : ajouter un motif au refus"},
+
+{id:"I-07",c:"I",s:"neuf",t:"Il hésite avant d'obéir",
+ i:"Entre l'ordre et l'exécution, un temps variable : instantané s'il est en forme et complice, une seconde s'il est fatigué, deux s'il est distrait par autre chose.",
+ j:"Rien. On le sent.",
+ p:"L'obéissance instantanée est la marque d'une machine.",
+ a:"Le délai raconte son état sans un mot d'interface.",
+ x:1, l:["I-06","R-01"],
+ b:"un compte à rebours avant de lancer le but"},
+
+{id:"I-08",c:"I",s:"neuf",t:"Il se rapproche quand tu vas mal",
+ i:"Sous un certain niveau de vie, il cesse de vagabonder et reste collé. Il ne soigne rien.",
+ j:"On le remarque en sortant d'un combat.",
+ p:"Il lit ton état sans qu'on le lui demande.",
+ a:"Cinq lignes de code pour un des gestes les plus émouvants du répertoire animal.",
+ x:1, l:["I-03","I-04","R-06"],
+ b:"un facteur sur la distance de suivi"},
+
+{id:"I-09",c:"I",s:"neuf",t:"Il fête ce que tu réussis",
+ i:"Diamant miné, monstre difficile tué, construction terminée, succès du jeu débloqué : une réaction courte et nette. Les diamants méritent la grande réaction.",
+ j:"On mine, il saute.",
+ p:"Il participe à ta partie au lieu d'y assister.",
+ a:"Réussir seul et réussir devant quelqu'un ne sont pas la même chose.",
+ x:1, l:["X-02","L-07"],
+ b:"accrocher les événements existants du jeu"},
+
+{id:"I-10",c:"I",s:"neuf",t:"Il remarque qu'il manque quelqu'un",
+ i:"Il sait combien vous êtes d'habitude. Quand un joueur familier du groupe n'est pas là, il regarde autour, il cherche.",
+ j:"Rien.",
+ p:"Il a une idée du groupe, pas seulement de son maître.",
+ a:"Sur un serveur RP, c'est le détail qui fait dire « il a remarqué que Théo n'était pas là ».",
+ x:3, l:["S-01","S-03","R-04"],
+ b:"étend les connaissances déjà stockées par UUID"},
+
+/* ---------- R — Relation ---------- */
+{id:"R-01",c:"R",s:"neuf",top:6,t:"La relation est un mot, jamais une barre",
+ i:"Remplacer tout affichage chiffré de la complicité par une échelle de huit mots : <em>méfiant, prudent, habitué, attaché, complice, inséparable</em>… Le nombre continue d'exister dans le code ; il ne sort jamais.",
+ j:"On lit une phrase dans le livre, et elle change de temps en temps.",
+ p:"Sa relation cesse d'être une ressource à farmer.",
+ a:"« Il te fait confiance » se retient. « 73/100 » s'optimise. Ce n'est pas la même émotion, ce n'est même pas le même jeu.",
+ x:1, l:["R-02","L-01","U-02"],
+ b:"purement d'affichage — le calcul existe déjà"},
+
+{id:"R-02",c:"R",s:"neuf",t:"La confiance se perd vite et se regagne lentement",
+ i:"Asymétrie franche : un coup, un abandon prolongé, un ordre donné en criant font descendre nettement plus vite que les caresses ne font monter.",
+ j:"On le sent après une bêtise, et on doit y mettre du temps.",
+ p:"Ses réactions ont un poids.",
+ a:"Ce qui se regagne facilement ne valait rien.",
+ x:1, l:["R-01","S-04"],
+ b:"deux facteurs différents dans le calcul existant"},
+
+{id:"R-03",c:"R",s:"etend",t:"Le tout premier souvenir",
+ i:"La toute première chose que vous avez faite ensemble est inscrite en tête de la page des souvenirs, avec sa date et son lieu, et n'en bouge jamais.",
+ j:"On la relit des mois plus tard.",
+ p:"Il a une origine, pas juste une date de création.",
+ a:"C'est gratuit et c'est ce que les joueurs montrent en capture d'écran.",
+ x:1, l:["L-03","P-01"],
+ b:"les moments existent — il manque le lieu et l'épinglage"},
+
+{id:"R-04",c:"R",s:"etend",top:7,t:"Les retrouvailles, à la hauteur de l'absence",
+ i:"Les retrouvailles existent déjà. Leur donner <b>trois intensités</b> selon la durée de l'absence : un salut pour une heure, une vraie fête pour une semaine, quelque chose de plus grave après un mois — il vient, il reste collé, il ne joue pas tout de suite.",
+ j:"On se reconnecte. C'est la première chose qui arrive.",
+ p:"Le temps passé loin de lui devient une donnée du récit.",
+ a:"Le moment le plus chargé de la vie d'un animal de compagnie, et il coûte trois seuils.",
+ x:1, l:["R-07","H-05","L-03"],
+ b:"étend Humeurs.retrouvailles"},
+
+{id:"R-05",c:"R",s:"etend",t:"Le cadeau porte le nom d'un endroit",
+ i:"Il rapporte déjà des objets. Que ce qu'il rapporte soit <b>marqué du lieu</b> où il l'a trouvé — « un galet de la rivière près de chez toi » — et affiché comme tel dans le livre.",
+ j:"On le reçoit, on le lit, on le garde.",
+ p:"Ses trouvailles cessent d'être aléatoires pour devenir situées.",
+ a:"Un caillou quelconque devient un objet qui n'existe qu'en un exemplaire au monde.",
+ x:2, l:["L-05","M-01","L-03"],
+ b:"étend RapporterGoal : joindre le lieu au moment"},
+
+{id:"R-06",c:"R",s:"neuf",t:"Il dort quand tu dors",
+ i:"Tu vas au lit, il se couche à côté. Il se réveille avant toi et te regarde.",
+ j:"Rien.",
+ p:"Il partage ton rythme au lieu de tourner en rond pendant la nuit.",
+ a:"Le réveil est le meilleur moment : la première chose que tu vois est qu'il t'attendait.",
+ x:1, l:["V-01","H-01","R-08"],
+ b:"accrocher l'événement de sommeil du joueur"},
+
+{id:"R-07",c:"R",s:"neuf",t:"Il t'a attendu",
+ i:"Après une longue absence, il est apathique quelques minutes : il joue moins, il reste près de son coin. <b>Aucune pénalité mécanique.</b> Le livre écrit une seule ligne : « Il t'a attendu. »",
+ j:"On le voit et on a envie de s'en occuper.",
+ p:"L'absence laisse une trace sans rien casser.",
+ a:"La culpabilité douce attache. La punition, non. Il faut viser très précisément entre les deux.",
+ x:1, l:["R-04","H-05"],
+ b:"respecte la règle : rien ne se dégrade hors ligne"},
+
+{id:"R-08",c:"R",s:"neuf",t:"Il te repère sans te voir",
+ i:"Quand tu arrives derrière lui, il tourne la tête avant que tu sois dans son champ de vision. Pour les autres joueurs, non — il faut qu'il les voie.",
+ j:"Rien.",
+ p:"Il te distingue par autre chose que par les yeux.",
+ a:"C'est une des choses les plus troublantes qu'un animal fasse, et c'est un simple test de propriétaire.",
+ x:1, l:["S-08","R-01"],
+ b:"une exception dans le contrôle du regard"},
+
+{id:"R-09",c:"R",s:"neuf",t:"C'est lui qui vient réclamer",
+ i:"Au-delà d'un certain niveau de complicité, il vient de lui-même se mettre sous ta main et attend. S'il n'obtient rien, il insiste une fois, puis abandonne.",
+ j:"On caresse. Ou on ne caresse pas.",
+ p:"L'initiative change de camp.",
+ a:"L'abandon après une seule insistance est ce qui rend le geste bouleversant. Il ne harcèle pas, il propose.",
+ x:2, l:["I-03","R-01","X-06"],
+ b:"un but de faible priorité conditionné à la complicité"},
+
+/* ---------- P — Progression ---------- */
+{id:"P-01",c:"P",s:"etend",top:8,t:"Des jalons, pas des niveaux",
+ i:"À côté du niveau, une liste de <b>choses vécues</b> : première nuit dehors, premier vol, a vu la mer, a survécu à un orage, cent jours ensemble, mille blocs parcourus côte à côte. Chacun daté, situé, et inscrit dans le livre.",
+ j:"On les débloque en jouant, sans jamais les viser.",
+ p:"Sa progression devient une biographie au lieu d'une courbe.",
+ a:"On ne se souvient pas d'être passé niveau 12. On se souvient de la première fois qu'on a vu la mer avec lui.",
+ x:2, l:["L-03","M-01","P-05","R-03"],
+ b:"les moments existent : il manque la liste, les seuils et la page"},
+
+{id:"P-02",c:"P",s:"etend",t:"L'aptitude qui s'ouvre toute seule",
+ i:"À côté des compétences achetées avec des points, des aptitudes qui s'ouvrent quand <b>la condition vécue</b> est remplie : bon nageur après tant de blocs nagés près de toi, pied sûr après tant de temps en montagne.",
+ j:"Elle apparaît. On ne l'a pas choisie, on l'a méritée sans le savoir.",
+ p:"Il se spécialise dans ce qu'il a réellement fait.",
+ a:"Deux joueurs qui jouent différemment obtiennent des bêtes différentes sans avoir rien décidé.",
+ x:2, l:["P-05","P-01","T-01"],
+ b:"étend le système de compétences : une condition au lieu d'un coût"},
+
+{id:"P-03",c:"P",s:"neuf",top:9,t:"La rouille",
+ i:"Un tour qu'on n'a pas pratiqué depuis longtemps devient hésitant : il met plus de temps, il se trompe parfois. Deux ou trois répétitions et il retrouve.",
+ j:"On se remet à travailler un vieux tour, et on le voit revenir.",
+ p:"Ce qu'il sait cesse d'être acquis pour de bon.",
+ a:"Rien ne prouve mieux qu'une chose est vivante que le fait qu'elle puisse se perdre — et rien ne donne plus envie de rejouer avec un vieux compagnon.",
+ x:2, l:["A-01","A-03","H-03"],
+ b:"une date de dernière pratique par mot appris"},
+
+{id:"P-04",c:"P",s:"neuf",t:"L'âge change le rythme, pas la taille",
+ i:"Il ne grandit pas — c'est acté. Mais il vieillit : jeune il est plus vif, plus curieux, plus maladroit ; vieux il est plus calme, il dort davantage, il obéit mieux et il oublie moins.",
+ j:"On le constate sur des dizaines d'heures.",
+ p:"Le temps a un effet visible sans toucher au modèle.",
+ a:"C'est la seule manière honnête de faire vieillir un compagnon quand on a décidé qu'il ne grandirait pas.",
+ x:2, l:["T-01","P-08","H-05"],
+ b:"un facteur d'âge sur la vivacité et sur la fréquence des siestes"},
+
+{id:"P-05",c:"P",s:"neuf",t:"La vocation qui émerge",
+ i:"Au bout d'assez d'heures, le livre lui donne un titre tiré de ce que vous avez réellement fait : compagnon de mine, de voyage, de maison, de nuit. D'abord purement descriptif ; plus tard, un tout petit avantage cohérent.",
+ j:"Ça arrive. Ce n'est pas un choix.",
+ p:"Il porte la marque de votre vie commune.",
+ a:"C'est un titre qu'on montre. Sur un serveur RP, un titre qu'on ne peut pas choisir vaut dix fois un titre qu'on achète.",
+ x:3, l:["P-02","T-01","S-06","L-07"],
+ b:"des seuils sur les compteurs, une clé dans la fiche"},
+
+{id:"P-06",c:"P",s:"neuf",t:"Le palier qu'on ne peut pas contourner",
+ i:"Une ou deux choses ne s'obtiennent qu'avec du temps passé ensemble — ni avec des points, ni avec de la nourriture, ni avec de l'or. Par exemple : qu'il accepte de rester seul dans une pièce sans paniquer.",
+ j:"On attend, sans le savoir.",
+ p:"Il a des étapes que rien n'accélère.",
+ a:"Dans un jeu où tout s'optimise, ce qui résiste à l'optimisation devient précieux.",
+ x:1, l:["P-01","H-05"],
+ b:"un seuil sur le temps ensemble déjà compté"},
+
+{id:"P-07",c:"P",s:"neuf",t:"Une courbe qu'on peut regarder",
+ i:"Une petite frise dans le livre : son humeur moyenne par semaine de jeu, ou le nombre de jalons par période. Dessinée à la main, jamais un graphique de tableur.",
+ j:"On l'ouvre par curiosité et on y voit les creux — la semaine où on ne s'est pas connecté.",
+ p:"Son histoire prend une forme.",
+ a:"Voir un creux dans la courbe de son animal fait un effet qu'aucune phrase ne fait.",
+ x:3, l:["L-07","L-08","H-05"],
+ b:"une moyenne par semaine, plafonnée à une trentaine de valeurs"},
+
+{id:"P-08",c:"P",s:"neuf",t:"Le second souffle des vieux compagnons",
+ i:"Passé un âge, il gagne quelque chose qu'un jeune ne peut pas avoir : il comprend un mot dit à moitié, il retrouve son coin depuis n'importe où, il ne se perd plus jamais.",
+ j:"On s'en aperçoit un jour où on n'a pas fini sa phrase.",
+ p:"L'ancienneté devient un atout, pas une usure.",
+ a:"Ça donne une raison de garder le même compagnon plutôt que d'en prendre un nouveau — le vrai risque de ce genre de mod.",
+ x:2, l:["P-04","A-01","V-01"],
+ b:"assouplir la reconnaissance vocale selon l'âge"},
+
+/* ---------- A — Apprentissage ---------- */
+{id:"A-01",c:"A",s:"neuf",top:10,t:"Le mot qu'il retient tout seul",
+ i:"Si tu prononces souvent le même mot près de lui dans le même contexte, il finit par le retenir <b>sans que tu le lui aies appris</b>. Le livre l'annonce : « Il a retenu un mot tout seul : ‹ allez ›. »",
+ j:"On ne fait rien de spécial. On parle, comme d'habitude.",
+ p:"Il apprend hors du cadre prévu, ce qu'aucun système d'apprentissage explicite ne peut simuler.",
+ a:"C'est le meilleur effet de surprise du catalogue. Le joueur découvre que la bête l'écoutait même quand il ne lui parlait pas.",
+ x:3, l:["A-03","A-04","L-01"],
+ b:"un compteur par mot entendu à portée, un seuil, et le plafond de huit mots"},
+
+{id:"A-02",c:"A",s:"neuf",t:"Le tour à deux temps",
+ i:"Un tour s'apprend par la paire <b>mot + geste</b> — dire le mot en étant accroupi, ou en tenant un objet. Une fois appris, l'un ou l'autre suffit.",
+ j:"On lui apprend en faisant les deux, puis on se contente du geste quand on ne peut pas parler.",
+ p:"Il associe, au lieu de simplement reconnaître.",
+ a:"Le geste silencieux qui marche encore est très gratifiant, et il sauve les joueurs sans micro.",
+ x:3, l:["A-06","A-05","U-01"],
+ b:"la fiche stocke déjà un geste par mot appris"},
+
+{id:"A-03",c:"A",s:"neuf",t:"Le mauvais apprentissage",
+ i:"Si tu le récompenses au mauvais moment, il apprend de travers : il s'assoit quand tu dis « viens ». Le livre le note — « Il confond deux mots » — et ça se corrige en pratiquant.",
+ j:"On s'en aperçoit, on râle, on reprend l'entraînement.",
+ p:"L'apprentissage devient faillible, donc réel.",
+ a:"C'est drôle, c'est frustrant au bon dosage, et ça donne une histoire à raconter. Un compagnon qui a mal appris quelque chose est immédiatement <b>le tien</b>.",
+ x:3, l:["A-01","P-03","X-01"],
+ b:"une confusion stockée comme une paire de mots, effaçable par répétition"},
+
+{id:"A-04",c:"A",s:"neuf",t:"Le mot marche mieux là où il l'a appris",
+ i:"Un mot appris dans ta base est mieux compris dans ta base. Ailleurs, il faut parfois s'y reprendre. L'écart s'efface avec la pratique en terrain nouveau.",
+ j:"On finit par l'entraîner ailleurs exprès.",
+ p:"Son savoir est situé, comme celui d'un vrai animal.",
+ a:"Ça donne une raison concrète de sortir et de travailler ensemble hors de la maison.",
+ x:2, l:["A-01","M-01","L-05"],
+ b:"un lieu joint au mot appris, et un petit malus hors de portée"},
+
+{id:"A-05",c:"A",s:"neuf",t:"L'objet qu'il apprend à chercher",
+ i:"Tu lui montres un objet ; il retient ce type-là et te le rapporte quand il en croise. Un seul type à la fois : lui en montrer un nouveau remplace l'ancien.",
+ j:"On lui montre une fleur, et il ramène des fleurs pendant des semaines.",
+ p:"Il a une mission qu'il s'est vu confier.",
+ a:"La limite à un seul type est ce qui rend le choix intéressant, et ce qui empêche que ça devienne du ramassage automatique.",
+ x:3, l:["R-05","A-02","E-06"],
+ b:"étend RapporterGoal avec un filtre appris"},
+
+{id:"A-06",c:"A",s:"neuf",t:"Il apprend par la répétition du contexte",
+ i:"Sans aucun ordre : si tu t'arrêtes toujours au même endroit avant d'entrer, il finit par s'y asseoir de lui-même en arrivant.",
+ j:"Rien du tout. C'est le principe.",
+ p:"Un savoir qui ne vient pas d'un menu.",
+ a:"C'est la définition même de l'habitude, et c'est ce qui produit la phrase « il fait ça parce qu'on le fait toujours ».",
+ x:3, l:["H-02","I-01","V-01"],
+ b:"compteur par couple (lieu, action) et seuil"},
+
+{id:"A-07",c:"A",s:"etend",t:"Le ton compte autant que le mot",
+ i:"Le mod distingue déjà chuchoté, ordinaire et crié. Qu'il en tire des conséquences : crier fait obéir plus vite mais fait baisser la complicité, chuchoter ne porte pas loin mais rassure une bête effrayée.",
+ j:"On apprend à choisir sa voix selon la situation.",
+ p:"La manière de parler devient un paramètre du dressage.",
+ a:"Découvrir qu'il vaut mieux chuchoter à une bête qui a peur est une leçon qu'aucun tutoriel n'a besoin de donner.",
+ x:2, l:["R-02","M-02","A-08"],
+ b:"la détection de ton existe déjà : il ne manque que les effets"},
+
+{id:"A-08",c:"A",s:"neuf",t:"Il apprend en regardant un autre compagnon",
+ i:"Un compagnon qui passe beaucoup de temps près d'un autre peut lui prendre une manie, ou apprendre un mot que l'autre connaît déjà.",
+ j:"On ne fait rien. On voit apparaître un geste qui n'est pas de chez soi.",
+ p:"Il a une source d'apprentissage qui n'est pas toi.",
+ a:"Sur un serveur, ça crée des lignées de comportements. Deux amis finissent avec des compagnons qui se ressemblent — et ils le remarquent.",
+ x:3, l:["S-03","T-03","S-08"],
+ b:"greffe sur Voisinages, avec une probabilité très faible"},
+
+/* ---------- V — Vie autour de toi ---------- */
+{id:"V-01",c:"V",s:"neuf",top:11,t:"Son coin",
+ i:"Il choisit <b>lui-même</b> un endroit dans ta base et y revient : près d'une source de lumière, à l'abri, avec vue, pas loin de ton lit. Le joueur ne le désigne pas. Le livre le nomme : « Son coin est près de la cheminée. »",
+ j:"On le trouve là quand on rentre. On finit par aménager autour.",
+ p:"Il a un chez-lui à l'intérieur de ton chez-toi.",
+ a:"C'est le geste qui transforme une base en maison. Et le fait qu'il l'ait choisi tout seul est tout ce qui compte.",
+ x:3, l:["V-02","V-07","R-06","L-05"],
+ b:"une évaluation de quelques blocs candidats, une fois par jour de jeu"},
+
+{id:"V-02",c:"V",s:"neuf",t:"Il déménage quand la maison change",
+ i:"Si tu déplaces le feu, si tu mures la fenêtre, il réévalue et change de coin — pas immédiatement, après quelques jours.",
+ j:"On construit, et on voit qu'il a bougé.",
+ p:"Il réagit à l'architecture, ce que presque aucun mob ne fait.",
+ a:"Le délai est essentiel : une bête qui change instantanément est un algorithme, une bête qui met trois jours est une bête.",
+ x:2, l:["V-01","V-08"],
+ b:"la même évaluation, avec une hystérésis"},
+
+{id:"V-03",c:"V",s:"neuf",t:"Il s'occupe pendant que tu construis",
+ i:"Quand tu restes immobile plus d'une trentaine de secondes, il arrête de suivre et fait autre chose dans la pièce : il inspecte, il s'assoit, il regarde par la fenêtre. Il reprend dès que tu bouges.",
+ j:"On construit. Il vit derrière nous.",
+ p:"Il cesse d'attendre bêtement à un mètre pendant deux heures.",
+ a:"Construire est ce que les joueurs font le plus longtemps. C'est là qu'il faut mettre de la vie, et c'est justement là qu'il n'y en a jamais.",
+ x:2, l:["V-06","X-03","I-01"],
+ b:"un but déclenché par l'immobilité du propriétaire"},
+
+{id:"V-04",c:"V",s:"neuf",t:"Il t'attend à l'entrée de la mine",
+ i:"Selon son caractère et son espèce, il refuse de descendre dans le noir et t'attend à l'entrée. Les plus courageux suivent.",
+ j:"On descend, on remonte, il est là.",
+ p:"Il a des limites qui lui sont propres.",
+ a:"Le retrouver à l'endroit exact où on l'a laissé, après une heure, fait plus d'effet qu'une heure de suivi parfait.",
+ x:2, l:["V-05","M-02","E-02"],
+ b:"greffe sur le suivi : une condition d'arrêt selon la lumière et la profondeur"},
+
+{id:"V-05",c:"V",s:"neuf",t:"Il se met dans le passage",
+ i:"Rarement, il se plante exactement là où tu veux aller. Il s'écarte au bout d'un instant, ou si tu le pousses.",
+ j:"On râle. On sourit.",
+ p:"Il occupe l'espace comme un être, pas comme un satellite.",
+ a:"Les petites gênes sont la preuve la plus fiable qu'une chose n'est pas là pour te servir. À doser précisément — trop, c'est un bug.",
+ x:1, l:["X-01","T-04"],
+ b:"une variation de la distance de suivi, très rare"},
+
+{id:"V-06",c:"V",s:"neuf",t:"Il connaît les pièces",
+ i:"Il distingue grossièrement les espaces de ta base — l'atelier, la chambre, l'entrée — et se comporte différemment dans chacun : calme là où tu dors, curieux là où tu ranges.",
+ j:"Rien.",
+ p:"Ta base cesse d'être un décor uniforme pour lui.",
+ a:"Il finit par avoir des habitudes de pièce, comme un chat.",
+ x:4, l:["V-01","V-03","H-02"],
+ b:"un regroupement de lieux mémorisés, sans analyse de bâtiment"},
+
+{id:"V-07",c:"V",s:"neuf",t:"Il rapporte ses affaires dans son coin",
+ i:"Les objets qu'il trouve et que tu ne prends pas, il les emmène dans son coin et les y laisse. Ça finit par faire un petit tas qui lui appartient.",
+ j:"On découvre son tas. On n'y touche pas, ou on y touche et il le remarque.",
+ p:"Il possède quelque chose.",
+ a:"Le petit tas est exactement le genre de détail qu'un joueur montre à ses amis.",
+ x:3, l:["V-01","R-05","V-08"],
+ b:"des objets posés, plafonnés en nombre"},
+
+{id:"V-08",c:"V",s:"neuf",t:"Il n'aime pas qu'on casse son coin",
+ i:"Casser le bloc sur lequel il dort, ou déplacer son tas, provoque une réaction nette : il regarde, il fait un bruit, il boude un moment.",
+ j:"On apprend à ne pas y toucher.",
+ p:"Il a un territoire minuscule qu'il défend sans agressivité.",
+ a:"Se faire reprocher quelque chose par son animal est une expérience rare et très marquante.",
+ x:2, l:["V-01","V-07","X-06"],
+ b:"accrocher l'événement de casse déjà écouté par Curiosite"},
+
+/* ---------- M — Le monde ---------- */
+{id:"M-01",c:"M",s:"etend",top:12,t:"Les premières fois",
+ i:"La première mer, la première neige, le premier village, le premier Nether, le premier orage, la première fois à cent blocs de haut. Chacune donne une réaction sur le moment <b>et</b> une ligne datée dans le livre.",
+ j:"On voyage. Elles tombent toutes seules.",
+ p:"Le monde devient une suite de découvertes partagées.",
+ a:"Page la plus rentable du livre, sans concurrence : elle transforme l'exploration ordinaire en album de souvenirs.",
+ x:2, l:["P-01","L-03","M-03","R-05"],
+ b:"la clé premiere_fois.* existe déjà dans Humeurs — il faut l'élargir et la présenter"},
+
+{id:"M-02",c:"M",s:"neuf",top:13,t:"Une peur nommée, et qu'on peut guérir",
+ i:"Chaque compagnon a une peur précise : l'orage, l'eau profonde, le vide, le noir, les zombies. Elle se voit (il se colle, il refuse d'avancer). Et elle <b>diminue</b> si tu es près de lui pendant ce qu'il craint. Le livre : « Il a moins peur de l'orage qu'avant. »",
+ j:"On reste avec lui pendant l'orage au lieu de partir.",
+ p:"Il a une faiblesse qui donne un rôle au joueur.",
+ a:"C'est la meilleure progression du catalogue : elle ne monte aucun chiffre visible, elle se mérite par la présence, et elle produit une phrase qu'on relit avec fierté.",
+ x:3, l:["T-04","I-06","M-05","P-01"],
+ b:"étend Humeurs, qui gère déjà l'orage et les pattes mouillées"},
+
+{id:"M-03",c:"M",s:"etend",t:"Le biome se lit sur lui",
+ i:"Il frissonne dans le froid et se rapproche, il cherche l'ombre dans le désert, il s'ébroue sous la pluie, il éternue dans le sable.",
+ j:"On voyage.",
+ p:"Le monde agit sur lui au lieu de défiler.",
+ a:"Traverser un désert avec quelqu'un qui a chaud n'est pas traverser un désert.",
+ x:2, l:["M-09","M-01","E-02"],
+ b:"étend Humeurs : ajouter des cas de biome"},
+
+{id:"M-04",c:"M",s:"neuf",t:"Il refuse certains blocs",
+ i:"Il contourne le sable des âmes, il évite l'eau, il n'aime pas la glace. Deux ou trois préférences par compagnon, pas par espèce.",
+ j:"On le voit faire un détour.",
+ p:"Sa manière de se déplacer devient reconnaissable.",
+ a:"Un détour est plus expressif qu'une animation : c'est une décision qu'on voit prendre.",
+ x:2, l:["M-02","T-04"],
+ b:"un coût de chemin par type de bloc"},
+
+{id:"M-05",c:"M",s:"etend",t:"L'orage",
+ i:"L'orage est déjà géré. En faire un vrai moment : il cherche l'abri, il se colle, et si tu restes dehors avec lui, ça compte double pour la peur et pour la complicité.",
+ j:"On choisit de rester ou de rentrer.",
+ p:"Un événement météo devient un événement relationnel.",
+ a:"Les meilleurs souvenirs d'un animal sont des soirs de tempête.",
+ x:1, l:["M-02","R-01","L-03"],
+ b:"étend Humeurs.orage"},
+
+{id:"M-06",c:"M",s:"neuf",t:"La nuit, selon l'espèce",
+ i:"L'oiseau s'endort au crépuscule et devient lourd ; le dragon se réveille. La nuit ne veut pas dire la même chose pour tout le monde.",
+ j:"On adapte, ou on porte son oiseau endormi.",
+ p:"L'espèce devient un rythme, pas une texture.",
+ a:"Avoir une bête nocturne quand on joue le soir, c'est avoir choisi la bonne.",
+ x:2, l:["E-01","H-01","X-04"],
+ b:"un champ de rythme dans la fiche d'espèce"},
+
+{id:"M-07",c:"M",s:"neuf",t:"Il montre ce qu'il trouve",
+ i:"Il repère quelque chose que tu n'as pas vu — un coffre, un minerai affleurant, un animal, une fleur rare — et il le désigne : il s'y rend, il se retourne vers toi, il attend.",
+ j:"On le suit, ou pas.",
+ p:"Il apporte de l'information au lieu d'en consommer.",
+ a:"C'est le geste du chien de chasse, et il donne envie de l'emmener partout.",
+ x:3, l:["I-04","A-05","E-06"],
+ b:"une recherche espacée, filtrée par espèce, budgetée"},
+
+{id:"M-08",c:"M",s:"neuf",t:"Il évite tes cultures",
+ i:"Il ne marche pas sur les champs labourés, il contourne les pousses.",
+ j:"Rien. On le remarque le jour où on s'aperçoit qu'il n'a jamais rien piétiné.",
+ p:"Il a des égards.",
+ a:"Une absence de nuisance, remarquée, vaut une présence agréable.",
+ x:1, l:["M-04","V-08"],
+ b:"un coût de chemin sur les terres labourées"},
+
+{id:"M-09",c:"M",s:"neuf",t:"Il se salit, et il sèche",
+ i:"La boue, la neige, la pluie laissent une trace visible qui s'estompe. Une teinte, pas une texture supplémentaire.",
+ j:"Rien.",
+ p:"Son état physique raconte d'où il vient.",
+ a:"Rentrer d'une expédition avec une bête crottée est une image, et une image se retient.",
+ x:3, l:["M-03","M-01"],
+ b:"une surcouche de couleur au rendu, sans nouvelle texture par espèce"},
+
+{id:"M-10",c:"M",s:"neuf",t:"Le besoin de hauteur",
+ i:"Une bête qui vole et qu'on garde au sol trop longtemps devient nerveuse : elle regarde le ciel, elle s'agite. Un vol la calme.",
+ j:"On la laisse voler de temps en temps.",
+ p:"Voler cesse d'être un moyen de transport pour devenir un besoin.",
+ a:"Un besoin non satisfait qui ne punit pas mais qui se voit est le meilleur moteur d'attention qui soit.",
+ x:2, l:["E-02","M-06","P-02"],
+ b:"un compteur de temps sans voler, pour les espèces qui volent"},
+
+/* ---------- S — Les autres ---------- */
+{id:"S-01",c:"S",s:"etend",t:"Il a un avis sur les autres joueurs",
+ i:"Le mod compte déjà les connaissances par joueur. En tirer une opinion : qui l'a nourri, qui l'a caressé, qui l'a frappé, qui est simplement souvent là. Le livre affiche trois noms au maximum, avec un mot chacun.",
+ j:"On lit la page, et on découvre qu'il aime bien quelqu'un.",
+ p:"Il a une vie sociale qui n'est pas la tienne.",
+ a:"Sur un serveur à mille joueurs, apprendre que le compagnon de quelqu'un vous aime bien est une monnaie sociale réelle.",
+ x:2, l:["S-02","S-04","L-06","I-10"],
+ b:"étend connaissance(UUID), déjà stocké"},
+
+{id:"S-02",c:"S",s:"neuf",t:"Il ne se laisse pas caresser par n'importe qui",
+ i:"Un inconnu qui tend la main se fait esquiver. Il faut plusieurs rencontres, ou un peu de nourriture, pour y avoir droit.",
+ j:"On essaie de caresser le compagnon d'un autre. On échoue. On revient.",
+ p:"Sa confiance a un prix pour les autres aussi.",
+ a:"Le jour où le compagnon d'un ami se laisse enfin toucher est un vrai moment, et il ne coûte rien à fabriquer.",
+ x:2, l:["S-01","R-02"],
+ b:"un seuil sur la connaissance du joueur qui interagit"},
+
+{id:"S-03",c:"S",s:"etend",t:"Amitiés et inimitiés entre compagnons",
+ i:"Les voisinages existent et produisent des familiers. Ajouter le versant négatif : deux bêtes qui se sont disputées s'évitent, changent de trottoir, s'ignorent ostensiblement.",
+ j:"On voit sa bête faire un détour dans la salle commune.",
+ p:"Il a des relations, pas seulement des connaissances.",
+ a:"Une inimitié entre deux compagnons devient une histoire entre deux joueurs. C'est du contenu RP produit gratuitement.",
+ x:2, l:["S-01","A-08","L-06"],
+ b:"étend Voisinages avec un signe"},
+
+{id:"S-04",c:"S",s:"neuf",t:"Il se méfie de qui t'a frappé",
+ i:"Si un joueur te blesse devant lui, il le retient et se méfie de lui longtemps.",
+ j:"Rien. On s'en aperçoit plus tard.",
+ p:"Il prend parti.",
+ a:"Sur un serveur RP, c'est un témoin. Et un témoin qui n'oublie pas est un excellent moteur d'histoires.",
+ x:2, l:["S-01","I-05","R-02"],
+ b:"accrocher l'événement de dégâts sur le propriétaire"},
+
+{id:"S-05",c:"S",s:"neuf",t:"La foule le change",
+ i:"Au-delà d'un certain nombre de joueurs autour, il se comporte autrement : il se colle, ou au contraire il se disperse et va voir. Selon sa sociabilité.",
+ j:"On entre dans la salle commune et son comportement change.",
+ p:"Il a un rapport au groupe.",
+ a:"Sur un serveur plein, c'est la situation la plus fréquente du jeu — et aujourd'hui elle ne produit rien.",
+ x:2, l:["S-08","T-02"],
+ b:"le compte de joueurs proches est déjà connu"},
+
+{id:"S-06",c:"S",s:"neuf",t:"La page publique",
+ i:"Les autres joueurs peuvent voir une version courte de sa fiche : nom, espèce, âge, vocation, et une anecdote. Jamais les jauges, jamais les compétences.",
+ j:"Clic droit sur un compagnon qui n'est pas le sien.",
+ p:"Il devient présentable.",
+ a:"On montre son animal. C'est la moitié du plaisir d'en avoir un.",
+ x:2, l:["S-01","L-07","P-05"],
+ b:"une vue restreinte des données déjà envoyées au livre"},
+
+{id:"S-07",c:"S",s:"neuf",t:"Il te cherche quand tu es loin dans la foule",
+ i:"Séparé de toi au milieu de trente joueurs, il ne se contente pas de suivre le plus proche : il te cherche activement, il monte sur quelque chose, il appelle.",
+ j:"On se perd dans une foule. Il arrive.",
+ p:"Il te distingue vraiment des autres.",
+ a:"Se faire retrouver est une des sensations les plus fortes qu'un animal puisse donner.",
+ x:2, l:["R-08","S-05"],
+ b:"un comportement de recherche au-delà d'une distance"},
+
+{id:"S-08",c:"S",s:"neuf",t:"Les compagnons se copient",
+ i:"Une manie très visible peut se propager d'un compagnon à un autre qui le côtoie longtemps. Rarement, et jamais plus d'une.",
+ j:"On remarque que sa bête fait le geste de celle d'un ami.",
+ p:"Les comportements circulent entre joueurs.",
+ a:"Ça crée des « familles » de compagnons sur le serveur, sans qu'aucun système de guilde ait été écrit.",
+ x:3, l:["T-03","A-08","S-03"],
+ b:"greffe sur Voisinages"},
+
+/* ---------- E — Les espèces ---------- */
+{id:"E-01",c:"E",s:"neuf",t:"Un verbe par espèce",
+ i:"Chaque espèce a un comportement que personne d'autre n'a et qui la définit en un mot : l'oiseau se <b>perche</b>, la mouette <b>chaparde</b>, le dragon <b>s'étale</b>. Un seul, mais irremplaçable.",
+ j:"On le voit dès la première heure.",
+ p:"L'espèce cesse d'être une texture et un modèle.",
+ a:"Choisir une espèce devient choisir une façon de vivre à côté de soi.",
+ x:2, l:["E-02","E-06","T-03"],
+ b:"un but supplémentaire déclaré dans la fiche d'espèce"},
+
+{id:"E-02",c:"E",s:"neuf",t:"Un besoin par espèce",
+ i:"La mouette a besoin de chiper, l'oiseau a besoin de voler, le dragon a besoin de chaleur. Non satisfait, ça se voit ; satisfait, ça ne donne aucun bonus.",
+ j:"On finit par organiser sa base autour.",
+ p:"S'occuper de lui devient spécifique à lui.",
+ a:"Un besoin crée un soin, un soin crée un attachement. Et l'absence de bonus est ce qui empêche que ça devienne une corvée d'optimisation.",
+ x:2, l:["M-10","E-01","V-01"],
+ b:"un champ dans la fiche d'espèce, une jauge cachée"},
+
+{id:"E-03",c:"E",s:"etend",t:"Des vocabulaires différents",
+ i:"L'oiseau comprend beaucoup de mots mais obéit mollement ; le dragon en comprend peu mais obéit franchement. Le plafond de mots appris devient un champ d'espèce.",
+ j:"On dresse différemment selon la bête.",
+ p:"Le dressage prend une couleur par espèce.",
+ a:"Deux joueurs qui ont dressé des espèces différentes ont des choses différentes à raconter.",
+ x:1, l:["A-01","E-01","I-07"],
+ b:"le plafond de huit mots devient une valeur d'espèce"},
+
+{id:"E-04",c:"E",s:"etend",t:"Un goût individuel dans l'espèce",
+ i:"Pas « les mouettes aiment le poisson » mais « <b>ta</b> mouette préfère le saumon ». Découvert par essais, puis noté dans le livre.",
+ j:"On teste des nourritures et on note la réaction.",
+ p:"Même à l'intérieur d'une espèce, il n'est pas interchangeable.",
+ a:"Connaître le plat préféré de son animal est une des choses les plus intimes qu'on puisse savoir de lui.",
+ x:1, l:["E-02","L-04","R-05"],
+ b:"objet_prefere.* existe déjà dans les moments"},
+
+{id:"E-05",c:"E",s:"neuf",t:"Une peur d'espèce et une peur personnelle",
+ i:"Toutes les mouettes ont peur des loups ; celle-ci a peur en plus des endroits fermés. Deux peurs, l'une commune, l'autre à elle.",
+ j:"On découvre la seconde par accident.",
+ p:"Il partage quelque chose avec les siens tout en restant lui.",
+ a:"Le mélange du typique et du singulier est exactement la recette d'un personnage.",
+ x:2, l:["M-02","T-04","E-01"],
+ b:"une peur dans la fiche d'espèce, une tirée à la naissance"},
+
+{id:"E-06",c:"E",s:"neuf",t:"Ce que seule cette espèce remarque",
+ i:"L'oiseau voit de loin et de haut ; la mouette repère la nourriture à travers les murs ; le dragon sent les minerais. Chacune signale une chose que les autres ignorent.",
+ j:"On emmène celui qui sert là où on va.",
+ p:"L'espèce devient un point de vue sur le monde.",
+ a:"C'est ce qui donne envie d'en avoir plusieurs — et de les prêter.",
+ x:3, l:["M-07","I-04","E-01"],
+ b:"une clé de détection dans la fiche d'espèce"},
+
+/* ---------- L — Le livre ---------- */
+{id:"L-01",c:"L",s:"neuf",top:14,t:"Le livre s'écrit tout seul, en phrases",
+ i:"Arrêter d'aligner des valeurs. Le livre est rédigé : « Le 14<sup>e</sup> jour, près de la rivière, il a vu la mer pour la première fois. » Les phrases sont composées à partir du journal, avec quelques tournures par type d'événement.",
+ j:"On l'ouvre, et on lit.",
+ p:"Sa vie devient un texte au lieu d'un état.",
+ a:"C'est ce qui distingue une fiche de santé d'un carnet de bord. Et un carnet, on le relit.",
+ x:3, l:["L-03","P-01","M-01","R-03"],
+ b:"le journal (pièce 2) rend cette page presque automatique"},
+
+{id:"L-02",c:"L",s:"neuf",t:"Les pages se remplissent au lieu d'exister",
+ i:"Une page vide n'est pas absente : elle est là, pâle, avec son titre et une ligne qui dit ce qu'il faudrait vivre pour la remplir.",
+ j:"On voit ce qui reste à découvrir sans qu'on nous donne une liste de quêtes.",
+ p:"Sa fiche a un avenir visible.",
+ a:"Le vide qui promet est plus motivant qu'une barre de progression.",
+ x:2, l:["L-01","P-01","U-04"],
+ b:"purement d'affichage"},
+
+{id:"L-03",c:"L",s:"neuf",t:"La page des premières fois",
+ i:"Une double page qui ne contient que ça : chaque première fois, sa date, son lieu. Rien d'autre. C'est la page qu'on montre.",
+ j:"On l'ouvre pour se souvenir.",
+ p:"Sa biographie tient en un coup d'œil.",
+ a:"C'est la page qui fera rouvrir le livre après cent heures. Sans elle, il n'y a pas de raison d'y revenir.",
+ x:2, l:["M-01","P-01","L-01"],
+ b:"lit le journal, n'ajoute aucune donnée"},
+
+{id:"L-04",c:"L",s:"neuf",t:"La page de ses habitudes et de ses manies",
+ i:"Ce qu'il fait toujours, ce qu'il ne fait jamais, son défaut, son plat préféré, son heure. Écrit comme un portrait, pas comme un tableau.",
+ j:"On la lit une fois, puis on la relit quand une ligne s'ajoute.",
+ p:"Son portrait est écrit noir sur blanc.",
+ a:"Lire par écrit un truc qu'on avait remarqué soi-même en jouant fait un effet particulier : la confirmation qu'on ne l'avait pas imaginé.",
+ x:2, l:["T-03","T-04","E-04","H-02"],
+ b:"lit les compteurs et les manies"},
+
+{id:"L-05",c:"L",s:"neuf",t:"La carte de ses lieux",
+ i:"Un petit croquis : son coin, l'endroit où tu le nourris, celui où tu es mort, celui qu'il n'aime pas. Dessiné à la main, sans coordonnées.",
+ j:"On la regarde et on reconnaît sa base.",
+ p:"Sa mémoire devient spatiale et visible.",
+ a:"Voir sa propre base dessinée à travers les yeux de sa bête est un très joli renversement.",
+ x:4, l:["V-01","I-05","I-01"],
+ b:"les lieux existent — c'est le rendu qui coûte"},
+
+{id:"L-06",c:"L",s:"neuf",t:"La page des autres",
+ i:"Les compagnons qu'il connaît, ceux qu'il évite, les joueurs qu'il apprécie. Trois colonnes courtes.",
+ j:"On la consulte avant une soirée RP.",
+ p:"Sa vie sociale est lisible.",
+ a:"Ça donne des raisons de faire se rencontrer les compagnons exprès.",
+ x:2, l:["S-01","S-03","S-08"],
+ b:"lit les voisinages et les connaissances"},
+
+{id:"L-07",c:"L",s:"neuf",t:"Des chiffres racontés",
+ i:"Aucune statistique brute. « Vous avez marché ensemble de quoi traverser deux fois la carte. » « Il a passé plus de temps sur ton épaule que par terre. » « Il t'a réveillé quarante et une fois. »",
+ j:"On les lit et on les répète aux copains.",
+ p:"Les compteurs sortent de la technique pour entrer dans le récit.",
+ a:"Ces phrases sont exactement ce que les joueurs mettent en capture d'écran.",
+ x:2, l:["P-07","L-01","S-06"],
+ b:"lit les compteurs (pièce 1)"},
+
+{id:"L-08",c:"L",s:"neuf",t:"Le livre vieillit",
+ i:"Le papier jaunit avec le temps, l'écriture s'accumule, des annotations apparaissent en marge. Purement visuel.",
+ j:"On ne le remarque qu'en comparant avec le livre d'un nouveau compagnon.",
+ p:"L'ancienneté devient tangible sans un chiffre.",
+ a:"La différence entre un livre neuf et un livre de six mois est une récompense qu'on ne peut pas acheter.",
+ x:3, l:["P-07","L-01","U-06"],
+ b:"quelques variantes de fond selon l'âge"},
+
+{id:"L-09",c:"L",s:"neuf",t:"La page que tu écris",
+ i:"Une page libre où le joueur note ce qu'il veut : deux ou trois lignes, gardées avec la fiche.",
+ j:"On y met une bêtise mémorable, un surnom, une date.",
+ p:"Le joueur devient co-auteur de la fiche.",
+ a:"Sous-estimé et redoutable : ce que le joueur a écrit lui-même est ce qu'il ne pourra jamais abandonner.",
+ x:2, l:["L-03","S-06"],
+ b:"un champ de texte plafonné, avec les précautions d'usage"},
+
+{id:"L-10",c:"L",s:"neuf",t:"Le livre existe même quand il est rangé",
+ i:"Compagnon rangé, le livre reste consultable et affiche où il est et ce qu'il fait — « il t'attend dans la salle commune ».",
+ j:"On l'ouvre au travail, façon de parler.",
+ p:"Il continue d'exister quand il n'est pas là.",
+ a:"C'est ce qui empêche un compagnon rangé de cesser d'exister dans la tête du joueur.",
+ x:1, l:["L-01","U-04"],
+ b:"en partie déjà là dans le carnet"},
+
+/* ---------- U — Interfaces ---------- */
+{id:"U-01",c:"U",s:"neuf",t:"La roue ne montre que ce qui a du sens ici",
+ i:"Les entrées de la roue dépendent du lieu, de l'heure et de ce qu'il sait faire. Dans l'eau, l'entrée « nage » ; devant un coffre, « attends ici ». Jamais plus de six.",
+ j:"On ouvre la roue et ce qu'on cherchait est là.",
+ p:"Il donne l'impression de proposer plutôt que d'attendre.",
+ a:"Une roue courte s'ouvre. Une roue longue ne s'ouvre plus, et tout le contenu qu'elle contient meurt avec.",
+ x:3, l:["A-02","U-03","E-01"],
+ b:"un filtre de contexte sur les entrées existantes"},
+
+{id:"U-02",c:"U",s:"etend",t:"Le panneau dit l'humeur par la forme",
+ i:"Les trois barres restent, mais leur <b>forme</b> parle : une barre d'humeur basse s'affaisse, une barre d'énergie pleine respire doucement. Aucun chiffre.",
+ j:"On lit son état d'un coup d'œil sans lâcher la souris.",
+ p:"Son état a une texture.",
+ a:"On finit par lire l'humeur comme on lit un visage.",
+ x:2, l:["R-01","U-06"],
+ b:"étend le panneau existant"},
+
+{id:"U-03",c:"U",s:"neuf",t:"« Il pense à… »",
+ i:"De temps en temps, une icône minuscule apparaît une seconde dans le panneau : ce qui l'occupe maintenant — un bruit, une odeur, un joueur, la faim.",
+ j:"On la voit du coin de l'œil.",
+ p:"On accède une seconde à ce qui se passe dans sa tête.",
+ a:"C'est la fenêtre la moins chère qu'on puisse ouvrir sur une intériorité.",
+ x:2, l:["U-02","I-01","X-03"],
+ b:"expose ce que le budget d'attention a choisi"},
+
+{id:"U-04",c:"U",s:"neuf",t:"Le livre s'ouvre là où il y a du neuf",
+ i:"À l'ouverture, il tombe sur la page qui a changé depuis la dernière consultation, avec la ligne neuve marquée discrètement.",
+ j:"On ouvre, on lit la nouveauté, on referme.",
+ p:"Sa fiche a un fil d'actualité sans notification.",
+ a:"C'est ce qui donne une raison de rouvrir le livre tous les jours sans jamais y être poussé.",
+ x:2, l:["L-02","U-05","L-01"],
+ b:"une date de dernière lecture par joueur"},
+
+{id:"U-05",c:"U",s:"neuf",t:"Une pastille, jamais un message",
+ i:"Quand il y a du neuf dans le livre, un point discret sur l'icône. Rien dans le chat, jamais.",
+ j:"On le remarque, ou pas.",
+ p:"Il ne réclame pas l'attention.",
+ a:"Le respect du silence est ce qui fait qu'un mod se garde installé pendant un an.",
+ x:1, l:["U-04"],
+ b:"un booléen"},
+
+{id:"U-06",c:"U",s:"neuf",t:"Le portrait change avec lui",
+ i:"Le rendu 3D du carnet reflète son état réel : sa pose du moment, sa saleté, son humeur, ses accessoires. Ce n'est jamais une image générique de l'espèce.",
+ j:"On ouvre le carnet et on le voit tel qu'il est en ce moment.",
+ p:"Le portrait est un miroir, pas une illustration.",
+ a:"Voir sa bête boueuse et fatiguée dans son propre carnet est plus fort que n'importe quelle barre.",
+ x:3, l:["M-09","U-02","L-08"],
+ b:"le rendu 3D du carnet existe déjà"},
+
+/* ---------- X — Les imprévus ---------- */
+{id:"X-01",c:"X",s:"neuf",t:"La bêtise",
+ i:"Rarement : il renverse quelque chose, il te chipe un aliment, il tombe à l'eau. Puis il a l'air gêné.",
+ j:"On râle, puis on raconte.",
+ p:"Il est faillible.",
+ a:"Les erreurs sont la preuve de vie la plus efficace du répertoire. Un être qui ne se trompe jamais n'est pas un être.",
+ x:2, l:["T-04","V-05","A-03"],
+ b:"une poignée de bêtises en données, sous budget d'attention"},
+
+{id:"X-02",c:"X",s:"neuf",t:"Le moment rare",
+ i:"Une fois toutes les quelques dizaines d'heures, quelque chose d'inhabituel et sans conséquence : il fixe le ciel une minute, il tourne trois fois autour de toi, il rapporte un objet qu'il n'aurait pas dû trouver.",
+ j:"Rien.",
+ p:"Sa vie a des accidents.",
+ a:"C'est ce qu'on raconte le lendemain. Et ce qui se raconte est ce qui fait rester.",
+ x:2, l:["X-03","X-07","L-01"],
+ b:"une table d'événements rares, sous budget"},
+
+{id:"X-03",c:"X",s:"neuf",t:"L'obsession passagère",
+ i:"Pendant un jour ou deux de jeu, il est fasciné par une chose : un bloc, un mob, un endroit. Il y retourne, il la fixe. Puis ça passe.",
+ j:"On le remarque, on s'en amuse, et on se demande pourquoi.",
+ p:"Il a des lubies.",
+ a:"Le fait que ça passe tout seul, et qu'on ne sache pas pourquoi c'était arrivé, est exactement ce qui rend ça crédible.",
+ x:2, l:["X-02","V-03","U-03"],
+ b:"une cible temporaire et un compte à rebours"},
+
+{id:"X-04",c:"X",s:"neuf",t:"La sieste",
+ i:"Il s'endort vraiment, au mauvais moment, dans une position idiote. On peut le réveiller — il n'apprécie pas.",
+ j:"On le trouve endormi et on hésite à le réveiller.",
+ p:"Il a des besoins qui coupent le service.",
+ a:"L'hésitation à réveiller quelqu'un est un sentiment très fort à produire dans un jeu.",
+ x:1, l:["T-07","H-01","R-06"],
+ b:"un état de sommeil et une pose"},
+
+{id:"X-05",c:"X",s:"neuf",t:"Son anniversaire",
+ i:"Une fois par an de temps de jeu, un jour où il est plus joueur que d'habitude, et une ligne dans le livre.",
+ j:"On tombe dessus par hasard.",
+ p:"Sa vie a un calendrier.",
+ a:"Le hasard de tomber dessus vaut mieux qu'une annonce.",
+ x:1, l:["P-01","H-05"],
+ b:"une comparaison de dates"},
+
+{id:"X-06",c:"X",s:"neuf",t:"Le mauvais jour",
+ i:"Rarement, il est de mauvaise humeur sans raison identifiable : il boude, il traîne, il obéit mollement. Ça passe.",
+ j:"On fait avec.",
+ p:"Il a des états qui ne dépendent pas de toi.",
+ a:"C'est le seul endroit du catalogue où l'inexpliqué est permis — parce que c'est exactement comme ça que ça se passe avec un vrai animal.",
+ x:1, l:["R-09","I-06","V-08"],
+ b:"un modificateur d'humeur temporaire"},
+
+{id:"X-07",c:"X",s:"neuf",t:"Il fait une chose que tu ne lui as pas apprise",
+ i:"Très rarement, il exécute correctement un ordre qu'il n'a jamais appris, une seule fois, comme par hasard.",
+ j:"On n'en croit pas ses yeux. On réessaie. Ça ne remarche pas.",
+ p:"Il a des éclairs.",
+ a:"L'impossibilité de reproduire est ce qui transforme un événement en anecdote, et une anecdote en légende de serveur.",
+ x:1, l:["X-02","A-01"],
+ b:"une probabilité minuscule sur un mot inconnu"},
+
+/* ---------- H — Le temps ---------- */
+{id:"H-01",c:"H",s:"etend",t:"La journée a un rythme",
+ i:"Les heures de repas existent. Étendre à toute la journée : plus vif le matin, calme au milieu, retour au coin le soir. Le rythme se cale sur les heures où <b>tu</b> joues.",
+ j:"On finit par reconnaître son moment de la journée.",
+ p:"Il a une routine.",
+ a:"Une routine est ce qu'on remarque quand elle est rompue — et c'est là qu'on comprend qu'elle existait.",
+ x:2, l:["T-07","H-03","X-04"],
+ b:"étend la machinerie des heures habituelles"},
+
+{id:"H-02",c:"H",s:"neuf",t:"L'habitude se voit longtemps avant d'être nommée",
+ i:"Il commence par faire la chose. Plusieurs heures de jeu plus tard seulement, le livre la nomme : « Il t'attend toujours à la porte. » Jamais l'inverse.",
+ j:"On remarque, puis on lit la confirmation.",
+ p:"Ses habitudes émergent au lieu d'être déclarées.",
+ a:"L'ordre est tout : nommer avant de montrer transforme un comportement vivant en fonctionnalité annoncée.",
+ x:2, l:["A-06","L-04","I-01"],
+ b:"un délai entre le seuil de comportement et le seuil d'écriture"},
+
+{id:"H-03",c:"H",s:"neuf",t:"L'habitude cassée",
+ i:"Si une habitude devient impossible — tu as muré la porte où il t'attendait — il est déboussolé quelques jours : il y retourne, il cherche, puis il en prend une autre.",
+ j:"On le voit chercher.",
+ p:"Ses habitudes ont un poids réel.",
+ a:"Le voir chercher quelque chose qui n'existe plus est le moment le plus attendrissant qu'on puisse écrire en trente lignes.",
+ x:2, l:["H-02","V-02","P-03"],
+ b:"une vérification quand l'habitude échoue plusieurs fois"},
+
+{id:"H-04",c:"H",s:"neuf",t:"Il t'attend à l'heure où tu rentres d'habitude",
+ i:"S'il repère que tu te connectes souvent à la même heure du jeu, il est à l'entrée à ce moment-là.",
+ j:"On arrive, il est là.",
+ p:"Il t'attend au sens propre.",
+ a:"Être attendu est la sensation centrale de tout le mod. Si une seule idée devait passer, ce serait peut-être celle-là.",
+ x:2, l:["H-01","R-04","V-01"],
+ b:"la même moyenne d'heures que pour les repas"},
+
+{id:"H-05",c:"H",s:"etend",t:"Le temps compte en heures ensemble, jamais en jours de calendrier",
+ i:"Tout ce qui vieillit se mesure au temps réellement passé côte à côte. Un joueur qui joue deux heures par semaine progresse, il est seulement plus lent.",
+ j:"Rien.",
+ p:"Son âge est un âge relationnel.",
+ a:"C'est ce qui garantit qu'un joueur occasionnel n'est jamais puni, et que le temps passé ensemble reste la seule monnaie.",
+ x:1, l:["P-04","P-06","R-07"],
+ b:"ticksEnsemble existe déjà — il faut que tout s'y branche"},
+
+/* ---------- Q — Les missions ---------- */
+{id:"Q-01",c:"Q",s:"neuf",top:15,t:"Le carnet de missions",
+ i:"Une page du livre propose <b>trois missions à la fois</b>, renouvelées tous les trois jours — comptés en jours réellement joués, jamais en jours de calendrier. On ne les accepte pas : elles sont là, et elles se cochent toutes seules quand on les a vécues.",
+ j:"On ouvre le livre, on voit ce qui est proposé, et on va faire autre chose. Deux jours plus tard on s’aperçoit qu’on en a rempli une sans y avoir pensé.",
+ p:"Il a des choses à faire avec toi qui ne viennent pas de toi.",
+ a:"Le fait qu’elles se cochent toutes seules est essentiel : une mission qu’on <b>accepte</b> devient une tâche, une mission qu’on <b>découvre avoir accomplie</b> reste un souvenir.",
+ x:3, l:["Q-02","Q-03","P-01","L-02"],
+ b:"trois clés dans la fiche et une date de renouvellement — les compteurs (pièce 1) font tout le reste"},
+
+{id:"Q-02",c:"Q",s:"neuf",top:16,t:"Des milliers de missions, sans en écrire mille",
+ i:"On n’écrit pas trois mille missions : on écrit <b>une quarantaine de moules</b> et on les remplit. « Fais-lui goûter <em>n</em> × <em>aliment</em> », « emmène-le voir <em>lieu</em> », « passe <em>n</em> nuits <em>quelque part</em> », « apprends-lui un mot <em>dans tel endroit</em> ». Quarante moules × une dizaine de paramètres × trois difficultés donnent déjà bien plus de trois mille énoncés distincts.",
+ j:"Il ne voit que le résultat : une mission concrète, et jamais deux fois la même.",
+ p:"Sa vie propose sans cesse quelque chose de nouveau à essayer.",
+ a:"C’est ce qui empêche le carnet de devenir répétitif au bout de deux semaines — le vrai piège de tous les systèmes de missions.",
+ x:4, l:["Q-01","Q-03","Q-04","Q-05"],
+ b:"des moules en JSON, comme les compétences et les bobos : aucun code par mission"},
+
+{id:"Q-03",c:"Q",s:"neuf",t:"Les missions demandent de vivre, jamais de farmer",
+ i:"Aucune mission du genre « tue trente zombies ». Toutes portent sur la vie commune : lui faire découvrir un biome, rester dehors pendant un orage, le laisser voler, lui apprendre un mot, le nourrir de ce qu’il préfère, le présenter au compagnon d’un ami.",
+ j:"On joue normalement, en un peu plus attentif.",
+ p:"Le carnet devient une liste de choses à vivre.",
+ a:"Une mission qui pousse à s’occuper de sa bête renforce l’attachement ; une mission qui pousse à farmer le détruit. C’est la ligne à ne jamais franchir.",
+ x:1, l:["Q-01","M-01","P-01"],
+ b:"une règle d’écriture des moules, pas du code"},
+
+{id:"Q-04",c:"Q",s:"neuf",t:"La mission que seule ton espèce reçoit",
+ i:"Une des trois est tirée dans le lot propre à l’espèce : voler à cent blocs de haut pour l’oiseau, chiper trois fois de la nourriture pour la mouette.",
+ j:"On découvre des missions que les copains n’auront jamais.",
+ p:"L’espèce a ses propres devoirs.",
+ a:"Comparer ses missions avec un ami qui a une autre bête devient intéressant.",
+ x:2, l:["Q-02","E-01","E-02"],
+ b:"une liste de moules déclarée dans la fiche d’espèce"},
+
+{id:"Q-05",c:"Q",s:"neuf",t:"La mission qui vient de son caractère",
+ i:"Une bête timide reçoit des missions de rencontre, une bête casanière des missions de voyage. Le carnet propose ce qui lui manque, pas ce qu’elle fait déjà tous les jours.",
+ j:"On s’aperçoit que le carnet le connaît.",
+ p:"Ses missions le corrigent, ou le confortent.",
+ a:"Une mission choisie pour <b>lui</b> ne ressemble plus du tout à une quête générique.",
+ x:2, l:["Q-02","T-02","T-01"],
+ b:"une pondération du tirage par les cinq penchants"},
+
+{id:"Q-06",c:"Q",s:"neuf",t:"La mission longue",
+ i:"Une quatrième, permanente, qui court sur des semaines : mille blocs parcourus côte à côte, cent nuits, dix premières fois. Elle ne se renouvelle pas — elle s’achève, une seule fois.",
+ j:"On la voit avancer très lentement, en arrière-plan.",
+ p:"Sa vie a un horizon.",
+ a:"Achever quelque chose qui a demandé un mois vaut cinquante missions de trois jours.",
+ x:2, l:["Q-01","P-01","P-06"],
+ b:"un seul compteur, un seul seuil"},
+
+{id:"Q-07",c:"Q",s:"neuf",t:"On peut en écarter une",
+ i:"Une des trois peut être remplacée, une fois par jour. Pas plus : sinon on retire jusqu’à tomber sur la plus facile, et le système ne veut plus rien dire.",
+ j:"Une mission ne te dit rien, tu la remplaces.",
+ p:"Rien — c’est un confort de joueur.",
+ a:"Ne pas se sentir prisonnier d’une liste est ce qui fait qu’on continue à l’ouvrir.",
+ x:1, l:["Q-01"],
+ b:"un compteur de rejets remis à zéro chaque jour"},
+
+{id:"Q-08",c:"Q",s:"neuf",t:"Une mission accomplie devient un souvenir",
+ i:"Une fois remplie, elle ne disparaît pas : elle passe dans le journal, avec sa date et son lieu, rédigée comme un souvenir et non comme une case cochée.",
+ j:"On la relit des mois plus tard sans se rappeler que c’était une mission.",
+ p:"Ses devoirs deviennent sa biographie.",
+ a:"C’est ce qui fait qu’un système de missions ne laisse pas un goût de liste de courses.",
+ x:1, l:["Q-01","L-01","L-03","P-01"],
+ b:"le journal (pièce 2)"},
+
+/* ---------- C — Le classement ---------- */
+{id:"C-01",c:"C",s:"neuf",top:17,t:"Plusieurs classements, jamais un seul",
+ i:"Un classement au niveau seul récompense celui qui farme et écrase tout ce que ce catalogue essaie de construire. Il en faut <b>quatre ou cinq côte à côte</b>, dont la plupart ne se farment pas : les plus hauts niveaux, mais aussi <em>les plus anciens</em> (temps passé ensemble), <em>les plus complices</em>, <em>les mieux dressés</em> (mots appris et encore sus), <em>les plus voyageurs</em> (premières fois).",
+ j:"Des onglets, comme sur ce que tu m’as montré. On regarde d’abord celui où on est bon.",
+ p:"Sa valeur cesse d’être un seul nombre.",
+ a:"Chaque joueur trouve un classement où il est quelqu’un. Et un joueur qui a passé six mois avec la même bête bat n’importe qui ayant farmé trois semaines — ce qui est exactement le message du mod.",
+ x:3, l:["C-02","C-06","P-01","H-05"],
+ b:"un tri sur les fiches, mis en cache et recalculé de loin en loin"},
+
+{id:"C-02",c:"C",s:"neuf",t:"Ta position, et le nombre de participants",
+ i:"En haut, toujours : « Ta position #47 · Participants 140 », comme sur ta capture. C’est la première chose qu’on regarde, avant même le podium.",
+ j:"On ouvre l’écran et on sait immédiatement où on en est.",
+ p:"Rien — c’est du confort de lecture.",
+ a:"Sans cette ligne, un classement à mille joueurs décourage. Avec elle, on a toujours un objectif à portée de main : gagner trois places.",
+ x:1, l:["C-01","C-03"],
+ b:"le rang est déjà connu une fois le tri fait"},
+
+{id:"C-03",c:"C",s:"neuf",t:"Le podium, puis le voisinage",
+ i:"Les trois premiers en grandes cartes — couronne, médailles — puis la suite en lignes compactes : numéro, joueur, nom du compagnon, espèce, valeur. Et surtout : <b>les cinq au-dessus et les cinq en dessous de toi</b>.",
+ j:"On fait défiler, on se cherche, on se trouve.",
+ p:"Rien.",
+ a:"Voir les cinq juste devant soi donne envie de continuer. Ne voir que le top 10 donne envie d’abandonner.",
+ x:3, l:["C-02","C-04","U-06"],
+ b:"écran client, données envoyées en un paquet plafonné"},
+
+{id:"C-04",c:"C",s:"neuf",t:"Survoler quelqu’un montre son compagnon",
+ i:"Comme sur ta capture : à droite, le compagnon du joueur survolé, en 3D, avec son nom, son espèce, son âge et une anecdote. Le carnet sait déjà faire ce rendu.",
+ j:"On survole la liste et on découvre les bêtes des autres.",
+ p:"Il devient visible par toute la communauté.",
+ a:"C’est là que le classement cesse d’être une compétition pour devenir une galerie. Et une galerie donne envie de soigner sa bête, pas de la farmer.",
+ x:3, l:["C-03","S-06","U-06","L-07"],
+ b:"réutilise le rendu 3D du carnet et la page publique"},
+
+{id:"C-05",c:"C",s:"neuf",t:"Le classement de la semaine",
+ i:"À côté des classements de toujours, un classement remis à zéro : ce qui a été gagné cette semaine seulement.",
+ j:"On regarde le lundi.",
+ p:"Rien.",
+ a:"C’est ce qui laisse une chance à quelqu’un qui commence aujourd’hui. Sans lui, un classement de serveur est verrouillé au bout de trois mois et plus personne ne l’ouvre.",
+ x:2, l:["C-01","Q-01"],
+ b:"une seconde série de compteurs, remise à zéro"},
+
+{id:"C-06",c:"C",s:"neuf",t:"Le classement ne donne aucun avantage",
+ i:"Pas de récompense, pas d’objet, pas de bonus. Au mieux un titre affiché sur la page publique de la bête.",
+ j:"On y va pour se voir, pas pour gagner.",
+ p:"Rien — et c’est le but.",
+ a:"Le jour où être premier rapporte quelque chose, mille joueurs se mettent à optimiser leur animal de compagnie. C’est très exactement la mort de ce qu’on essaie de construire, et c’est le seul vrai danger de cette fonctionnalité.",
+ x:1, l:["C-01","P-05"],
+ b:"une règle de conception, pas du code"},
+
+{id:"C-07",c:"C",s:"etend",t:"Plus de plafond au niveau 50",
+ i:"La table de progression s’arrête net. La prolonger par une formule au-delà de sa dernière entrée : le niveau continue de monter, de plus en plus lentement, sans limite. Les seuils déjà écrits — la monte à 50 — restent valables tels quels.",
+ j:"On ne bute plus sur un mur au bout de quelques mois.",
+ p:"Son ancienneté peut continuer de s’exprimer.",
+ a:"Un plafond atteint est une raison d’arrêter de jouer avec lui. Sur un serveur qui dure des années, c’est rédhibitoire.",
+ x:1, l:["C-01","P-04","P-08"],
+ b:"une extrapolation après la dernière ligne de la table de progression"},
+
+{id:"H-06",c:"H",s:"neuf",t:"Ce qu'il a fait pendant ton absence",
+ i:"À la reconnexion, une ligne inventée mais cohérente : « Il a passé le plus clair de son temps près de la fenêtre. » Rien n'a réellement tourné — on raconte, on ne simule pas.",
+ j:"On la lit à la reconnexion, une fois.",
+ p:"Il a une vie hors de ta présence, au moins dans le récit.",
+ a:"Une phrase honnêtement inventée fait le même effet qu'une simulation coûteuse, et ne coûte rien.",
+ x:1, l:["R-04","R-07","L-01"],
+ b:"tirage parmi quelques tournures, pondéré par ses habitudes"}
+
+];
+
+const TOP = [
+	["I-01","Parce qu'elle produit littéralement la phrase que tu cherches : « il sait où je vais ». Aucune autre idée ne va aussi loin."],
+	["V-01","Le coin transforme une base en maison. C'est la présence, et c'est lui qui l'a choisi."],
+	["M-02","La meilleure progression du catalogue : elle ne monte aucun chiffre, elle se mérite en restant là, et elle s'écrit en une phrase dont on est fier."],
+	["T-03","Le plus court chemin entre un mob et une bête. Trois animations, et il devient reconnaissable entre mille."],
+	["L-01","Sans un livre qui raconte, tout le reste du catalogue reste invisible. C'est le porte-voix de toutes les autres idées."],
+	["T-04","Un défaut définitif est la seule chose du mod qu'on ne peut pas améliorer — donc la seule qu'on devra aimer telle quelle."],
+	["R-01","Une ligne de code, un changement d'affichage, et la relation cesse d'être une ressource à farmer."],
+	["M-01","La page la plus rentable du livre : elle transforme l'exploration ordinaire en album."],
+	["A-01","Le meilleur effet de surprise du catalogue : découvrir qu'il écoutait même quand on ne lui parlait pas."],
+	["I-03","Presque gratuit, et le joueur l'essaie mille fois par partie. Rapport effet/coût imbattable."],
+	["R-04","Le moment le plus chargé de la vie d'un animal de compagnie, pour trois seuils de durée."],
+	["P-03","Rien ne prouve mieux qu'une chose est vivante que le fait qu'elle puisse se perdre."],
+	["Q-02","Quarante moules bien écrits valent trois mille missions écrites à la main — et c'est la seule façon que ça tienne un an."],
+	["C-01","Plusieurs classements plutôt qu'un seul : c'est toute la différence entre une galerie où chacun brille et une course au farm qui détruit le reste."]
+];
+
+const VAGUES = [
+	["Vague 1", "Il est là",
+	 "Le socle, plus tout ce qui se remarque immédiatement sans rien avoir à comprendre. À la fin de cette vague, un joueur qui n'a rien lu doit déjà sentir la différence.",
+	 ["T-03","T-04","T-06","I-03","I-08","V-01","V-05","X-04","X-01","M-03","U-03","R-01"]],
+	["Vague 2", "Il te connaît",
+	 "Le journal se met à écrire, et les premiers comportements qui dépendent de ce qui a été vécu apparaissent. C'est la vague qui change la nature du mod.",
+	 ["I-01","M-01","L-01","L-03","L-02","R-03","R-04","R-06","H-02","H-04","P-01","U-04","U-05"]],
+	["Vague 3", "Il apprend, il oublie, il a peur",
+	 "Tout ce qui rend sa progression faillible et personnelle. C'est ici que deux compagnons de même espèce commencent à diverger pour de bon.",
+	 ["M-02","A-01","A-03","A-04","P-02","P-03","P-05","I-06","I-07","H-03","T-01","T-02","L-04"]],
+	["Vague 4", "Il vit parmi les autres",
+	 "Le versant social et le versant espèce. C'est celui qui compte le plus sur un serveur à mille joueurs, et celui qui a le plus besoin que les trois premiers soient solides.",
+	 ["S-01","S-02","S-03","S-04","S-05","S-07","S-08","E-01","E-02","E-06","L-06","S-06","A-08"]],
+	["Vague 5", "Il se montre",
+	 "Missions et classement. Volontairement en dernier, et ce n'est pas un détail : ce sont les seules mécaniques du catalogue capables d'abîmer les autres si elles arrivent trop tôt. Un classement posé sur un compagnon encore vide ne produit que du farm.",
+	 ["C-07","Q-01","Q-02","Q-03","Q-05","Q-06","Q-08","C-01","C-02","C-03","C-04","C-05","C-06"]]
+];
+
+/* ---------- Rendu ---------- */
+
+const par = {};
+for (const e of E) (par[e.c] ||= []).push(e);
+
+function jauge(x) {
+	let s = "";
+	for (let k = 1; k <= 5; k++) s += k <= x ? "█" : "<span>░</span>";
+	return s + "<em>" + COUTS[x] + "</em>";
+}
+
+function carte(e) {
+	const tags = [];
+	if (e.top) tags.push('<span class="tag top">★ prioritaire</span>');
+	tags.push('<span class="tag ' + e.s + '">' + (e.s === "neuf" ? "neuf" : "étend l’existant") + "</span>");
+	const liens = (e.l || []).map(id => '<a href="#' + id + '">' + id + "</a>").join("");
+	return '<article class="entree' + (e.top ? " top" : "") + '" id="' + e.id + '">'
+		+ '<div class="e-tete"><span class="e-id">' + e.id + '</span>'
+		+ '<h4 class="e-titre">' + e.t + "</h4>" + tags.join("") + "</div>"
+		+ '<div class="rubriques">'
+		+ '<div class="rub">Idée</div><p class="val">' + e.i + "</p>"
+		+ '<div class="rub">En jeu</div><p class="val sec">' + e.j + "</p>"
+		+ '<div class="rub">Pour lui</div><p class="val sec">' + e.p + "</p>"
+		+ '<div class="rub">Attachement</div><p class="val sec">' + e.a + "</p>"
+		+ '<div class="rub">Coût</div><p class="val jauge">' + jauge(e.x) + "</p>"
+		+ '<div class="rub">Sur quoi</div><p class="val sec">' + e.b + "</p>"
+		+ '<div class="rub">Liens</div><p class="val liens">' + (liens || "—") + "</p>"
+		+ "</div></article>";
+}
+
+const sortie = document.getElementById("sortie");
+const compte = document.getElementById("compte");
+const recherche = document.getElementById("recherche");
+const bTop = document.getElementById("f-top");
+const bNeuf = document.getElementById("f-neuf");
+const bSimple = document.getElementById("f-simple");
+
+function dessiner() {
+	const q = recherche.value.trim().toLowerCase();
+	const top = bTop.getAttribute("aria-pressed") === "true";
+	const neuf = bNeuf.getAttribute("aria-pressed") === "true";
+	const simple = bSimple.getAttribute("aria-pressed") === "true";
+	let n = 0;
+	let html = "";
+	for (const c of Object.keys(CATS)) {
+		const gardees = (par[c] || []).filter(e => {
+			if (top && !e.top) return false;
+			if (neuf && e.s !== "neuf") return false;
+			if (simple && e.x > 2) return false;
+			if (!q) return true;
+			return (e.id + " " + e.t + " " + e.i + " " + e.j + " " + e.p + " " + e.a + " " + e.b)
+				.toLowerCase().includes(q);
+		});
+		if (!gardees.length) continue;
+		n += gardees.length;
+		html += '<div class="famille"><h3><span class="lettre">' + c + "</span>" + CATS[c][0] + "</h3>"
+			+ '<p class="desc">' + CATS[c][1] + "</p>"
+			+ '<div class="entrees">' + gardees.map(carte).join("") + "</div></div>";
+	}
+	sortie.innerHTML = html || '<p class="sous">Rien ne correspond.</p>';
+	compte.textContent = n + " / " + E.length + " entrées";
+}
+
+for (const b of [bTop, bNeuf, bSimple]) {
+	b.addEventListener("click", () => {
+		b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+		dessiner();
+	});
+}
+recherche.addEventListener("input", dessiner);
+dessiner();
+
+const titres = {};
+for (const e of E) titres[e.id] = e.t;
+
+document.getElementById("classement").innerHTML = TOP.map((r, i) =>
+	'<div class="rang"><div class="n">' + (i + 1) + "</div>"
+	+ '<a class="ref" href="#' + r[0] + '">' + r[0] + "</a>"
+	+ "<div><h4>" + titres[r[0]] + "</h4><p>" + r[1] + "</p></div></div>").join("");
+
+document.getElementById("vagues").innerHTML = VAGUES.map((v, i) =>
+	'<div class="vague"><div class="v-tete"><span class="v-num">' + v[0] + "</span>"
+	+ "<h4>" + v[1] + "</h4></div><p>" + v[2] + "</p>"
+	+ '<div class="refs">' + v[3].map(id =>
+		'<a href="#' + id + '" title="' + (titres[id] || "").replace(/<[^>]+>/g, "") + '">' + id + "</a>").join("")
+	+ "</div></div>").join("");
+</script>

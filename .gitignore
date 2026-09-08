@@ -1,0 +1,18 @@
+# Gradle et sorties de compilation
+.gradle/
+build/
+out/
+run/
+
+# Fichiers produits localement
+logs/
+*.log
+*.class
+
+# Editeurs et systeme
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+

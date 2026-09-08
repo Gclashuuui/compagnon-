@@ -1,0 +1,77 @@
+{
+	"_comment": [
+		"Un bebe dragon aile, elance.",
+		"",
+		"C'est le BEBE de l'espece. L'adulte fait entre seize et soixante blocs",
+		"d'envergure : c'est un boss, pas un compagnon. Le bebe a son propre",
+		"modele, ses propres animations et ses propres textures.",
+		"",
+		"Il ne vole pas : le bebe n'a aucune animation de vol.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Bébé Raevyx",
+	"geometrie": "compagnon:geo/baby_raevyx.geo.json",
+	"animations": "compagnon:animations/baby_raevyx.animation.json",
+	"taille": {
+		"largeur": 0.8,
+		"hauteur": 1
+	},
+	"vole": false,
+	"nom_a_la_voix": "raevyx",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/baby_raevyx.png",
+		"femelle": "compagnon:textures/entity/baby_raevyx_female.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, en attendant mieux : les vrais fichiers son",
+		"de cette bete existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes — deux especes qui",
+		"parlent pareil sont deux especes qu'on confond."
+	],
+	"sons": {
+		"ambiance": "entity.wolf.ambient",
+		"content": "entity.wolf.pant",
+		"mal": "entity.wolf.hurt",
+		"alerte": "entity.wolf.growl"
+	},
+	"_comment_roles": [
+		"Les roles vides sont des roles qu'on n'a pas encore remplis : le modele",
+		"n'a pas d'animation honnete pour eux. Un role vide ne joue rien, ce qui",
+		"vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.raevyx.idle",
+		"marche": "animation.raevyx.walk",
+		"course": "animation.raevyx.run",
+		"vol": "",
+		"assis": "animation.raevyx.sit",
+		"couche": "animation.raevyx.sleep"
+	},
+	"reactions": {
+		"caresse": "",
+		"joyeux": "animation.raevyx.dance",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.raevyx.dance",
+		"salut": "",
+		"reconnait": "",
+		"ramasse": "animation.raevyx.eat",
+		"reveil": "animation.raevyx.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.5,
+				0
+			],
+			"largeur": 0.8,
+			"hauteur": 0.8
+		}
+	]
+}

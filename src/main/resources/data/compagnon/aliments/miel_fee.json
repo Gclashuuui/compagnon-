@@ -1,0 +1,9 @@
+{
+	"nom": "Pot de miel",
+	"effets": {
+		"faim": 30,
+		"energie": 20,
+		"complicite": 8
+	},
+	"modele": 25
+}

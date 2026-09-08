@@ -1,0 +1,7 @@
+{
+	"nom": "Larve dorée",
+	"effets": {
+		"faim": 35
+	},
+	"modele": 30
+}

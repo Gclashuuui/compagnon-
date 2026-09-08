@@ -1,0 +1,8 @@
+{
+	"nom": "Souris en sucre",
+	"effets": {
+		"faim": 20,
+		"complicite": 12
+	},
+	"modele": 37
+}

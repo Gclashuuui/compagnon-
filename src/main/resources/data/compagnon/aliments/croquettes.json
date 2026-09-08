@@ -1,0 +1,8 @@
+{
+	"nom": "Croquettes",
+	"effets": {
+		"faim": 30,
+		"energie": 10
+	},
+	"modele": 12
+}

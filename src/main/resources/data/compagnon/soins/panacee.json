@@ -1,0 +1,8 @@
+{
+	"nom": "Panacée",
+	"effets": {
+		"sante": 80,
+		"complicite": 5
+	},
+	"modele": 20
+}

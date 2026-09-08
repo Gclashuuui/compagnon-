@@ -1,0 +1,7 @@
+{
+	"nom": "Croûte de tourte",
+	"effets": {
+		"faim": 11
+	},
+	"modele": 4
+}

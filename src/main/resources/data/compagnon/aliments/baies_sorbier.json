@@ -1,0 +1,8 @@
+{
+	"nom": "Baies de sorbier",
+	"effets": {
+		"faim": 15,
+		"energie": 10
+	},
+	"modele": 22
+}

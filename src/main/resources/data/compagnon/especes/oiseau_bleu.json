@@ -1,0 +1,152 @@
+{
+	"_comment": [
+		"Le petit oiseau bleu. Modele, 52 animations et 7 textures convertis depuis",
+		"le bbmodel d'origine.",
+		"",
+		"Il regarde vers -Z comme les autres, et son os de bec est trouve tout seul.",
+		"",
+		"C'EST UNE MONTURE. Au niveau maximum, son proprietaire peut monter sur la",
+		"selle : clic droit les mains vides. Voir \"selle\" et \"monter_au_niveau\"",
+		"plus bas.",
+		"",
+		"Il est grand — plus de trois blocs — parce qu'il faut pouvoir s'asseoir",
+		"dessus. Les morceaux de collision suivent sa vraie silhouette."
+	],
+	"titre": "Oiseau bleu",
+	"geometrie": "compagnon:geo/oiseau_bleu.geo.json",
+	"animations": "compagnon:animations/oiseau_bleu.animation.json",
+	"taille": {
+		"largeur": 1.4,
+		"hauteur": 3.2
+	},
+	"vole": true,
+	"nom_a_la_voix": "oiseau",
+	"_comment_selle": [
+		"Ou le cavalier s'assoit, en blocs depuis ses pattes.",
+		"",
+		"[droite, haut, avant] : le meme ordre que les morceaux de collision.",
+		"",
+		"Mesure sur le modele, pas devine : le dessus de la selle est a 28,1",
+		"unites soit 1,76 bloc, et son centre a 5,73 unites devant l origine."
+	],
+	"selle": [
+		0,
+		1.76,
+		0.36
+	],
+	"_comment_monter": [
+		"Le niveau a partir duquel on peut le monter.",
+		"",
+		"Le maximum de la table, et c'est voulu : monter sa bete doit etre",
+		"l'aboutissement de tout le reste, pas une chose qu'on fait le premier",
+		"jour. Mettre 0 rend la monte impossible, ce qui est le cas de toutes les",
+		"autres especes puisqu'elles ne declarent pas cette cle."
+	],
+	"monter_au_niveau": 50,
+	"variante_par_defaut": "bleu",
+	"variantes": {
+		"bleu": "compagnon:textures/entity/oiseau_bleu.png",
+		"azur": "compagnon:textures/entity/oiseau_bleu_2.png",
+		"ardoise": "compagnon:textures/entity/oiseau_bleu_3.png",
+		"ivoire": "compagnon:textures/entity/oiseau_bleu_4.png",
+		"cendre": "compagnon:textures/entity/oiseau_bleu_5.png",
+		"nuit": "compagnon:textures/entity/oiseau_bleu_6.png",
+		"brique": "compagnon:textures/entity/oiseau_bleu_7.png"
+	},
+	"_comment_sons": [
+		"Sa voix, empruntee aux sons du jeu.",
+		"",
+		"Aucun fichier son n'est livre avec le mod : le jeu en a des centaines, dont",
+		"des dizaines de cris d'animaux. Une mouette qui emprunte la voix du",
+		"perroquet sonne tres bien, et le mod ne grossit pas d'un octet.",
+		"",
+		"La hauteur du son depend en plus de CHAQUE compagnon : deux betes de la",
+		"meme espece ne crient pas pareil, et on reconnait la sienne a l'oreille.",
+		"",
+		"Les roles :",
+		"  ambiance : de temps en temps, sans raison. Sa presence sonore.",
+		"  content  : une caresse, un repas, une reussite.",
+		"  mal      : il a mal, ou il va tres mal.",
+		"  envol    : il quitte le sol.",
+		"  alerte   : il a repere quelque chose et te le signale.",
+		"",
+		"Une cle absente = silence pour ce role. Une espece sans cette section reste",
+		"entierement muette, exactement comme avant."
+	],
+	"sons": {
+		"ambiance": "minecraft:entity.parrot.ambient",
+		"content": "minecraft:entity.cat.purr",
+		"mal": "minecraft:entity.parrot.hurt",
+		"envol": "minecraft:entity.phantom.flap",
+		"alerte": "minecraft:entity.parrot.imitate.creeper"
+	},
+	"locomotion": {
+		"immobile": "animation.oiseau_bleu.idle",
+		"marche": "animation.oiseau_bleu.marche",
+		"course": "animation.oiseau_bleu.course",
+		"vol": "animation.oiseau_bleu.fly",
+		"assis": "animation.oiseau_bleu.assis",
+		"couche": "animation.oiseau_bleu.couche"
+	},
+	"reactions": {
+		"joyeux": "animation.oiseau_bleu.idle_ailes",
+		"triste": "animation.oiseau_bleu.idle_repos",
+		"caresse": "animation.oiseau_bleu.caresse",
+		"ecoute": "animation.oiseau_bleu.ecoute",
+		"tourne": "animation.oiseau_bleu.demi_tour",
+		"joie": "animation.oiseau_bleu.joie",
+		"salut": "animation.oiseau_bleu.salut",
+		"reconnait": "animation.oiseau_bleu.idle3",
+		"reveil": "animation.oiseau_bleu.wakeup",
+		"ramasse": "animation.oiseau_bleu.attack"
+	},
+	"_comment_parties": [
+		"Quatre morceaux : le corps, le cou, la tete et la queue. Il fait trois",
+		"blocs de haut et trois de long — une seule boite carree le rendrait",
+		"traversable par la tete et par la queue.",
+		"",
+		"[droite, haut, avant], en blocs, le haut compte depuis ses pattes."
+	],
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.55,
+				0
+			],
+			"largeur": 1.1,
+			"hauteur": 1.5
+		},
+		{
+			"nom": "cou",
+			"decalage": [
+				0,
+				1.5,
+				-0.6
+			],
+			"largeur": 0.6,
+			"hauteur": 0.9
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				2.1,
+				-1.15
+			],
+			"largeur": 0.7,
+			"hauteur": 0.8
+		},
+		{
+			"nom": "queue",
+			"decalage": [
+				0,
+				0.7,
+				0.9
+			],
+			"largeur": 0.7,
+			"hauteur": 0.5
+		}
+	]
+}

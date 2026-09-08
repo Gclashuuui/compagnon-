@@ -1,0 +1,8 @@
+{
+	"nom": "Savon aux herbes",
+	"effets": {
+		"complicite": 15,
+		"sante": 10
+	},
+	"modele": 27
+}

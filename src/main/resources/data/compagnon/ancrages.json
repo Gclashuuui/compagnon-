@@ -1,0 +1,226 @@
+{
+	"_lisez_moi": [
+		"Ou se posent les objets sur chaque espece.",
+		"",
+		"Un emplacement dit TROIS choses : sur quel os la chose est accrochee, de",
+		"combien elle s en ecarte, et comment elle est tournee. Accrochee a un os,",
+		"elle suit toutes ses animations sans un seul calcul : une balle posee sur",
+		"la machoire du dragonnet bouge quand il ouvre la gueule.",
+		"",
+		"Le decalage se lit [droite, haut, avant], en UNITES DE MODELE — seize font",
+		"un bloc, comme dans Blockbench. La rotation est en degres, dans le meme",
+		"ordre. L echelle est un facteur : 1 laisse l objet a sa taille.",
+		"",
+		"Ces valeurs-ci sont un POINT DE DEPART, posees a la lecture du modele et",
+		"jamais vues en jeu. Elles sont faites pour etre corrigees a l oeil avec",
+		"/compagnon ancrer, qui ecrit ses reglages dans <serveur>/compagnon/",
+		"ancrages.json — ce fichier-la gagne toujours sur celui-ci, et survit aux",
+		"mises a jour du mod.",
+		"",
+		"Une espece absente d ici n affiche simplement rien. C est voulu : un trou",
+		"se remarque et se corrige, une position approximative se garde des mois."
+	],
+	"dragonnet": {
+		"_comment": [
+			"Sa machoire porte cinq cubes et son pivot est a [0, 12.2, -13.6] ;",
+			"ses dents du bas sont a z = -16. La balle se pose donc en avant du",
+			"pivot, entre les machoires."
+		],
+		"defaut": {
+			"os": "jaw",
+			"decalage": [
+				0,
+				1,
+				3
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.6
+		}
+	},
+	"mouette": {
+		"_comment": [
+			"Son bec est porte par la tete : elle n a pas d os de machoire."
+		],
+		"defaut": {
+			"os": "head",
+			"decalage": [
+				0,
+				0,
+				3
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.45
+		}
+	},
+	"oiseau_bleu": {
+		"defaut": {
+			"os": "head",
+			"decalage": [
+				0,
+				0,
+				3
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.45
+		}
+	},
+	"kobeko": {
+		"_comment": [
+			"Sa machoire est un os a lui, pivot [0, 13.2, -3]."
+		],
+		"defaut": {
+			"os": "jaw",
+			"decalage": [
+				0,
+				0,
+				2
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.5
+		}
+	},
+	"atroxiia": {
+		"defaut": {
+			"os": "lowerJawController",
+			"decalage": [
+				0,
+				0,
+				1.4
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.25
+		}
+	},
+	"cindervane": {
+		"defaut": {
+			"os": "jawController",
+			"decalage": [
+				0,
+				0,
+				1.1
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.25
+		}
+	},
+	"ignivorus": {
+		"defaut": {
+			"os": "lowerjawController",
+			"decalage": [
+				0,
+				0,
+				4.5
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.39
+		}
+	},
+	"nulljaw": {
+		"defaut": {
+			"os": "lowerjawController",
+			"decalage": [
+				0,
+				0,
+				1.2
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.25
+		}
+	},
+	"raevyx": {
+		"defaut": {
+			"os": "jawController",
+			"decalage": [
+				0,
+				0,
+				2.7
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.25
+		}
+	},
+	"stegonaut": {
+		"defaut": {
+			"os": "lowerjawController",
+			"decalage": [
+				0,
+				0,
+				2.9
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.25
+		}
+	},
+	"varasuchus": {
+		"defaut": {
+			"os": "lowerJawController",
+			"decalage": [
+				0,
+				0,
+				3.1
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.27
+		}
+	},
+	"volitans": {
+		"defaut": {
+			"os": "jawController",
+			"decalage": [
+				0,
+				0,
+				2.4
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"echelle": 0.25
+		}
+	}
+}

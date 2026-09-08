@@ -1,0 +1,8 @@
+{
+	"nom": "Soupe verte fumante",
+	"effets": {
+		"faim": 18,
+		"sante": 12
+	},
+	"modele": 6
+}

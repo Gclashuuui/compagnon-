@@ -1,0 +1,7 @@
+{
+	"nom": "Steak cru",
+	"effets": {
+		"faim": 35
+	},
+	"modele": 13
+}

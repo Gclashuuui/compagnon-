@@ -1,0 +1,83 @@
+{
+	"_comment": [
+		"Le plus grand des huit. Sept blocs au garrot, et il crache le feu.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans ignivorus.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Ignivorus adulte",
+	"geometrie": "compagnon:geo/ignivorus_adulte.geo.json",
+	"animations": "compagnon:animations/ignivorus_adulte.animation.json",
+	"taille": {
+		"largeur": 5,
+		"hauteur": 6
+	},
+	"vole": true,
+	"nom_a_la_voix": "ignivorus",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/ignivorus_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/ignivorus_adulte_femelle.png",
+		"cramoisi": "compagnon:textures/entity/ignivorus_adulte_cramoisi.png",
+		"cramoisi_femelle": "compagnon:textures/entity/ignivorus_adulte_cramoisi_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.wither.ambient",
+		"content": "entity.hoglin.ambient",
+		"mal": "entity.wither.hurt",
+		"alerte": "entity.wither.spawn"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.ignivorus_adulte.idle",
+		"marche": "animation.ignivorus_adulte.walk",
+		"course": "animation.ignivorus_adulte.run",
+		"vol": "animation.ignivorus_adulte.glide",
+		"assis": "animation.ignivorus_adulte.sit",
+		"couche": "animation.ignivorus_adulte.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.ignivorus_adulte.grumble1",
+		"joyeux": "animation.ignivorus_adulte.flex",
+		"triste": "animation.ignivorus_adulte.grumble3",
+		"ecoute": "animation.ignivorus_adulte.investigating",
+		"tourne": "",
+		"joie": "animation.ignivorus_adulte.flex",
+		"salut": "animation.ignivorus_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.ignivorus_adulte.eat",
+		"reveil": "animation.ignivorus_adulte.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				3,
+				0
+			],
+			"largeur": 5,
+			"hauteur": 4.800000000000001
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				4.800000000000001,
+				3.5
+			],
+			"largeur": 2.5,
+			"hauteur": 2.4000000000000004
+		}
+	]
+}

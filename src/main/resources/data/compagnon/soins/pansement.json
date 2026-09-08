@@ -1,0 +1,7 @@
+{
+	"nom": "Pansement adhésif",
+	"effets": {
+		"sante": 20
+	},
+	"modele": 3
+}

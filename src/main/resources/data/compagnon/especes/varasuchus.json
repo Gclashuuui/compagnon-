@@ -1,0 +1,77 @@
+{
+	"_comment": [
+		"Long et serpentin : quatre blocs du museau a la queue.",
+		"",
+		"C'est le BEBE de l'espece. L'adulte fait entre seize et soixante blocs",
+		"d'envergure : c'est un boss, pas un compagnon. Le bebe a son propre",
+		"modele, ses propres animations et ses propres textures.",
+		"",
+		"Il ne vole pas : le bebe n'a aucune animation de vol.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Bébé Varasuchus",
+	"geometrie": "compagnon:geo/baby_varasuchus.geo.json",
+	"animations": "compagnon:animations/baby_varasuchus.animation.json",
+	"taille": {
+		"largeur": 0.8,
+		"hauteur": 1.2
+	},
+	"vole": false,
+	"nom_a_la_voix": "varasuchus",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/baby_varasuchus.png",
+		"femelle": "compagnon:textures/entity/baby_varasuchus_female.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, en attendant mieux : les vrais fichiers son",
+		"de cette bete existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes — deux especes qui",
+		"parlent pareil sont deux especes qu'on confond."
+	],
+	"sons": {
+		"ambiance": "entity.turtle.ambient_land",
+		"content": "entity.turtle.shamble",
+		"mal": "entity.turtle.hurt",
+		"alerte": "entity.turtle.death"
+	},
+	"_comment_roles": [
+		"Les roles vides sont des roles qu'on n'a pas encore remplis : le modele",
+		"n'a pas d'animation honnete pour eux. Un role vide ne joue rien, ce qui",
+		"vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.varasuchus.idle",
+		"marche": "animation.varasuchus.walk",
+		"course": "animation.varasuchus.run",
+		"vol": "",
+		"assis": "animation.varasuchus.sit",
+		"couche": "animation.varasuchus.sleep"
+	},
+	"reactions": {
+		"caresse": "",
+		"joyeux": "animation.varasuchus.dance",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.varasuchus.dance",
+		"salut": "",
+		"reconnait": "",
+		"ramasse": "animation.varasuchus.eat",
+		"reveil": "animation.varasuchus.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.6,
+				0
+			],
+			"largeur": 0.8,
+			"hauteur": 0.96
+		}
+	]
+}

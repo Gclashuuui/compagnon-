@@ -1,0 +1,8 @@
+{
+	"nom": "Verrine aux fraises",
+	"effets": {
+		"faim": 12,
+		"complicite": 12
+	},
+	"modele": 9
+}

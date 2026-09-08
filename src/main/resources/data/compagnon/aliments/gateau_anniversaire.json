@@ -1,0 +1,8 @@
+{
+	"nom": "Gâteau d'anniversaire",
+	"effets": {
+		"faim": 10,
+		"complicite": 20
+	},
+	"modele": 10
+}

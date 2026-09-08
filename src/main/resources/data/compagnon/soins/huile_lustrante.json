@@ -1,0 +1,8 @@
+{
+	"nom": "Huile lustrante",
+	"effets": {
+		"complicite": 18,
+		"sante": 5
+	},
+	"modele": 28
+}

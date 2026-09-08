@@ -1,0 +1,19 @@
+{
+	"_comment": [
+		"Une competence. Un point la prend, et on ne peut pas la reprendre.",
+		"",
+		"Les effets qui MULTIPLIENT vont sous 1 pour ameliorer (faim, energie,",
+		"bobos) et au-dessus pour ameliorer (experience). Celui qui S AJOUTE est",
+		"oreille, en blocs.",
+		"",
+		"especes vide = toutes les especes."
+	],
+	"nom": "Endurant",
+	"description": "Faim et fatigue le prennent tres lentement.",
+	"niveau_requis": 25,
+	"especes": [],
+	"effets": {
+		"faim": 0.75,
+		"energie": 0.75
+	}
+}

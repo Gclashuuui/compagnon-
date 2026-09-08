@@ -1,0 +1,10 @@
+{
+	"nom": "Independant",
+	"traits": {
+		"sociabilite": 0.5,
+		"attachement": 0.25,
+		"vivacite": 0.7,
+		"calin": 0.2,
+		"curiosite": 0.6
+	}
+}

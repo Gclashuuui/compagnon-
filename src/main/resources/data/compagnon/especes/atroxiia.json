@@ -1,0 +1,77 @@
+{
+	"_comment": [
+		"Un petit quadrupede trapu, long et bas sur pattes.",
+		"",
+		"C'est le BEBE de l'espece. L'adulte fait entre seize et soixante blocs",
+		"d'envergure : c'est un boss, pas un compagnon. Le bebe a son propre",
+		"modele, ses propres animations et ses propres textures.",
+		"",
+		"Il ne vole pas : le bebe n'a aucune animation de vol.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Bébé Atroxiia",
+	"geometrie": "compagnon:geo/baby_atroxiia.geo.json",
+	"animations": "compagnon:animations/baby_atroxiia.animation.json",
+	"taille": {
+		"largeur": 0.6,
+		"hauteur": 0.6
+	},
+	"vole": false,
+	"nom_a_la_voix": "atroxiia",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/baby_atroxiia.png",
+		"femelle": "compagnon:textures/entity/baby_atroxiia_female.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, en attendant mieux : les vrais fichiers son",
+		"de cette bete existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes — deux especes qui",
+		"parlent pareil sont deux especes qu'on confond."
+	],
+	"sons": {
+		"ambiance": "entity.ravager.ambient",
+		"content": "entity.ravager.step",
+		"mal": "entity.ravager.hurt",
+		"alerte": "entity.ravager.roar"
+	},
+	"_comment_roles": [
+		"Les roles vides sont des roles qu'on n'a pas encore remplis : le modele",
+		"n'a pas d'animation honnete pour eux. Un role vide ne joue rien, ce qui",
+		"vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.atroxiia.idle",
+		"marche": "animation.atroxiia.walk",
+		"course": "animation.atroxiia.run",
+		"vol": "",
+		"assis": "animation.atroxiia.sit",
+		"couche": "animation.atroxiia.sleep"
+	},
+	"reactions": {
+		"caresse": "",
+		"joyeux": "animation.atroxiia.dance",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.atroxiia.dance",
+		"salut": "",
+		"reconnait": "",
+		"ramasse": "animation.atroxiia.eat",
+		"reveil": "animation.atroxiia.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.3,
+				0
+			],
+			"largeur": 0.6,
+			"hauteur": 0.48
+		}
+	]
+}

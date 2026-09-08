@@ -1,0 +1,7 @@
+{
+	"nom": "Pastilles fébrifuges",
+	"effets": {
+		"sante": 30
+	},
+	"modele": 18
+}

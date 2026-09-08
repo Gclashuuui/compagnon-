@@ -1,0 +1,18 @@
+{
+	"_comment": [
+		"Une competence propre a une espece : les autres ne la verront jamais.",
+		"",
+		"Le champ especes existait depuis le debut et ne servait a rien. C est lui",
+		"qui permet a deux especes davoir des avenirs differents, sans une ligne",
+		"de code."
+	],
+	"nom": "Vol soutenu",
+	"description": "Elle plane deux fois plus longtemps sans se fatiguer.",
+	"niveau_requis": 20,
+	"especes": [
+		"mouette"
+	],
+	"effets": {
+		"energie": 0.6
+	}
+}

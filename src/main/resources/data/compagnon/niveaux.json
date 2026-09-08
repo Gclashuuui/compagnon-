@@ -1,0 +1,376 @@
+{
+	"progression": {
+		"sources": {
+			"soins": {
+				"xp": 5,
+				"plafond_par_jour": 40
+			},
+			"affection": {
+				"xp": 3,
+				"plafond_par_jour": 30
+			},
+			"balade": {
+				"xp": 1,
+				"plafond_par_jour": 50
+			}
+		},
+		"barres": {
+			"faim": {
+				"depart": 100,
+				"par_minute": -0.35,
+				"minimum": 0,
+				"maximum": 100
+			},
+			"energie": {
+				"depart": 100,
+				"par_minute": -0.4,
+				"par_minute_repos": 1.5,
+				"minimum": 0,
+				"maximum": 100
+			},
+			"complicite": {
+				"depart": 20,
+				"par_minute": 0,
+				"minimum": 0,
+				"maximum": 100
+			},
+			"sante": {
+				"depart": 100,
+				"par_minute": 0,
+				"minimum": 5,
+				"maximum": 100
+			}
+		},
+		"bobos": {
+			"par_heure_de_jeu": 0.2
+		},
+		"actions": {
+			"energie_depensee": -2,
+			"energie_minimum": 15
+		}
+	},
+	"niveaux": [
+		{
+			"niveau": 1,
+			"xp": 0,
+			"debloque": [
+				"animation.dragonnet.yawn",
+				"animation.mouette.amb_call",
+				"animation.oiseau_bleu.salut"
+			]
+		},
+		{
+			"niveau": 2,
+			"xp": 48,
+			"debloque": [
+				"animation.mouette.head_shake"
+			]
+		},
+		{
+			"niveau": 3,
+			"xp": 112,
+			"debloque": [
+				"animation.mouette.amb_head_tilt",
+				"animation.oiseau_bleu.idle2",
+				"animation.kobeko.heavy_idle"
+			]
+		},
+		{
+			"niveau": 4,
+			"xp": 192,
+			"debloque": [
+				"animation.mouette.look_around",
+				"animation.ignivorus.grumble3"
+			]
+		},
+		{
+			"niveau": 5,
+			"xp": 288,
+			"debloque": [
+				"animation.dragonnet.sleep",
+				"animation.mouette.stretch",
+				"animation.oiseau_bleu.blink",
+				"animation.atroxiia_adulte.taunt"
+			]
+		},
+		{
+			"niveau": 6,
+			"xp": 400,
+			"debloque": []
+		},
+		{
+			"niveau": 7,
+			"xp": 528,
+			"debloque": [
+				"animation.mouette.amb_shake"
+			]
+		},
+		{
+			"niveau": 8,
+			"xp": 672,
+			"debloque": [
+				"animation.oiseau_bleu.idle4",
+				"animation.cindervane_adulte.drinking",
+				"animation.ignivorus_adulte.drinking",
+				"animation.raevyx_adulte.drinking"
+			]
+		},
+		{
+			"niveau": 9,
+			"xp": 832,
+			"debloque": [
+				"animation.mouette.preen"
+			]
+		},
+		{
+			"niveau": 10,
+			"xp": 1008,
+			"debloque": [
+				"animation.stegonaut_adulte.jump",
+				"animation.varasuchus_adulte.jump"
+			]
+		},
+		{
+			"niveau": 11,
+			"xp": 1200,
+			"debloque": [
+				"animation.mouette.hop"
+			]
+		},
+		{
+			"niveau": 12,
+			"xp": 1408,
+			"debloque": [
+				"animation.oiseau_bleu.secoue_ailes_vol",
+				"animation.kobeko.taunt_hold",
+				"animation.varasuchus_adulte.flex2"
+			]
+		},
+		{
+			"niveau": 13,
+			"xp": 1632,
+			"debloque": [
+				"animation.mouette.flap_small"
+			]
+		},
+		{
+			"niveau": 14,
+			"xp": 1872,
+			"debloque": []
+		},
+		{
+			"niveau": 15,
+			"xp": 2128,
+			"debloque": [
+				"animation.mouette.look_up"
+			]
+		},
+		{
+			"niveau": 16,
+			"xp": 2400,
+			"debloque": [
+				"animation.oiseau_bleu.idle5"
+			]
+		},
+		{
+			"niveau": 17,
+			"xp": 2688,
+			"debloque": []
+		},
+		{
+			"niveau": 18,
+			"xp": 2992,
+			"debloque": [
+				"animation.mouette.excited",
+				"animation.varasuchus_adulte.bucking"
+			]
+		},
+		{
+			"niveau": 19,
+			"xp": 3312,
+			"debloque": []
+		},
+		{
+			"niveau": 20,
+			"xp": 3648,
+			"debloque": [
+				"animation.oiseau_bleu.attack",
+				"animation.ignivorus_adulte.roar",
+				"animation.raevyx_adulte.roar",
+				"animation.volitans_adulte.roar"
+			]
+		},
+		{
+			"niveau": 21,
+			"xp": 4000,
+			"debloque": [
+				"animation.mouette.scratch"
+			]
+		},
+		{
+			"niveau": 22,
+			"xp": 4368,
+			"debloque": []
+		},
+		{
+			"niveau": 23,
+			"xp": 4752,
+			"debloque": []
+		},
+		{
+			"niveau": 24,
+			"xp": 5152,
+			"debloque": [
+				"animation.oiseau_bleu.vol_cercle"
+			]
+		},
+		{
+			"niveau": 25,
+			"xp": 5568,
+			"debloque": [
+				"animation.mouette.stretch_both",
+				"animation.varasuchus_adulte.flex3"
+			]
+		},
+		{
+			"niveau": 26,
+			"xp": 6000,
+			"debloque": []
+		},
+		{
+			"niveau": 27,
+			"xp": 6448,
+			"debloque": []
+		},
+		{
+			"niveau": 28,
+			"xp": 6912,
+			"debloque": [
+				"animation.oiseau_bleu.saut"
+			]
+		},
+		{
+			"niveau": 29,
+			"xp": 7392,
+			"debloque": []
+		},
+		{
+			"niveau": 30,
+			"xp": 7888,
+			"debloque": [
+				"animation.mouette.flap",
+				"animation.atroxiia_adulte.jump"
+			]
+		},
+		{
+			"niveau": 31,
+			"xp": 8400,
+			"debloque": []
+		},
+		{
+			"niveau": 32,
+			"xp": 8928,
+			"debloque": [
+				"animation.oiseau_bleu.attrape_en_vol"
+			]
+		},
+		{
+			"niveau": 33,
+			"xp": 9472,
+			"debloque": []
+		},
+		{
+			"niveau": 34,
+			"xp": 10032,
+			"debloque": []
+		},
+		{
+			"niveau": 35,
+			"xp": 10608,
+			"debloque": []
+		},
+		{
+			"niveau": 36,
+			"xp": 11200,
+			"debloque": [
+				"animation.mouette.preen_tail"
+			]
+		},
+		{
+			"niveau": 37,
+			"xp": 11808,
+			"debloque": []
+		},
+		{
+			"niveau": 38,
+			"xp": 12432,
+			"debloque": [
+				"animation.oiseau_bleu.nage"
+			]
+		},
+		{
+			"niveau": 39,
+			"xp": 13072,
+			"debloque": []
+		},
+		{
+			"niveau": 40,
+			"xp": 13728,
+			"debloque": []
+		},
+		{
+			"niveau": 41,
+			"xp": 14400,
+			"debloque": []
+		},
+		{
+			"niveau": 42,
+			"xp": 15088,
+			"debloque": [
+				"animation.mouette.doze"
+			]
+		},
+		{
+			"niveau": 43,
+			"xp": 15792,
+			"debloque": []
+		},
+		{
+			"niveau": 44,
+			"xp": 16512,
+			"debloque": [
+				"animation.oiseau_bleu.freine_en_vol"
+			]
+		},
+		{
+			"niveau": 45,
+			"xp": 17248,
+			"debloque": []
+		},
+		{
+			"niveau": 46,
+			"xp": 18000,
+			"debloque": []
+		},
+		{
+			"niveau": 47,
+			"xp": 18768,
+			"debloque": []
+		},
+		{
+			"niveau": 48,
+			"xp": 19552,
+			"debloque": []
+		},
+		{
+			"niveau": 49,
+			"xp": 20352,
+			"debloque": []
+		},
+		{
+			"niveau": 50,
+			"xp": 21168,
+			"debloque": []
+		}
+	]
+}

@@ -1,0 +1,30 @@
+{
+	"_comment": [
+		"Un moule a missions. Le code n'en connait aucune : il ne lit que ce fichier.",
+		"",
+		"compteur  : le compteur de la fiche que la mission regarde grandir. La",
+		"            mission retient sa valeur au moment ou elle est proposee, et sa",
+		"            progression est la difference — ce qu'on avait deja fait avant",
+		"            ne compte donc jamais.",
+		"quantites : les trois crans de difficulte, du plus facile au plus dur.",
+		"xp        : ce que rapporte chaque cran, dans le meme ordre.",
+		"famille   : deux missions de la meme famille ne sont jamais proposees",
+		"            ensemble, pour ne pas avoir trois fois la meme idee le meme jour.",
+		"especes   : vide ou absent = toutes les especes.",
+		"longue    : une mission de fond, qui court sur des semaines et ne se",
+		"            renouvelle pas. Il n'y en a qu'une a la fois."
+	],
+	"compteur": "caresses",
+	"texte": "mission.compagnon.caresser",
+	"quantites": [
+		3,
+		8,
+		15
+	],
+	"xp": [
+		10,
+		22,
+		45
+	],
+	"famille": "affection"
+}

@@ -1,0 +1,8 @@
+{
+	"nom": "Bonbons au citron",
+	"effets": {
+		"faim": 10,
+		"energie": 20
+	},
+	"modele": 38
+}

@@ -1,0 +1,8 @@
+{
+	"nom": "Pomme givrée",
+	"effets": {
+		"faim": 20,
+		"sante": 20
+	},
+	"modele": 28
+}

@@ -1,0 +1,83 @@
+{
+	"_comment": [
+		"Un dragon de venin, aussi a l'aise sous l'eau que dans le ciel.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans volitans.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Volitans adulte",
+	"geometrie": "compagnon:geo/volitans_adulte.geo.json",
+	"animations": "compagnon:animations/volitans_adulte.animation.json",
+	"taille": {
+		"largeur": 3.5,
+		"hauteur": 4
+	},
+	"vole": true,
+	"nom_a_la_voix": "volitans",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/volitans_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/volitans_adulte_femelle.png",
+		"sang": "compagnon:textures/entity/volitans_adulte_sang.png",
+		"sang_femelle": "compagnon:textures/entity/volitans_adulte_sang_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.elder_guardian.ambient",
+		"content": "entity.dolphin.ambient",
+		"mal": "entity.elder_guardian.hurt",
+		"alerte": "entity.elder_guardian.curse"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.volitans_adulte.idle",
+		"marche": "animation.volitans_adulte.walk",
+		"course": "animation.volitans_adulte.run",
+		"vol": "animation.volitans_adulte.fly_glide",
+		"assis": "animation.volitans_adulte.sit",
+		"couche": "animation.volitans_adulte.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.volitans_adulte.grumble1",
+		"joyeux": "",
+		"triste": "animation.volitans_adulte.grumble3",
+		"ecoute": "animation.volitans_adulte.investigating",
+		"tourne": "",
+		"joie": "",
+		"salut": "animation.volitans_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.volitans_adulte.eat",
+		"reveil": "animation.volitans_adulte.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				2,
+				0
+			],
+			"largeur": 3.5,
+			"hauteur": 3.2
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				3.2,
+				2.4499999999999997
+			],
+			"largeur": 1.75,
+			"hauteur": 1.6
+		}
+	]
+}

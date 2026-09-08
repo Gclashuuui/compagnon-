@@ -1,0 +1,120 @@
+{
+	"_comment": [
+		"Le kobeko. Modele, 30 animations et dix colorations fournis avec le mod.",
+		"",
+		"C'est un BIPEDE, le premier du mod : torse, tete, machoire, deux bras, deux",
+		"jambes a genou et pied, une queue. Vingt-et-un os pour dix-neuf cubes, et un",
+		"os d'accroche d'arme laisse vide.",
+		"",
+		"Il regarde vers -Z comme les autres : la machoire est a z = -3, la queue a",
+		"z = +3,3. C'est la convention de Blockbench, et celle que le rendu attend",
+		"pour poser un objet dans sa gueule.",
+		"",
+		"IL NE VOLE PAS. Le role de vol est present mais vide : le fichier d'espece",
+		"doit declarer les quatre roles de locomotion, et un role vide retombe sur",
+		"l'animation immobile.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pieds, pas depuis son centre, et",
+		"l'avant va vers la tete.",
+		"",
+		"Deux morceaux et pas trois : il fait un demi-bloc de large pour un bloc de",
+		"haut. Un morceau de plus se paie a chaque tick et ne se verrait pas."
+	],
+	"titre": "Kobeko",
+	"geometrie": "compagnon:geo/kobeko.geo.json",
+	"animations": "compagnon:animations/kobeko.animation.json",
+	"taille": {
+		"largeur": 0.5,
+		"hauteur": 1.1
+	},
+	"vole": false,
+	"nom_a_la_voix": "kobeko",
+	"variante_par_defaut": "lime",
+	"_comment_variantes": [
+		"Dix colorations. Le mod en tire une au hasard a la naissance, et elle ne",
+		"change plus : c'est ce qui fait que deux kobekos ne se ressemblent pas."
+	],
+	"variantes": {
+		"lime": "compagnon:textures/entity/kobeko_lime.png",
+		"bleu": "compagnon:textures/entity/kobeko_blue.png",
+		"desert": "compagnon:textures/entity/kobeko_desert.png",
+		"feuille": "compagnon:textures/entity/kobeko_leaf.png",
+		"citron": "compagnon:textures/entity/kobeko_lemon.png",
+		"nuit": "compagnon:textures/entity/kobeko_night.png",
+		"ocean": "compagnon:textures/entity/kobeko_ocean.png",
+		"pale": "compagnon:textures/entity/kobeko_pale.png",
+		"fraise": "compagnon:textures/entity/kobeko_strawberry.png",
+		"errant": "compagnon:textures/entity/kobeko_stray.png"
+	},
+	"_comment_sons": [
+		"Sa voix, empruntee aux sons du jeu. Aucun fichier son n'est livre.",
+		"",
+		"Le piglin plutot que le renard ou le perroquet : c'est un petit bonhomme",
+		"qui grogne, pas un oiseau. Et le dragonnet a deja la voix du renard — deux",
+		"especes qui parlent pareil, ce sont deux especes qu'on confond.",
+		"",
+		"Pas de role d'envol : il ne quitte pas le sol."
+	],
+	"sons": {
+		"ambiance": "minecraft:entity.piglin.ambient",
+		"content": "minecraft:entity.piglin.celebrate",
+		"mal": "minecraft:entity.piglin.hurt",
+		"alerte": "minecraft:entity.piglin.angry"
+	},
+	"_comment_locomotion": [
+		"assis et couche sont VIDES : le modele n'a pas d'animation assise en",
+		"boucle ni d'animation couchee. sit_start et sit_end existent, mais ce sont",
+		"des transitions d'une seconde, pas des poses qui tiennent.",
+		"",
+		"course reprend la marche : il n'a pas d'allure rapide. C'est assume et ca",
+		"se voit peu ; une vraie course serait mieux."
+	],
+	"locomotion": {
+		"immobile": "animation.kobeko.idle",
+		"marche": "animation.kobeko.walk",
+		"course": "animation.kobeko.walk",
+		"vol": "",
+		"assis": "",
+		"couche": ""
+	},
+	"_comment_reactions": [
+		"Ce que le mod lui demande de jouer, et ce qu'on a trouve de plus proche",
+		"dans ses trente animations. Trois roles restent vides faute de candidat",
+		"honnete : mieux vaut ne rien jouer que jouer de travers."
+	],
+	"reactions": {
+		"caresse": "animation.kobeko.gesture",
+		"joyeux": "animation.kobeko.gesture_5",
+		"triste": "animation.kobeko.stagger",
+		"ecoute": "animation.kobeko.look_around",
+		"tourne": "",
+		"joie": "animation.kobeko.flash",
+		"salut": "animation.kobeko.horn",
+		"reconnait": "animation.kobeko.inspect_2",
+		"ramasse": "animation.kobeko.inspect_1",
+		"reveil": "animation.kobeko.faint_recover"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.5,
+				0
+			],
+			"largeur": 0.5,
+			"hauteur": 0.7
+		},
+		{
+			"nom": "queue",
+			"decalage": [
+				0,
+				0.35,
+				-0.45
+			],
+			"largeur": 0.3,
+			"hauteur": 0.25
+		}
+	]
+}

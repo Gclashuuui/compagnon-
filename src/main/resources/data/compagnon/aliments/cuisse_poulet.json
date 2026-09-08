@@ -1,0 +1,8 @@
+{
+	"nom": "Cuisse rôtie",
+	"effets": {
+		"faim": 32,
+		"energie": 12
+	},
+	"modele": 1
+}

@@ -1,0 +1,81 @@
+{
+	"_comment": [
+		"Un quadrupede de glace, trapu et bas sur pattes.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans atroxiia.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Atroxiia adulte",
+	"geometrie": "compagnon:geo/atroxiia_adulte.geo.json",
+	"animations": "compagnon:animations/atroxiia_adulte.animation.json",
+	"taille": {
+		"largeur": 3,
+		"hauteur": 2.5
+	},
+	"vole": false,
+	"nom_a_la_voix": "atroxiia",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/atroxiia_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/atroxiia_adulte_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.ravager.ambient",
+		"content": "entity.ravager.celebrate",
+		"mal": "entity.ravager.hurt",
+		"alerte": "entity.ravager.roar"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.atroxiia_adulte.idle",
+		"marche": "animation.atroxiia_adulte.walk",
+		"course": "animation.atroxiia_adulte.run",
+		"vol": "",
+		"assis": "animation.atroxiia_adulte.sit",
+		"couche": "animation.atroxiia_adulte.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.atroxiia_adulte.grumble1",
+		"joyeux": "animation.atroxiia_adulte.flex",
+		"triste": "animation.atroxiia_adulte.grumble3",
+		"ecoute": "animation.atroxiia_adulte.investigating",
+		"tourne": "",
+		"joie": "animation.atroxiia_adulte.flex",
+		"salut": "animation.atroxiia_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.atroxiia_adulte.eat",
+		"reveil": "animation.atroxiia_adulte.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				1.25,
+				0
+			],
+			"largeur": 3,
+			"hauteur": 2
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				2,
+				2.0999999999999996
+			],
+			"largeur": 1.5,
+			"hauteur": 1
+		}
+	]
+}

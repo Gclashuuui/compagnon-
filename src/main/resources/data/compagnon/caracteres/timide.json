@@ -1,0 +1,10 @@
+{
+	"nom": "Timide",
+	"traits": {
+		"sociabilite": 0.15,
+		"attachement": 0.95,
+		"vivacite": 0.4,
+		"calin": 0.4,
+		"curiosite": 0.3
+	}
+}

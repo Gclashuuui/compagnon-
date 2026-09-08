@@ -1,0 +1,107 @@
+{
+	"_comment": [
+		"La mouette. Modele et 52 animations fournis avec le mod.",
+		"",
+		"Elle regarde vers -Z dans son modele, comme le dragonnet : le bec est a",
+		"z = -10, la queue a z = +7,6. C'est la convention de Blockbench, et c'est",
+		"celle que le rendu attend pour poser un objet dans le bec.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, pas depuis son centre.",
+		"",
+		"Trois morceaux et pas cinq : elle fait 1,1 bloc de long contre 2 pour le",
+		"dragonnet. Un morceau de plus se paie a chaque tick et ne se verrait pas."
+	],
+	"titre": "Mouette",
+	"geometrie": "compagnon:geo/mouette.geo.json",
+	"animations": "compagnon:animations/mouette.animation.json",
+	"taille": {
+		"largeur": 0.5,
+		"hauteur": 0.9
+	},
+	"vole": true,
+	"nom_a_la_voix": "mouette",
+	"variante_par_defaut": "blanche",
+	"variantes": {
+		"blanche": "compagnon:textures/entity/mouette.png"
+	},
+	"_comment_sons": [
+		"Sa voix, empruntee aux sons du jeu.",
+		"",
+		"Aucun fichier son n'est livre avec le mod : le jeu en a des centaines, dont",
+		"des dizaines de cris d'animaux. Une mouette qui emprunte la voix du",
+		"perroquet sonne tres bien, et le mod ne grossit pas d'un octet.",
+		"",
+		"La hauteur du son depend en plus de CHAQUE compagnon : deux betes de la",
+		"meme espece ne crient pas pareil, et on reconnait la sienne a l'oreille.",
+		"",
+		"Les roles :",
+		"  ambiance : de temps en temps, sans raison. Sa presence sonore.",
+		"  content  : une caresse, un repas, une reussite.",
+		"  mal      : il a mal, ou il va tres mal.",
+		"  envol    : il quitte le sol.",
+		"  alerte   : il a repere quelque chose et te le signale.",
+		"",
+		"Une cle absente = silence pour ce role. Une espece sans cette section reste",
+		"entierement muette, exactement comme avant."
+	],
+	"sons": {
+		"ambiance": "minecraft:entity.parrot.ambient",
+		"content": "minecraft:entity.parrot.eat",
+		"mal": "minecraft:entity.parrot.hurt",
+		"envol": "minecraft:entity.parrot.fly",
+		"alerte": "minecraft:entity.parrot.imitate.ghast"
+	},
+	"locomotion": {
+		"immobile": "animation.mouette.idle",
+		"marche": "animation.mouette.walk",
+		"course": "animation.mouette.run",
+		"vol": "animation.mouette.fly",
+		"assis": "animation.mouette.sit",
+		"couche": "animation.mouette.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.mouette.settle_feathers",
+		"joyeux": "animation.mouette.idle3",
+		"triste": "animation.mouette.idle_rest",
+		"ecoute": "animation.mouette.watch_player",
+		"tourne": "animation.mouette.hop",
+		"joie": "animation.mouette.excited",
+		"salut": "animation.mouette.amb_call",
+		"reconnait": "animation.mouette.amb_head_tilt",
+		"reveil": "animation.mouette.wake_up",
+		"ramasse": "animation.mouette.peck"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.19,
+				0.09
+			],
+			"largeur": 0.45,
+			"hauteur": 0.4
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				0.62,
+				0.33
+			],
+			"largeur": 0.25,
+			"hauteur": 0.26
+		},
+		{
+			"nom": "queue",
+			"decalage": [
+				0,
+				0.3,
+				-0.27
+			],
+			"largeur": 0.32,
+			"hauteur": 0.12
+		}
+	]
+}

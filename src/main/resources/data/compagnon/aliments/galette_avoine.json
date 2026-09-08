@@ -1,0 +1,8 @@
+{
+	"nom": "Galette à l'avoine",
+	"effets": {
+		"faim": 25,
+		"energie": 8
+	},
+	"modele": 16
+}

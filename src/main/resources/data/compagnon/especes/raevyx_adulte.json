@@ -1,0 +1,83 @@
+{
+	"_comment": [
+		"Un dragon d'orage. Huit blocs de haut, et la foudre pour voix.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans raevyx.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Raevyx adulte",
+	"geometrie": "compagnon:geo/raevyx_adulte.geo.json",
+	"animations": "compagnon:animations/raevyx_adulte.animation.json",
+	"taille": {
+		"largeur": 4,
+		"hauteur": 6
+	},
+	"vole": true,
+	"nom_a_la_voix": "raevyx",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/raevyx_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/raevyx_adulte_femelle.png",
+		"or_nocturne": "compagnon:textures/entity/raevyx_adulte_or_nocturne.png",
+		"or_nocturne_femelle": "compagnon:textures/entity/raevyx_adulte_or_nocturne_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.ender_dragon.growl",
+		"content": "entity.wolf.pant",
+		"mal": "entity.ender_dragon.hurt",
+		"alerte": "entity.lightning_bolt.thunder"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.raevyx_adulte.idle",
+		"marche": "animation.raevyx_adulte.walk",
+		"course": "animation.raevyx_adulte.run",
+		"vol": "animation.raevyx_adulte.fly_glide",
+		"assis": "animation.raevyx_adulte.sit",
+		"couche": "animation.raevyx_adulte.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.raevyx_adulte.grumble1",
+		"joyeux": "animation.raevyx_adulte.flex",
+		"triste": "animation.raevyx_adulte.grumble3",
+		"ecoute": "animation.raevyx_adulte.investigating",
+		"tourne": "",
+		"joie": "animation.raevyx_adulte.flex",
+		"salut": "animation.raevyx_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.raevyx_adulte.eat",
+		"reveil": "animation.raevyx_adulte.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				3,
+				0
+			],
+			"largeur": 4,
+			"hauteur": 4.800000000000001
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				4.800000000000001,
+				2.8
+			],
+			"largeur": 2,
+			"hauteur": 2.4000000000000004
+		}
+	]
+}

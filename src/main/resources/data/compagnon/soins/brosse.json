@@ -1,0 +1,8 @@
+{
+	"nom": "Brosse de toilettage",
+	"effets": {
+		"complicite": 20,
+		"sante": 5
+	},
+	"modele": 26
+}

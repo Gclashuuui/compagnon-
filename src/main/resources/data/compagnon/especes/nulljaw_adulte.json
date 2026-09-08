@@ -1,0 +1,81 @@
+{
+	"_comment": [
+		"Le petit des huit, meme adulte. Il ne marche pas : il flotte.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans nulljaw.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Nulljaw adulte",
+	"geometrie": "compagnon:geo/nulljaw_adulte.geo.json",
+	"animations": "compagnon:animations/nulljaw_adulte.animation.json",
+	"taille": {
+		"largeur": 1.4,
+		"hauteur": 2.2
+	},
+	"vole": true,
+	"nom_a_la_voix": "nulljaw",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/nulljaw_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/nulljaw_adulte_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.breeze.idle_air",
+		"content": "entity.allay.item_given",
+		"mal": "entity.vex.hurt",
+		"alerte": "entity.breeze.wind_burst"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.nulljaw_adulte.idle",
+		"marche": "animation.nulljaw_adulte.hover",
+		"course": "animation.nulljaw_adulte.hover",
+		"vol": "animation.nulljaw_adulte.hover",
+		"assis": "",
+		"couche": ""
+	},
+	"reactions": {
+		"caresse": "animation.nulljaw_adulte.grumble1",
+		"joyeux": "",
+		"triste": "animation.nulljaw_adulte.grumble3",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "",
+		"salut": "animation.nulljaw_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.nulljaw_adulte.eat",
+		"reveil": ""
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				1.1,
+				0
+			],
+			"largeur": 1.4,
+			"hauteur": 1.7600000000000002
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				1.7600000000000002,
+				0.9799999999999999
+			],
+			"largeur": 0.7,
+			"hauteur": 0.8800000000000001
+		}
+	]
+}

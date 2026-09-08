@@ -1,0 +1,8 @@
+{
+	"nom": "Baume chauffant",
+	"effets": {
+		"sante": 25,
+		"energie": 10
+	},
+	"modele": 19
+}

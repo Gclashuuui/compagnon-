@@ -1,0 +1,34 @@
+{
+	"_comment": [
+		"Les reglages du serveur. Un /reload suffit a les relire.",
+		"",
+		"Chaque cle peut manquer : la valeur par defaut est alors prise, sans",
+		"erreur. Ce fichier entier peut manquer, d'ailleurs."
+	],
+	"invocation": {
+		"_comment": [
+			"Combien de compagnons un joueur peut avoir dehors en meme temps.",
+			"",
+			"Trois par defaut. Assez pour se promener avec sa petite bande, assez",
+			"peu pour qu une salle commune a cent personnes ne devienne pas une",
+			"menagerie de mille creatures a animer.",
+			"",
+			"En invoquer un de plus range automatiquement le precedent : on ne",
+			"refuse jamais, on remplace. Mettre 0 enleve la limite."
+		],
+		"sortis_en_meme_temps": 3
+	},
+	"competences": {
+		"_comment": [
+			"Tous les combien de niveaux il gagne un point de competence.",
+			"",
+			"Cinq : au niveau maximum cela fait dix points pour neuf competences.",
+			"Presque toutes, mais pas tout de suite, et pas dans le meme ordre que le",
+			"voisin. Un point par niveau en donnerait cinquante, chacun prendrait tout,",
+			"et deux betes du meme niveau seraient de nouveau identiques.",
+			"",
+			"Mettre 0 enleve les points, donc les competences."
+		],
+		"un_point_tous_les_niveaux": 5
+	}
+}

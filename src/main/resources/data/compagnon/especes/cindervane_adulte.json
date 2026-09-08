@@ -1,0 +1,85 @@
+{
+	"_comment": [
+		"Un dragon de magma, large d'aile et bas sur l'horizon.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans cindervane.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Cindervane adulte",
+	"geometrie": "compagnon:geo/cindervane_adulte.geo.json",
+	"animations": "compagnon:animations/cindervane_adulte.animation.json",
+	"taille": {
+		"largeur": 3,
+		"hauteur": 2
+	},
+	"vole": true,
+	"nom_a_la_voix": "cindervane",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/cindervane_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/cindervane_adulte_femelle.png",
+		"albinos": "compagnon:textures/entity/cindervane_adulte_albinos.png",
+		"albinos_femelle": "compagnon:textures/entity/cindervane_adulte_albinos_femelle.png",
+		"pie": "compagnon:textures/entity/cindervane_adulte_pie.png",
+		"pie_femelle": "compagnon:textures/entity/cindervane_adulte_pie_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.ender_dragon.growl",
+		"content": "entity.ender_dragon.flap",
+		"mal": "entity.ender_dragon.hurt",
+		"alerte": "entity.blaze.shoot"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.cindervane_adulte.idle",
+		"marche": "animation.cindervane_adulte.walk",
+		"course": "animation.cindervane_adulte.run",
+		"vol": "animation.cindervane_adulte.glide",
+		"assis": "animation.cindervane_adulte.sit",
+		"couche": "animation.cindervane_adulte.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.cindervane_adulte.grumble1",
+		"joyeux": "animation.cindervane_adulte.flex",
+		"triste": "animation.cindervane_adulte.grumble3",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.cindervane_adulte.flex",
+		"salut": "animation.cindervane_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.cindervane_adulte.eat",
+		"reveil": "animation.cindervane_adulte.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				1,
+				0
+			],
+			"largeur": 3,
+			"hauteur": 1.6
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				1.6,
+				2.0999999999999996
+			],
+			"largeur": 1.5,
+			"hauteur": 0.8
+		}
+	]
+}

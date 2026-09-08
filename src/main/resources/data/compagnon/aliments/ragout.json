@@ -1,0 +1,9 @@
+{
+	"nom": "Ragoût en chaudron",
+	"effets": {
+		"faim": 35,
+		"energie": 20,
+		"complicite": 5
+	},
+	"modele": 20
+}

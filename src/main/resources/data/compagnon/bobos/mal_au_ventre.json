@@ -1,0 +1,6 @@
+{
+	"nom": "Mal au ventre",
+	"description": "Il est barbouille et n'a pas envie de bouger.",
+	"soigne_par": "sirop_toux",
+	"sante": -20
+}

@@ -1,0 +1,8 @@
+{
+	"nom": "Poudre de corne de Bicorne",
+	"effets": {
+		"sante": 30,
+		"energie": 15
+	},
+	"modele": 12
+}

@@ -1,0 +1,8 @@
+{
+	"nom": "Figue pourpre",
+	"effets": {
+		"faim": 25,
+		"complicite": 5
+	},
+	"modele": 24
+}

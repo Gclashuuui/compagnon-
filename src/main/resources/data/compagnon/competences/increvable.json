@@ -1,0 +1,18 @@
+{
+	"_comment": [
+		"Une competence. Un point la prend, et on ne peut pas la reprendre.",
+		"",
+		"Les effets qui MULTIPLIENT vont sous 1 pour ameliorer (faim, energie,",
+		"bobos) et au-dessus pour ameliorer (experience). Celui qui S AJOUTE est",
+		"oreille, en blocs.",
+		"",
+		"especes vide = toutes les especes."
+	],
+	"nom": "Increvable",
+	"description": "Il n attrape presque plus rien.",
+	"niveau_requis": 35,
+	"especes": [],
+	"effets": {
+		"bobos": 0.3
+	}
+}

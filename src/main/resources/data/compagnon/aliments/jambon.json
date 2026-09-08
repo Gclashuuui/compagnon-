@@ -1,0 +1,9 @@
+{
+	"nom": "Jambon rôti aux herbes",
+	"effets": {
+		"faim": 35,
+		"energie": 16,
+		"complicite": 4
+	},
+	"modele": 7
+}

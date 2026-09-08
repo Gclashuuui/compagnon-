@@ -1,0 +1,77 @@
+{
+	"_comment": [
+		"Le plus gros des huit bebes. Deja imposant.",
+		"",
+		"C'est le BEBE de l'espece. L'adulte fait entre seize et soixante blocs",
+		"d'envergure : c'est un boss, pas un compagnon. Le bebe a son propre",
+		"modele, ses propres animations et ses propres textures.",
+		"",
+		"Il ne vole pas : le bebe n'a aucune animation de vol.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Bébé Ignivorus",
+	"geometrie": "compagnon:geo/baby_ignivorus.geo.json",
+	"animations": "compagnon:animations/baby_ignivorus.animation.json",
+	"taille": {
+		"largeur": 1,
+		"hauteur": 1.4
+	},
+	"vole": false,
+	"nom_a_la_voix": "ignivorus",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/baby_ignivorus.png",
+		"femelle": "compagnon:textures/entity/baby_ignivorus_female.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, en attendant mieux : les vrais fichiers son",
+		"de cette bete existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes — deux especes qui",
+		"parlent pareil sont deux especes qu'on confond."
+	],
+	"sons": {
+		"ambiance": "entity.hoglin.ambient",
+		"content": "entity.hoglin.step",
+		"mal": "entity.hoglin.hurt",
+		"alerte": "entity.hoglin.angry"
+	},
+	"_comment_roles": [
+		"Les roles vides sont des roles qu'on n'a pas encore remplis : le modele",
+		"n'a pas d'animation honnete pour eux. Un role vide ne joue rien, ce qui",
+		"vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.ignivorus.idle",
+		"marche": "animation.ignivorus.walk",
+		"course": "animation.ignivorus.run",
+		"vol": "",
+		"assis": "animation.ignivorus.sit",
+		"couche": "animation.ignivorus.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.ignivorus.grumble1",
+		"joyeux": "animation.ignivorus.dance",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.ignivorus.dance",
+		"salut": "animation.ignivorus.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.ignivorus.eat",
+		"reveil": "animation.ignivorus.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.7,
+				0
+			],
+			"largeur": 1,
+			"hauteur": 1.1199999999999999
+		}
+	]
+}

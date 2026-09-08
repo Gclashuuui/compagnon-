@@ -1,0 +1,9 @@
+{
+	"nom": "Champignons lumineux",
+	"effets": {
+		"faim": 15,
+		"energie": 25,
+		"sante": 10
+	},
+	"modele": 21
+}

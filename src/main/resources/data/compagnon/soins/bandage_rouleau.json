@@ -1,0 +1,7 @@
+{
+	"nom": "Rouleau de bandage",
+	"effets": {
+		"sante": 25
+	},
+	"modele": 1
+}

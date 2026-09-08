@@ -1,0 +1,77 @@
+{
+	"_comment": [
+		"Un petit herbivore a plaques dorsales.",
+		"",
+		"C'est le BEBE de l'espece. L'adulte fait entre seize et soixante blocs",
+		"d'envergure : c'est un boss, pas un compagnon. Le bebe a son propre",
+		"modele, ses propres animations et ses propres textures.",
+		"",
+		"Il ne vole pas : le bebe n'a aucune animation de vol.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Bébé Stegonaut",
+	"geometrie": "compagnon:geo/baby_stegonaut.geo.json",
+	"animations": "compagnon:animations/baby_stegonaut.animation.json",
+	"taille": {
+		"largeur": 0.8,
+		"hauteur": 1.1
+	},
+	"vole": false,
+	"nom_a_la_voix": "stegonaut",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/baby_stegonaut.png",
+		"femelle": "compagnon:textures/entity/baby_stegonaut_female.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, en attendant mieux : les vrais fichiers son",
+		"de cette bete existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes — deux especes qui",
+		"parlent pareil sont deux especes qu'on confond."
+	],
+	"sons": {
+		"ambiance": "entity.goat.ambient",
+		"content": "entity.goat.eat",
+		"mal": "entity.goat.hurt",
+		"alerte": "entity.goat.screaming.ambient"
+	},
+	"_comment_roles": [
+		"Les roles vides sont des roles qu'on n'a pas encore remplis : le modele",
+		"n'a pas d'animation honnete pour eux. Un role vide ne joue rien, ce qui",
+		"vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.stegonaut.idle",
+		"marche": "animation.stegonaut.walk",
+		"course": "animation.stegonaut.run",
+		"vol": "",
+		"assis": "animation.stegonaut.sit",
+		"couche": "animation.stegonaut.sleep"
+	},
+	"reactions": {
+		"caresse": "",
+		"joyeux": "animation.stegonaut.dance",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.stegonaut.dance",
+		"salut": "",
+		"reconnait": "",
+		"ramasse": "animation.stegonaut.eat",
+		"reveil": "animation.stegonaut.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.55,
+				0
+			],
+			"largeur": 0.8,
+			"hauteur": 0.8800000000000001
+		}
+	]
+}

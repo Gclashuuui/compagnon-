@@ -1,0 +1,6 @@
+{
+	"nom": "Patte foulee",
+	"description": "Il boite un peu et evite de poser la patte.",
+	"soigne_par": "attelle",
+	"sante": -25
+}

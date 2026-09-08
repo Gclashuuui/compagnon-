@@ -1,0 +1,8 @@
+{
+	"nom": "Chocogrenouille",
+	"effets": {
+		"faim": 20,
+		"complicite": 12
+	},
+	"modele": 31
+}

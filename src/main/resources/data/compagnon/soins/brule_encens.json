@@ -1,0 +1,8 @@
+{
+	"nom": "Brûle-encens purificateur",
+	"effets": {
+		"sante": 20,
+		"complicite": 10
+	},
+	"modele": 25
+}

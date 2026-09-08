@@ -1,0 +1,9 @@
+{
+	"nom": "Cristal runique",
+	"effets": {
+		"sante": 100,
+		"energie": 30,
+		"complicite": 10
+	},
+	"modele": 30
+}

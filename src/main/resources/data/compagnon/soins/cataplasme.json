@@ -1,0 +1,7 @@
+{
+	"nom": "Cataplasme d'herbes",
+	"effets": {
+		"sante": 25
+	},
+	"modele": 23
+}

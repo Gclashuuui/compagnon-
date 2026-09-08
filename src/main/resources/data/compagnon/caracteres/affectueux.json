@@ -1,0 +1,10 @@
+{
+	"nom": "Affectueux",
+	"traits": {
+		"sociabilite": 0.8,
+		"attachement": 0.9,
+		"vivacite": 0.6,
+		"calin": 0.9,
+		"curiosite": 0.5
+	}
+}

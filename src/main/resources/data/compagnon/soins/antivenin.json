@@ -1,0 +1,7 @@
+{
+	"nom": "Antivenin",
+	"effets": {
+		"sante": 40
+	},
+	"modele": 15
+}

@@ -1,0 +1,16 @@
+{
+	"_comment": [
+		"Il previent aussi en plein jour.",
+		"",
+		"Sans elle, il ne signale que dans le noir : c est ce qui l empeche de",
+		"commenter chaque zombie qui brule au soleil. Avec, il previent partout, ce",
+		"qui vaut le coup dans une cave eclairee ou une cour a l aube."
+	],
+	"nom": "Sentinelle",
+	"description": "Il monte la garde meme en plein jour.",
+	"niveau_requis": 25,
+	"especes": [],
+	"effets": {
+		"veille": 1
+	}
+}

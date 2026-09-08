@@ -1,0 +1,9 @@
+{
+	"nom": "Glace givrée",
+	"effets": {
+		"faim": 15,
+		"energie": 10,
+		"complicite": 8
+	},
+	"modele": 36
+}

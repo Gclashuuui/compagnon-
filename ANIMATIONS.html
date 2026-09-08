@@ -1,0 +1,1382 @@
+<title>Bestiaire animé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;1,6..72,400&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+	:root {
+		/* Papier d'animation sous une lightbox : froid, pas creme. */
+		--fond:        #E9ECEF;
+		--fond-creux:  #DFE3E8;
+		--carte:       #F7F8FA;
+		--encre:       #171A21;
+		--encre-2:     #4A515E;
+		--encre-3:     #7B8391;
+		--trait:       #C9D0D8;
+		--trait-fort:  #9AA4B2;
+
+		/* Une teinte par bete. C'est le sujet qui donne la palette. */
+		--mouette:     #55707F;
+		--oiseau:      #4356B8;
+		--dragonnet:   #B0512C;
+
+		--alerte:      #A6321F;
+		--alerte-fond: #F6E3DE;
+		--bien:        #2F6B4F;
+
+		--rail: 74px;
+		--lecture: 68ch;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) {
+			--fond:        #101319;
+			--fond-creux:  #0A0C11;
+			--carte:       #181C24;
+			--encre:       #EAEDF2;
+			--encre-2:     #A9B2C0;
+			--encre-3:     #737D8C;
+			--trait:       #2A303B;
+			--trait-fort:  #3D4553;
+
+			--mouette:     #8FB2C4;
+			--oiseau:      #8A9BF0;
+			--dragonnet:   #E08B62;
+
+			--alerte:      #F0836C;
+			--alerte-fond: #2C1815;
+			--bien:        #6FC79B;
+		}
+	}
+
+	:root[data-theme="dark"] {
+		--fond:        #101319;
+		--fond-creux:  #0A0C11;
+		--carte:       #181C24;
+		--encre:       #EAEDF2;
+		--encre-2:     #A9B2C0;
+		--encre-3:     #737D8C;
+		--trait:       #2A303B;
+		--trait-fort:  #3D4553;
+
+		--mouette:     #8FB2C4;
+		--oiseau:      #8A9BF0;
+		--dragonnet:   #E08B62;
+
+		--alerte:      #F0836C;
+		--alerte-fond: #2C1815;
+		--bien:        #6FC79B;
+	}
+
+	* { box-sizing: border-box; }
+
+	body {
+		background: var(--fond);
+		color: var(--encre);
+		font-family: "Newsreader", Georgia, serif;
+		font-size: 17px;
+		line-height: 1.62;
+		margin: 0;
+		padding: 0 20px 120px;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.page { max-width: 940px; margin: 0 auto; }
+
+	h1, h2, h3, .mono, .rail, th {
+		font-family: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+	}
+
+	.mono, .rail, .os, .cote, .num {
+		font-family: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+	}
+
+	/* ---------- En-tete ---------- */
+
+	header {
+		padding: 88px 0 40px;
+		border-bottom: 2px solid var(--encre);
+	}
+
+	.sur-titre {
+		font-size: 12px;
+		letter-spacing: .18em;
+		text-transform: uppercase;
+		color: var(--encre-3);
+		margin: 0 0 22px;
+	}
+
+	h1 {
+		font-size: clamp(46px, 9vw, 88px);
+		font-weight: 800;
+		line-height: .93;
+		letter-spacing: -.035em;
+		margin: 0 0 24px;
+		text-wrap: balance;
+	}
+
+	.chapeau {
+		font-size: 21px;
+		line-height: 1.5;
+		color: var(--encre-2);
+		max-width: 58ch;
+		margin: 0;
+		font-weight: 300;
+	}
+
+	/* ---------- Les chiffres du constat ---------- */
+
+	.constat {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 1px;
+		background: var(--trait);
+		border: 1px solid var(--trait);
+		margin: 44px 0;
+	}
+
+	.chiffre {
+		background: var(--carte);
+		padding: 22px 20px 20px;
+	}
+
+	.chiffre .num {
+		display: block;
+		font-size: 42px;
+		line-height: 1;
+		letter-spacing: -.04em;
+		margin-bottom: 10px;
+	}
+
+	.chiffre.mal .num { color: var(--alerte); }
+
+	.chiffre p {
+		margin: 0;
+		font-size: 15px;
+		line-height: 1.45;
+		color: var(--encre-2);
+	}
+
+	/* ---------- Sections ---------- */
+
+	section { margin: 74px 0 0; scroll-margin-top: 20px; }
+
+	h2 {
+		font-size: clamp(28px, 4.5vw, 40px);
+		font-weight: 800;
+		letter-spacing: -.028em;
+		line-height: 1.05;
+		margin: 0 0 8px;
+		text-wrap: balance;
+	}
+
+	h2 .index {
+		font-family: "DM Mono", monospace;
+		font-size: 14px;
+		font-weight: 400;
+		letter-spacing: 0;
+		color: var(--encre-3);
+		display: block;
+		margin-bottom: 12px;
+	}
+
+	h3 {
+		font-size: 19px;
+		font-weight: 600;
+		letter-spacing: -.01em;
+		margin: 44px 0 4px;
+	}
+
+	p { max-width: var(--lecture); }
+
+	.intro { color: var(--encre-2); max-width: var(--lecture); }
+
+	/* ---------- La fiche d'espece ---------- */
+
+	.bete {
+		border-top: 3px solid var(--teinte);
+		padding-top: 26px;
+		margin-top: 88px;
+	}
+
+	.bete.mouette   { --teinte: var(--mouette); }
+	.bete.oiseau    { --teinte: var(--oiseau); }
+	.bete.dragonnet { --teinte: var(--dragonnet); }
+
+	.bete h2 { color: var(--teinte); }
+
+	.fiche-os {
+		background: var(--fond-creux);
+		border-left: 3px solid var(--teinte);
+		padding: 16px 20px;
+		margin: 22px 0 8px;
+		font-size: 14.5px;
+		line-height: 1.6;
+	}
+
+	.fiche-os .mono { font-size: 13px; color: var(--encre-2); }
+
+	/* ---------- La feuille de rythme ---------- */
+
+	.piste {
+		margin: 34px 0 0;
+		border-top: 1px solid var(--trait-fort);
+	}
+
+	.piste-titre {
+		display: flex;
+		align-items: baseline;
+		gap: 14px;
+		padding: 14px 0 12px;
+		flex-wrap: wrap;
+	}
+
+	.piste-code {
+		font-family: "DM Mono", monospace;
+		font-size: 11px;
+		letter-spacing: .14em;
+		padding: 3px 8px;
+		border: 1px solid var(--trait-fort);
+		color: var(--encre-2);
+		white-space: nowrap;
+	}
+
+	.piste-code.roue {
+		border-color: var(--teinte, var(--encre));
+		color: var(--teinte, var(--encre));
+		font-weight: 500;
+	}
+
+	.piste-titre h3 { margin: 0; font-size: 17px; }
+	.piste-titre .quoi { font-size: 14.5px; color: var(--encre-3); }
+
+	.ligne {
+		display: grid;
+		grid-template-columns: var(--rail) 1fr;
+		gap: 18px;
+		padding: 15px 0;
+		border-top: 1px solid var(--trait);
+		align-items: start;
+	}
+
+	.rail {
+		font-family: "DM Mono", monospace;
+		font-size: 12px;
+		color: var(--encre-3);
+		padding-top: 3px;
+		line-height: 1.5;
+	}
+
+	.rail b {
+		display: block;
+		font-weight: 500;
+		color: var(--teinte, var(--encre-2));
+		font-size: 13px;
+	}
+
+	.corps > :first-child { margin-top: 0; }
+	.corps > :last-child { margin-bottom: 0; }
+
+	.nom {
+		font-family: "Bricolage Grotesque", sans-serif;
+		font-weight: 600;
+		font-size: 17.5px;
+		letter-spacing: -.012em;
+		margin: 0 0 5px;
+	}
+
+	.ligne p { margin: 0 0 7px; font-size: 16px; }
+
+	/* La raison : le critere du joueur, pas une decoration. */
+	.pourquoi {
+		font-size: 15px;
+		color: var(--encre-2);
+		border-left: 2px solid var(--teinte, var(--trait-fort));
+		padding-left: 13px;
+		margin: 9px 0 0;
+		font-style: italic;
+	}
+
+	.pourquoi b { font-style: normal; font-weight: 600; color: var(--encre); }
+
+	/* ---------- Les os ---------- */
+
+	.os-liste { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 5px; }
+
+	.os {
+		font-size: 11.5px;
+		padding: 2px 7px;
+		background: var(--fond-creux);
+		border: 1px solid var(--trait);
+		color: var(--encre-2);
+		white-space: nowrap;
+	}
+
+	.os.manque {
+		background: var(--alerte-fond);
+		border-color: var(--alerte);
+		color: var(--alerte);
+		font-weight: 500;
+	}
+
+	.os.manque::before { content: "+ "; }
+
+	.deja {
+		font-size: 11.5px;
+		padding: 2px 7px;
+		border: 1px solid var(--bien);
+		color: var(--bien);
+		white-space: nowrap;
+		font-family: "DM Mono", monospace;
+	}
+
+	/* ---------- Tableaux ---------- */
+
+	.defile { overflow-x: auto; margin: 22px 0; }
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 15px;
+		min-width: 560px;
+	}
+
+	th {
+		text-align: left;
+		font-size: 11.5px;
+		letter-spacing: .12em;
+		text-transform: uppercase;
+		color: var(--encre-3);
+		font-weight: 600;
+		padding: 0 16px 9px 0;
+		border-bottom: 1.5px solid var(--trait-fort);
+	}
+
+	td {
+		padding: 11px 16px 11px 0;
+		border-bottom: 1px solid var(--trait);
+		vertical-align: top;
+	}
+
+	td:first-child { white-space: nowrap; }
+
+	/* ---------- Encadres ---------- */
+
+	.note {
+		background: var(--carte);
+		border: 1px solid var(--trait);
+		border-left: 3px solid var(--encre);
+		padding: 20px 22px;
+		margin: 30px 0;
+	}
+
+	.note.rouge { border-left-color: var(--alerte); }
+	.note h3 { margin: 0 0 8px; font-size: 17px; }
+	.note p { margin: 0 0 10px; font-size: 16px; }
+	.note p:last-child { margin-bottom: 0; }
+
+	.regle {
+		font-family: "Bricolage Grotesque", sans-serif;
+		font-size: clamp(21px, 3.4vw, 29px);
+		font-weight: 600;
+		line-height: 1.28;
+		letter-spacing: -.02em;
+		max-width: 30ch;
+		margin: 34px 0;
+		text-wrap: balance;
+	}
+
+	ol.pas, ul.pas { max-width: var(--lecture); padding-left: 22px; }
+	ol.pas li, ul.pas li { margin-bottom: 12px; }
+
+	.legende {
+		display: flex;
+		gap: 20px;
+		flex-wrap: wrap;
+		font-size: 13.5px;
+		color: var(--encre-3);
+		margin: 18px 0 0;
+		align-items: center;
+	}
+
+	footer {
+		margin-top: 90px;
+		padding-top: 26px;
+		border-top: 2px solid var(--encre);
+		font-size: 14.5px;
+		color: var(--encre-3);
+	}
+
+	@media (max-width: 620px) {
+		body { font-size: 16px; padding: 0 16px 80px; }
+		:root { --rail: 58px; }
+		.ligne { gap: 12px; }
+		header { padding-top: 56px; }
+	}
+</style>
+
+<div class="page">
+
+<header>
+	<p class="sur-titre">Compagnon · document de conception · aucune ligne de code</p>
+	<h1>Bestiaire animé</h1>
+	<p class="chapeau">Ce que chaque bête sait faire, ce qu'elle devrait savoir faire, et ce qui mérite vraiment d'être débloqué.</p>
+</header>
+
+<section>
+	<h2><span class="index">01 — Le constat</span>La machine est bonne. C'est le casting qui est faux.</h2>
+
+	<p class="intro">Avant de proposer, j'ai compté. Voici ce que contiennent réellement <span class="mono">niveaux.json</span>, les trois fiches d'espèce et les trois fichiers d'animation.</p>
+
+	<div class="constat">
+		<div class="chiffre">
+			<span class="num">111</span>
+			<p>animations livrées avec le mod, sur trois espèces.</p>
+		</div>
+		<div class="chiffre mal">
+			<span class="num">52</span>
+			<p>ne sont <b>jamais jouées</b>. Ni dans la vie courante, ni dans la roue. Elles existent dans le fichier et personne ne les verra.</p>
+		</div>
+		<div class="chiffre mal">
+			<span class="num">6</span>
+			<p>déblocages de la roue sont <b>l'animation que la bête joue déjà toute seule</b>.</p>
+		</div>
+		<div class="chiffre mal">
+			<span class="num">25</span>
+			<p>des 50 paliers de niveau ne débloquent rien du tout.</p>
+		</div>
+	</div>
+
+	<h3>Les six doublons, nommément</h3>
+
+	<p>Ce sont les pires, parce qu'ils tiennent la promesse à l'envers : le joueur monte de niveau, ouvre sa roue, et découvre un geste qu'il a déjà vu cent fois.</p>
+
+	<div class="defile">
+		<table>
+			<thead>
+				<tr><th>Palier</th><th>Ce qu'on « débloque »</th><th>Ce que c'est en vrai</th></tr>
+			</thead>
+			<tbody>
+				<tr><td class="mono">Niv. 1</td><td class="mono">mouette.amb_call</td><td>c'est déjà <span class="mono">reactions.salut</span> — elle le fait à chaque fois que tu t'arrêtes</td></tr>
+				<tr><td class="mono">Niv. 3</td><td class="mono">mouette.amb_head_tilt</td><td>c'est déjà <span class="mono">reactions.reconnait</span></td></tr>
+				<tr><td class="mono">Niv. 11</td><td class="mono">mouette.hop</td><td>c'est déjà <span class="mono">reactions.tourne</span> — la manie « tourne quand tu t'arrêtes »</td></tr>
+				<tr><td class="mono">Niv. 18</td><td class="mono">mouette.excited</td><td>c'est déjà <span class="mono">reactions.joie</span></td></tr>
+				<tr><td class="mono">Niv. 1</td><td class="mono">oiseau_bleu.salut</td><td>c'est déjà <span class="mono">reactions.salut</span></td></tr>
+				<tr><td class="mono">Niv. 20</td><td class="mono">oiseau_bleu.attack</td><td>c'est déjà <span class="mono">reactions.attack</span></td></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="note">
+		<h3>La bonne nouvelle</h3>
+		<p><b>Le mod sait déjà faire la séparation que tu décris.</b> Il y a deux voies distinctes dans le code : les rôles <span class="mono">@salut</span>, <span class="mono">@joie</span>, <span class="mono">@triste</span>… déclarés dans <span class="mono">reactions</span> de la fiche d'espèce, joués tout seuls par les manies, la présence et les buts ; et la liste <span class="mono">debloque</span> de <span class="mono">niveaux.json</span>, qui remplit la roue.</p>
+		<p>Il n'y a donc <b>rien à reconstruire</b>. Il y a à re-caster : sortir la vie quotidienne de la roue, et remplir la roue de choses qui la méritent.</p>
+	</div>
+
+	<p class="regle">Une animation dans la roue doit être quelque chose que la bête ne fera jamais toute seule. Sinon ce n'est pas une récompense, c'est un doublon.</p>
+</section>
+
+<section>
+	<h2><span class="index">02 — La méthode</span>Quatre voies au lieu de deux</h2>
+
+	<div class="defile">
+		<table>
+			<thead>
+				<tr><th>Voie</th><th>Qui la déclenche</th><th>Dans la roue ?</th><th>Ce qu'elle sert</th></tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><span class="piste-code">VIE</span></td>
+					<td>personne — l'humeur, le climat, l'heure, la fatigue</td>
+					<td><b>jamais</b></td>
+					<td>elle donne l'impression que la bête existe quand tu ne la regardes pas</td>
+				</tr>
+				<tr>
+					<td><span class="piste-code">RÉAC</span></td>
+					<td>toi — une caresse, un repas, un ordre, un regard</td>
+					<td><b>jamais</b></td>
+					<td>elle répond. C'est ce qui fait qu'un geste du joueur a un effet visible</td>
+				</tr>
+				<tr>
+					<td><span class="piste-code roue">ROUE</span></td>
+					<td>toi, exprès, dans la roue</td>
+					<td><b>oui</b></td>
+					<td>c'est la récompense. Elle doit se montrer aux autres</td>
+				</tr>
+				<tr>
+					<td><span class="piste-code">RARE</span></td>
+					<td>le monde, dans des conditions précises</td>
+					<td><b>jamais</b></td>
+					<td>elle se raconte. « Il paraît qu'à minuit… »</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h3>Le test d'entrée dans la roue</h3>
+
+	<p>Une animation mérite une case si elle passe <b>les trois</b> :</p>
+
+	<ol class="pas">
+		<li><b>Le test du couloir.</b> Si tu la déclenches dans une salle commune, est-ce que quelqu'un tourne la tête ? Un clignement d'œil, non. Un cri de guerre de quatre secondes, oui.</li>
+		<li><b>Le test de l'espèce.</b> Est-ce qu'on pourrait la donner à une autre bête en changeant juste le nom ? Si oui, elle ne va pas dans la roue — elle va dans la vie.</li>
+		<li><b>Le test de la phrase.</b> Est-ce que le joueur peut la raconter à quelqu'un qui ne l'a pas vue ? « Il tire la langue et il l'oublie » se raconte. « Il lève la patte » ne se raconte pas.</li>
+	</ol>
+
+	<div class="note rouge">
+		<h3>Et une contrainte de rythme</h3>
+		<p>Il ne faut <b>pas</b> remplir les 25 paliers vides. Un palier qui ne donne rien donne du prix au suivant. La bonne cadence est <b>un geste tous les cinq à six niveaux</b> — soit huit à dix gestes par espèce sur toute une vie de compagnon, pas trente.</p>
+	</div>
+
+	<p class="legende">
+		<span class="deja">déjà dans le modèle</span>
+		<span class="os manque">os à ajouter</span>
+	</p>
+</section>
+
+<!-- =========================== MOUETTE =========================== -->
+
+<section class="bete mouette">
+	<h2><span class="index">03 — Première bête</span>La mouette, ou la voyou</h2>
+
+	<p class="intro">Ce n'est pas un oiseau noble. C'est celle qui te vole tes frites, qui hurle à six heures du matin et qui te regarde manger sans cligner. <b>Tout doit venir de là.</b> Une mouette élégante est une mouette ratée.</p>
+
+	<div class="fiche-os">
+		<b>Ce qu'elle a aujourd'hui.</b> 16 os, 26 cubes — <span class="mono">neck1/2/3, head, beak, tail, wing_right(+tip), wing_left(+tip), leg/foot ×2</span>.<br>
+		52 animations livrées : 15 branchées sur sa vie, 16 dans la roue, <b>25 mortes</b>.<br>
+		<span class="mono">Pas de paupières. Pas de bec articulé. Pas de langue.</span>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">VIE</span>
+			<h3>Sa vie quotidienne</h3>
+			<span class="quoi">— presque tout existe déjà et n'est branché sur rien</span>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Climat</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Le vent la décoiffe</p>
+				<p>Un idle spécial quand il y a du vent, de la pluie, ou qu'elle est en hauteur. Les plumes du dos se hérissent, elle se met de trois quarts face au vent.</p>
+				<div class="os-liste"><span class="deja">idle_wind · 6,5 s</span><span class="deja">idle_froid</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Fatigue</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Les ailes qui tombent</p>
+				<p>Sous 25 d'énergie, les ailes ne sont plus tout à fait repliées et elle marche plus lentement. Ça se voit sans ouvrir le livre — c'est la seule information de santé qu'on lit sur la bête elle-même.</p>
+				<div class="os-liste"><span class="deja">wing_droop · 5 s</span><span class="deja">walk_slow</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Danger</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Elle se fige</p>
+				<p>Un monstre à moins de douze blocs, dans le noir : elle s'arrête net, corps bas, tête haute, immobile. C'est le geste le plus utile de la liste, parce qu'il te prévient.</p>
+				<div class="os-liste"><span class="deja">alert_freeze · 4 s</span><span class="deja">startle</span><span class="deja">alert_snap</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Toilette</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Elle se nettoie, par roulement</p>
+				<p>Quatre toilettes différentes qui tournent : l'aile gauche, le dos, la queue, un réajustement rapide. Quatre au lieu d'une, et on cesse de reconnaître le geste.</p>
+				<div class="os-liste"><span class="deja">preen_wing_left</span><span class="deja">preen_back</span><span class="deja">preen_tail</span><span class="deja">feather_adjust</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Transitions</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Décoller, se poser, s'asseoir, se relever</p>
+				<p><b>Aujourd'hui elle se téléporte en vol.</b> Les quatre transitions existent dans le fichier et ne sont jouées nulle part. C'est le trou le plus visible du mod : une bête qui passe de la marche au vol sans un battement d'ailes ne vole pas, elle glisse.</p>
+				<div class="os-liste"><span class="deja">takeoff · 1,5 s</span><span class="deja">land · 1,85 s</span><span class="deja">sit_down</span><span class="deja">stand_up</span><span class="deja">wake_up</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Hasard</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Elle trébuche</p>
+				<p>Une fois sur quatre cents pas. Jamais deux fois de suite. C'est le genre de chose qu'on ne voit qu'après trois heures de jeu — et qu'on raconte.</p>
+				<div class="os-liste"><span class="deja">stumble · 2,1 s</span><span class="deja">amb_step</span><span class="deja">amb_tail_flick</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Le monde</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Elle boit, elle fouille, elle avale</p>
+				<p>Près de l'eau elle boit. Sur du sable ou de l'herbe elle inspecte le sol et donne des coups de bec. Après un repas, elle déglutit et se réajuste les plumes.</p>
+				<div class="os-liste"><span class="deja">drink</span><span class="deja">inspect_ground</span><span class="deja">peck_quick</span><span class="deja">swallow</span><span class="deja">head_scan</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>À faire</b>nouveau</div>
+			<div class="corps">
+				<p class="nom">Trois manques</p>
+				<p>Elle se perche en hauteur et regarde au loin, sans bouger, longtemps. — Elle marche en crabe le long d'un bord, sans jamais tomber. — Elle secoue une patte après l'eau, une seule, avec agacement.</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">RÉAC</span>
+			<h3>Quand tu t'occupes d'elle</h3>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Caresse</b></div>
+			<div class="corps">
+				<p>Bien lunée : elle se tasse et lisse ses plumes. <b>Mal lunée</b> — humeur basse, ou faim sous 30 — elle donne un coup de bec sec et s'écarte d'un pas. Un compagnon qui accepte toujours n'a pas de caractère.</p>
+				<div class="os-liste"><span class="deja">settle_feathers</span><span class="deja">alert_snap</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Repas</b></div>
+			<div class="corps">
+				<p>Elle arrache, elle avale, elle se réajuste. Trois animations à la suite au lieu d'une, et manger cesse d'être un clic.</p>
+				<div class="os-liste"><span class="deja">peck</span><span class="deja">swallow</span><span class="deja">feather_adjust</span></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code roue">ROUE</span>
+			<h3>Les vraies récompenses</h3>
+			<span class="quoi">— neuf, pour toute une vie de compagnon</span>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 8</b>3 s</div>
+			<div class="corps">
+				<p class="nom">Le péage</p>
+				<p>Elle se plante devant toi, en travers, ouvre les ailes à fond et crie. Elle ne bouge pas tant que tu n'as pas reculé d'un pas. Si tu insistes, elle finit par s'écarter — mais lentement, et sans te regarder.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la seule animation du mod qui te demande quelque chose, à toi.</p>
+				<div class="os-liste"><span class="deja">wing_left/right</span><span class="deja">leg_*</span><span class="os manque">bec_bas</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 14</b>9 s</div>
+			<div class="corps">
+				<p class="nom">La statue</p>
+				<p>Une patte levée. Et rien. Absolument rien ne bouge pendant neuf secondes — pas la tête, pas la queue, pas une plume. Puis elle repose la patte comme s'il ne s'était rien passé.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est l'inverse d'une animation. Le joueur attend, doute que ça ait marché, et c'est exactement à ce moment-là que ça devient drôle.</p>
+				<div class="os-liste"><span class="deja">tout existe</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 20</b>4 s</div>
+			<div class="corps">
+				<p class="nom">Le vol du casse-croûte</p>
+				<p>Elle t'arrache l'objet de la main, monte de trois blocs, fait un tour au-dessus de toi, et le laisse retomber à tes pieds. <b>Tu ne perds rien.</b> Mais pendant quatre secondes, tu n'as plus ton objet.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> elle te vole. Aucun compagnon gentil ne fait ça, et c'est exactement ce qu'est une mouette.</p>
+				<div class="os-liste"><span class="deja">beak</span><span class="os manque">point_bec</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 26</b>3,5 s</div>
+			<div class="corps">
+				<p class="nom">L'atterrissage raté</p>
+				<p>Elle rate. Elle dérape sur deux blocs, bat des ailes en catastrophe, manque de tomber, se rattrape — <b>puis regarde autour d'elle</b> pour vérifier que personne n'a vu.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> le regard d'après. C'est la gêne qui est drôle, pas la chute. Une chute sans le regard, c'est juste une chute.</p>
+				<div class="os-liste"><span class="deja">land</span><span class="deja">head_scan</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 32</b>4 s</div>
+			<div class="corps">
+				<p class="nom">Le cri de guerre</p>
+				<p>Pattes plantées, ailes grandes ouvertes, tête rejetée en arrière, et elle hurle pendant quatre secondes. <b>Et toutes les mouettes à moins de vingt blocs répondent.</b></p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la première animation qui déborde sur les compagnons des autres. Dans une cour à trente joueurs, ça devient un événement.</p>
+				<div class="os-liste"><span class="deja">wing_*</span><span class="deja">neck1/2/3</span><span class="os manque">bec_bas</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 38</b>6 s</div>
+			<div class="corps">
+				<p class="nom">Le surf</p>
+				<p>Face au vent, ailes à demi ouvertes, elle avance de zéro. Elle tient dans l'air, immobile, en corrigeant sans arrêt. Plus il y a de vent et plus tu es haut, plus c'est long.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est du vol qui ne va nulle part. On n'a jamais vu ça dans Minecraft.</p>
+				<div class="os-liste"><span class="deja">wing_*_tip</span><span class="deja">tail</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 44</b>5 s</div>
+			<div class="corps">
+				<p class="nom">La bagarre avec son reflet</p>
+				<p>Uniquement au bord de l'eau. Elle repère son reflet, se raidit, attaque, recule, réattaque — et finit par s'ébrouer et s'éloigner, vexée.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> elle ne marche qu'au bord de l'eau. Une animation qui a un lieu se cherche, et un joueur qui cherche un lieu explore.</p>
+				<div class="os-liste"><span class="deja">tout existe</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 50</b>4 s</div>
+			<div class="corps">
+				<p class="nom">Le pas de côté vexé</p>
+				<p>Elle te tourne le dos et s'éloigne de trois pas <b>de côté</b>, en te regardant par-dessus l'aile. Puis elle s'arrête. Et elle attend.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> elle finit dans une position qui appelle une réponse. C'est la seule qui laisse le joueur avec quelque chose à faire.</p>
+				<div class="os-liste"><span class="deja">neck1/2/3</span><span class="deja">leg_*</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 60</b>6 s</div>
+			<div class="corps">
+				<p class="nom">Le dépeçage</p>
+				<p>Elle coince une frite invisible sous une patte et tire dessus au bec. Obstinément. Six secondes. Il n'y a rien sous sa patte.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est de la pantomime. Le joueur voit un objet qui n'existe pas.</p>
+				<div class="os-liste"><span class="deja">foot_*</span><span class="os manque">bec_bas</span></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">RARE</span>
+			<h3>Ce qui ne se commande pas</h3>
+			<span class="quoi">— jamais dans la roue, jamais annoncé</span>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Orage</b>1/30</div>
+			<div class="corps">
+				<p class="nom">La tempête</p>
+				<p>Pendant un orage, dehors, à découvert : elle se met face au vent et ne bouge plus pendant vingt secondes. Elle ne répond à rien. Puis elle se secoue et revient.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Groupe</b>1×/jour</div>
+			<div class="corps">
+				<p class="nom">Le vol des mouettes</p>
+				<p>Quatre mouettes ou plus à moins de dix blocs : elles décollent ensemble, font un tour, et se reposent. Une seule fois par jour de jeu, et seulement si personne ne les a montées.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Lieu</b>rare</div>
+			<div class="corps">
+				<p class="nom">Le vieux souvenir</p>
+				<p>À l'endroit exact où on l'a soignée pour la première fois, elle s'arrête et regarde le sol. Rien n'est écrit. C'est au joueur de se souvenir de ce qui s'y est passé — et il s'en souvient, parce que c'est lui qui y était.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Heure</b>minuit</div>
+			<div class="corps">
+				<p class="nom">Le cri de minuit</p>
+				<p>À minuit pile, dehors, un seul cri. Rien d'autre. Il n'y a aucune raison. C'est ça qui est bien.</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- =========================== OISEAU BLEU =========================== -->
+
+<section class="bete oiseau">
+	<h2><span class="index">04 — Deuxième bête</span>L'oiseau bleu, ou la monture</h2>
+
+	<p class="intro">Son modèle porte <b>une selle et une bride</b>. Ce n'est pas un animal de compagnie, c'est un coursier — élégant, cérémonieux, et un peu vaniteux. Là où la mouette est une voyou, celui-ci a des manières. Ses gestes doivent être <b>lents, larges et tenus</b>.</p>
+
+	<div class="fiche-os">
+		<b>Ce qu'il a aujourd'hui.</b> 32 os, 54 cubes — dont <span class="mono">jaw, eyelids, eyelidr, eyelidl, feathers</span> (une crête), <span class="mono">bridle, saddle</span>, des ailes en trois segments et une queue en trois segments.<br>
+		52 animations livrées : 15 branchées, 12 dans la roue, <b>27 mortes</b>.
+	</div>
+
+	<div class="note rouge">
+		<h3>Un ménage à faire d'abord</h3>
+		<p>Il a <b>deux générations d'animations qui font la même chose</b> : <span class="mono">walk</span> et <span class="mono">marche</span>, <span class="mono">sit</span> et <span class="mono">assis</span>, <span class="mono">sleep</span> et <span class="mono">sommeil</span>, <span class="mono">fly</span> et <span class="mono">fly_droit</span>. Les françaises sont branchées, les anglaises sont mortes. Ce n'est pas grave, mais il faut décider laquelle est la bonne avant d'en ajouter d'autres.</p>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">VIE</span>
+			<h3>Sa vie quotidienne</h3>
+			<span class="quoi">— quatre idles de climat déjà faits et jamais joués</span>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Climat</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Quatre bêtes en une</p>
+				<p>Il a un idle pour le froid, un pour la chaleur, un pour le vent et un quand il est sur ses gardes. <b>Aucun des quatre n'est joué.</b> Branchés sur le biome, la météo et la présence de monstres, ils donnent quatre compagnons différents pour le prix d'une ligne de fiche.</p>
+				<div class="os-liste"><span class="deja">idle_froid · 7 s</span><span class="deja">idle_chaud</span><span class="deja">idle_vent</span><span class="deja">idle_alerte</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Attente</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Il s'impatiente</p>
+				<p>Laissé assis plus de deux minutes, il passe de <span class="mono">assis</span> à <span class="mono">assis_impatient</span> : la queue bat, la tête cherche. Un compagnon qui attend exactement pareil au bout de dix minutes n'attend pas, il est en pause.</p>
+				<div class="os-liste"><span class="deja">assis_impatient · 4 s</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Vol</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Six façons de voler</p>
+				<p>Vol rasant, montée en spirale, descente douce, vol fatigué, freinage, décollage depuis l'eau. Six styles de vol livrés, <b>zéro utilisé</b>. Le vol fatigué à lui seul — quand son énergie tombe — vaut toutes les barres du panneau.</p>
+				<div class="os-liste"><span class="deja">vol_rase</span><span class="deja">monte_spirale</span><span class="deja">descente_douce</span><span class="deja">vol_fatigue</span><span class="deja">freine_en_vol</span><span class="deja">decolle_de_l_eau</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Terrain</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Il saute, il freine, il se réceptionne</p>
+				<p>Un saut par-dessus un obstacle, un arrêt brusque quand tu t'arrêtes net, une chute et une réception. C'est ce qui manque pour qu'il ait l'air de <b>traverser</b> le décor au lieu de flotter dessus.</p>
+				<div class="os-liste"><span class="deja">saut_obstacle</span><span class="deja">arret_brusque</span><span class="deja">chute</span><span class="deja">reception</span><span class="deja">se_pose_perchoir</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>À faire</b>nouveau</div>
+			<div class="corps">
+				<p class="nom">Deux manques</p>
+				<p>La crête se dresse toute seule quand un autre oiseau bleu approche. — Il replie une aile de travers, s'en aperçoit, et la resecoue.</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">RÉAC</span>
+			<h3>Quand tu t'occupes de lui</h3>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Caresse</b>déjà fait</div>
+			<div class="corps">
+				<p class="nom">Il peut refuser</p>
+				<p><span class="mono">caresse_refus</span> existe et n'est branché nulle part. Une monture qui se laisse toujours toucher n'est pas une monture, c'est un meuble.</p>
+				<div class="os-liste"><span class="deja">caresse · 2 s</span><span class="deja">caresse_refus · 1,2 s</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Ordre</b>déjà fait</div>
+			<div class="corps">
+				<p>Il écoute — les paupières se relèvent, la tête s'incline vers toi — puis il exécute. La demi-seconde entre les deux est ce qui fait qu'un ordre a été <b>reçu</b> et pas simplement appliqué.</p>
+				<div class="os-liste"><span class="deja">ecoute</span><span class="deja">demi_tour</span></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code roue">ROUE</span>
+			<h3>Les vraies récompenses</h3>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 6</b>3 s</div>
+			<div class="corps">
+				<p class="nom">La révérence</p>
+				<p>Il plie une patte, ramène une aile en travers de sa poitrine comme une cape, et baisse la tête jusqu'au sol. Il tient trois secondes.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est une invitation. Le premier joueur qui la voit comprend tout seul qu'il peut monter.</p>
+				<div class="os-liste"><span class="deja">wingl2/3</span><span class="deja">legr2</span><span class="deja">neck2/3</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 12</b>5 s</div>
+			<div class="corps">
+				<p class="nom">Le déploiement</p>
+				<p>Il ouvre les deux ailes à l'envergure complète, <b>très lentement</b>, crête dressée, et tient la pose. Deux oiseaux côte à côte font une haie d'honneur.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> la lenteur. Tout le reste du jeu est rapide ; cinq secondes pour ouvrir une aile, ça force à regarder.</p>
+				<div class="os-liste"><span class="deja">wingl/r + 2 + 3</span><span class="deja">feathers</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 18</b>3 s</div>
+			<div class="corps">
+				<p class="nom">Le salut au cavalier</p>
+				<p><b>Ne se joue que quand tu es sur son dos.</b> Il tourne la tête complètement en arrière, par-dessus l'aile, et te regarde. Puis il se remet droit.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> tu la débloques sans savoir qu'elle existe. Elle ne se déclenche pas au sol — donc le jour où tu la découvres, tu es déjà en train de voler.</p>
+				<div class="os-liste"><span class="deja">neck, neck2, neck3</span><span class="deja">head</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 24</b>4 s</div>
+			<div class="corps">
+				<p class="nom">La feuille morte</p>
+				<p>En vol seulement : il replie les ailes contre le corps et tombe de dix blocs en tournoyant sur lui-même — puis les rouvre d'un coup et remonte. Si tu es dessus, tu tombes avec lui.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la seule animation du mod qui fait peur. Dix blocs de chute libre à dos d'oiseau, la première fois, c'est un souvenir.</p>
+				<div class="os-liste"><span class="deja">chute</span><span class="deja">wingl/r</span><span class="deja">tail2/3</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 30</b>6 s</div>
+			<div class="corps">
+				<p class="nom">Le lissage du harnais</p>
+				<p>Il attrape sa propre sangle de selle au bec et la nettoie, méticuleusement, puis passe à la bride. Il ne s'occupe pas de ses plumes : <b>il s'occupe de l'équipement que tu lui as mis.</b></p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> il prend soin d'un objet qui vient de toi. C'est la seule animation qui parle de la relation sans montrer le joueur.</p>
+				<div class="os-liste"><span class="deja">saddle</span><span class="deja">bridle</span><span class="deja">jaw</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 36</b>3 s</div>
+			<div class="corps">
+				<p class="nom">La vague</p>
+				<p>La crête se soulève d'avant en arrière comme une vague, trois fois de suite, de plus en plus vite. C'est une parade.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> une partie du corps qu'on n'avait jamais vue bouger toute seule.</p>
+				<div class="os-liste"><span class="os manque">crete1</span><span class="os manque">crete2</span><span class="os manque">crete3</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 42</b>5 s</div>
+			<div class="corps">
+				<p class="nom">Le port de tête</p>
+				<p>Un huit lent, dessiné dans l'air avec la tête, comme une danseuse. Le cou a trois segments : il est fait exactement pour ça, et personne ne s'en est encore servi.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est de la grâce pure. Aucune utilité, aucune blague — c'est juste beau, et ça suffit.</p>
+				<div class="os-liste"><span class="deja">neck, neck2, neck3</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 48</b>tenu</div>
+			<div class="corps">
+				<p class="nom">Le refus</p>
+				<p>Tu lui demandes quelque chose : il tourne la tête, ferme les paupières, et ne bouge plus. <b>Il reste comme ça</b> jusqu'à ce que tu le caresses. Une caresse, et il redevient coopératif.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> tu débloques la capacité de te faire dire non. Personne ne s'y attend, et tout le monde la montre à ses amis.</p>
+				<div class="os-liste"><span class="deja">eyelidr/eyelidl</span><span class="deja">neck</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 56</b>7 s</div>
+			<div class="corps">
+				<p class="nom">L'escorte</p>
+				<p>Il décolle, fait un tour complet autour de toi à trois blocs — en te gardant dans son regard tout du long — et se repose exactement là où il était.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> il revient <b>précisément</b> à sa place. C'est la précision qui impressionne, pas le vol.</p>
+				<div class="os-liste"><span class="deja">vol_cercle</span><span class="deja">se_pose_perchoir</span></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">RARE</span>
+			<h3>Ce qui ne se commande pas</h3>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Aube</b>perché</div>
+			<div class="corps">
+				<p class="nom">Le lever</p>
+				<p>À l'aube, dehors, perché en hauteur : il déploie les ailes face au soleil et ne bouge plus pendant quinze secondes. Il faut être debout à cette heure-là pour le voir.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Duo</b>niv. 30+</div>
+			<div class="corps">
+				<p class="nom">Les deux montures</p>
+				<p>Deux oiseaux bleus de niveau 30 ou plus à moins de huit blocs : ils se font face et déploient leurs ailes <b>en même temps</b>. Aucun des deux joueurs ne l'a demandé.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Panne</b>en vol</div>
+			<div class="corps">
+				<p class="nom">La panne sèche</p>
+				<p>Énergie sous 10 en plein vol : il passe en vol fatigué, cherche un point d'appui, et se pose en catastrophe. Tu ne choisis pas où.</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- =========================== DRAGONNET =========================== -->
+
+<section class="bete dragonnet">
+	<h2><span class="index">05 — Troisième bête</span>Le dragonnet, ou le gâchis</h2>
+
+	<div class="note rouge">
+		<h3>Le plus beau modèle du mod est celui qui fait le moins de choses</h3>
+		<p><b>91 os. 148 cubes. Sept animations.</b> Il a des pupilles séparées du globe oculaire, une paupière haute <em>et</em> une paupière basse par œil, une langue, des dents du haut et du bas indépendantes, une mâchoire, deux sourcils, des oreilles avec des pointes articulées, <b>trois orteils par patte sur quatre pattes</b>, une queue en six segments avec des ailerons, et des ailes dont chaque membrane est un os à part.</p>
+		<p>Et il sait : marcher, marcher vite, voler, dormir, se coucher, respirer, et bâiller.</p>
+	</div>
+
+	<p class="intro">C'est ici qu'il y a le plus à gagner, et de très loin. Tout ce qui suit est <b>à créer</b> — mais tout ce qui suit est déjà possible avec les os qui existent, sauf là où c'est marqué.</p>
+
+	<div class="fiche-os">
+		<b>Ce qu'il faut retenir de ses os.</b><br>
+		<span class="mono">pupil_l, pupil_r</span> — il peut loucher, dilater, regarder de côté sans tourner la tête.<br>
+		<span class="mono">tongue, jaw, teeth_upper, teeth_lower</span> — il peut tirer la langue, haleter, montrer les dents.<br>
+		<span class="mono">brow_l, brow_r</span> — il peut avoir une <b>expression</b>. Aucune autre bête du mod ne peut.<br>
+		<span class="mono">ear_l/r + _tip</span> — les oreilles s'orientent vers ce qu'il entend.<br>
+		<span class="mono">tail1 → tail6 + fins</span> — un frisson peut le parcourir segment par segment.<br>
+		<span class="mono">toe0/1/2 ×4</span> — il peut serrer les griffes.
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">VIE</span>
+			<h3>Sa vie quotidienne</h3>
+			<span class="quoi">— tout est à créer</span>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Yeux</b>nouveau</div>
+			<div class="corps">
+				<p class="nom">Il ne cligne pas des deux yeux en même temps</p>
+				<p>Un œil se ferme une image avant l'autre. Personne ne le remarque, tout le monde le sent. Et dans le noir, les pupilles se dilatent ; en plein soleil, elles se réduisent à un trait.</p>
+				<div class="os-liste"><span class="deja">eyelid_up_l/r</span><span class="deja">eyelid_low_l/r</span><span class="deja">pupil_l/r</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Oreilles</b>nouveau</div>
+			<div class="corps">
+				<p class="nom">Elles suivent le bruit</p>
+				<p>Un coffre qui s'ouvre, un joueur qui court, un cri : les oreilles pivotent vers la source <b>avant</b> que la tête ne bouge. C'est le geste le plus animal de toute la liste, et il ne coûte que deux os.</p>
+				<div class="os-liste"><span class="deja">ear_l, ear_r</span><span class="deja">ear_l_tip, ear_r_tip</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Queue</b>nouveau</div>
+			<div class="corps">
+				<p class="nom">Elle balaie, elle s'enroule, elle trahit</p>
+				<p>Assis, la queue balaie lentement le sol. Content, elle bat plus vite. Sur ses gardes, elle se raidit et les ailerons se dressent. La queue dit l'humeur avant la tête.</p>
+				<div class="os-liste"><span class="deja">tail1 → tail6</span><span class="deja">tail_fin_l/r</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Corps</b>nouveau</div>
+			<div class="corps">
+				<p class="nom">Le reste du quotidien</p>
+				<p>Il renifle le sol. Il se gratte l'oreille avec une patte arrière. Il s'assoit et enroule la queue autour de ses pattes avant. Il souffle par les naseaux quand il fait froid. Il replie une aile de travers et la resecoue.</p>
+				<div class="os-liste"><span class="deja">leg_bl/br</span><span class="deja">toe0/1/2</span><span class="deja">wing_l_*</span></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">RÉAC</span>
+			<h3>Quand tu t'occupes de lui</h3>
+			<span class="quoi">— il n'a aucune réaction déclarée aujourd'hui</span>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Caresse</b>nouveau</div>
+			<div class="corps">
+				<p>Il pousse la tête <b>contre</b> ta main au lieu de la subir, les paupières à mi-hauteur, et la queue s'enroule d'un cran. La différence entre « il accepte » et « il en redemande » tient dans ces deux os.</p>
+				<div class="os-liste"><span class="deja">head_act</span><span class="deja">eyelid_up_l/r</span><span class="deja">tail_act</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Écoute</b>nouveau</div>
+			<div class="corps">
+				<p>Les oreilles se dressent, les pupilles se braquent sur toi, un sourcil monte. Il n'a pas encore bougé la tête et tu sais déjà qu'il t'écoute.</p>
+				<div class="os-liste"><span class="deja">ear_*</span><span class="deja">pupil_*</span><span class="deja">brow_l</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Repas</b>nouveau</div>
+			<div class="corps">
+				<p>Il attrape, il mâche <b>de travers</b> — la mâchoire part sur le côté, deux fois — puis il se lèche les babines. La langue existe : il faut s'en servir.</p>
+				<div class="os-liste"><span class="deja">jaw_act</span><span class="deja">tongue</span><span class="deja">teeth_*</span></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code roue">ROUE</span>
+			<h3>Les vraies récompenses</h3>
+			<span class="quoi">— dix, et deux qui demandent le modèle</span>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 4</b>8 s</div>
+			<div class="corps">
+				<p class="nom">Le blep</p>
+				<p>Il bâille, il referme la bouche… <b>et la langue reste dehors.</b> Il ne s'en rend pas compte. Elle reste sortie six secondes pendant qu'il regarde ailleurs, l'air parfaitement normal. Puis il la rentre d'un coup, l'air surpris.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> ça ne coûte que deux os, et c'est la chose la plus attachante que ce mod puisse produire. C'est celle-là qu'on met en capture d'écran.</p>
+				<div class="os-liste"><span class="deja">tongue</span><span class="deja">jaw_act</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 10</b>4 s</div>
+			<div class="corps">
+				<p class="nom">Le regard qui juge</p>
+				<p>Un sourcil monte. Les pupilles se rétrécissent. La tête s'incline de quinze degrés. Il te regarde. Quatre secondes. <b>Rien d'autre ne bouge.</b></p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la première fois qu'un compagnon a un avis sur toi.</p>
+				<div class="os-liste"><span class="deja">brow_l</span><span class="deja">pupil_l/r</span><span class="deja">head_act</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 16</b>4 s</div>
+			<div class="corps">
+				<p class="nom">L'étirement du chat</p>
+				<p>Pattes avant tendues loin devant, dos creusé, croupe en l'air, queue droite — <b>et un frisson qui part de la nuque et descend jusqu'à la pointe de la queue, segment par segment.</b> Les six segments servent enfin à quelque chose.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est un chat. Un dragon qui s'étire comme un chat, c'est exactement le décalage qui fait qu'on s'attache.</p>
+				<div class="os-liste"><span class="deja">leg_fl/fr</span><span class="deja">torso_up/low</span><span class="deja">tail1 → tail6</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 22</b>5 s</div>
+			<div class="corps">
+				<p class="nom">Le bâillement à trois étages</p>
+				<p>La mâchoire s'ouvre. Elle s'ouvre <b>encore</b>. La langue s'enroule, les oreilles se replient en arrière, la queue tremble jusqu'au bout, les yeux se mouillent. Cinq secondes. <b>Et les autres dragonnets à dix blocs bâillent après lui.</b></p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est contagieux. Entre dragonnets, et probablement entre joueurs.</p>
+				<div class="os-liste"><span class="deja">jaw_act</span><span class="deja">tongue</span><span class="deja">ear_*</span><span class="deja">tail*</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 28</b>5 s</div>
+			<div class="corps">
+				<p class="nom">La braise</p>
+				<p>Il inspire. Une lueur monte dans sa gorge — <b>segment par segment</b>, de la poitrine au cou puis à la tête. Puis il expire un petit nuage d'étincelles qui retombe et s'éteint au sol. Rien ne brûle.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la première fois qu'on voit quelque chose se passer <b>à l'intérieur</b> de la bête.</p>
+				<div class="os-liste"><span class="os manque">gorge_lueur</span><span class="os manque">bouche_lueur</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 34</b>6 s</div>
+			<div class="corps">
+				<p class="nom">Le trésor</p>
+				<p>Il pousse du museau un objet invisible, le fait rouler sur deux blocs, s'assoit dessus, enroule sa queue tout autour — <b>puis il te regarde</b>, l'air de dire que c'est à lui.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> il défend quelque chose qui n'existe pas. Et le regard final te désigne comme la menace.</p>
+				<div class="os-liste"><span class="deja">head_act</span><span class="deja">tail_act</span><span class="deja">pupil_*</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 40</b>4 s</div>
+			<div class="corps">
+				<p class="nom">Le vrombissement</p>
+				<p>Les membranes des ailes vibrent comme celles d'une libellule, de plus en plus vite, avec un son qui monte. Le sol tremble un peu. <b>Il ne décolle jamais.</b></p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> tout dit qu'il va décoller. Il ne décolle pas.</p>
+				<div class="os-liste"><span class="deja">wing_l_mem</span><span class="deja">wing_r_mem</span><span class="deja">wing_*_f2/f3_mem</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 46</b>7 s</div>
+			<div class="corps">
+				<p class="nom">La mue de l'aile</p>
+				<p>Il déplie une aile en grand et l'examine, <b>articulation par articulation</b> : l'avant-bras, puis le doigt 2, puis le doigt 3, puis la pointe. Il secoue une membrane qui n'allait pas. Il replie.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> personne n'a jamais vu une aile de dragon être <b>vérifiée</b>. C'est du réalisme là où on n'en attendait pas.</p>
+				<div class="os-liste"><span class="deja">wing_l_fore</span><span class="deja">wing_l_f2/f3</span><span class="deja">wing_l_tip</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 55</b>6 s</div>
+			<div class="corps">
+				<p class="nom">Le crachat de plasma</p>
+				<p>Il s'ancre sur ses quatre pattes, griffes serrées. La gorge s'allume. La mâchoire s'ouvre en grand et un trait de plasma part devant lui sur trois blocs, puis se dissipe. <b>Rien n'est blessé, rien ne brûle.</b> La bouche fume ensuite pendant deux secondes.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la seule qui donne l'impression d'être dangereuse en ne faisant absolument aucun dégât. Et la fumée d'après vaut le souffle lui-même.</p>
+				<div class="os-liste"><span class="deja">toe0/1/2 ×4</span><span class="os manque">gorge_lueur</span><span class="os manque">bouche_lueur</span><span class="os manque">souffle</span></div>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Niv. 65</b>tenu</div>
+			<div class="corps">
+				<p class="nom">Le sommeil du dragon</p>
+				<p>Il s'enroule complètement sur lui-même : la queue autour du corps, la tête posée sur sa propre queue, une aile rabattue par-dessus comme une couverture. <b>Et il reste comme ça</b> jusqu'à ce que tu le réveilles.</p>
+				<p class="pourquoi"><b>Pourquoi ça surprend :</b> c'est la seule animation du mod qui ne s'arrête pas toute seule. Tu peux le laisser dormir dans un coin de ta chambre et revenir demain.</p>
+				<div class="os-liste"><span class="deja">tail1 → tail6</span><span class="deja">wing_l</span><span class="deja">neck_act</span></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="piste">
+		<div class="piste-titre">
+			<span class="piste-code">RARE</span>
+			<h3>Ce qui ne se commande pas</h3>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Noir</b>état</div>
+			<div class="corps">
+				<p class="nom">Les yeux dans le noir</p>
+				<p>Sous une lumière de zéro, les pupilles se dilatent complètement et deux points brillent. Ce n'est pas une animation, c'est un <b>état</b> — mais on ne le voit que là, et on le cherche.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Une fois</b>dans sa vie</div>
+			<div class="corps">
+				<p class="nom">Le premier vol</p>
+				<p>La toute première fois qu'il décolle, une seule fois : il rate, retombe, se relève, réessaie, et y arrive. Ça n'arrivera plus jamais.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Orage</b>rare</div>
+			<div class="corps">
+				<p class="nom">Il gronde</p>
+				<p>Pendant un orage, il lève la tête vers le ciel et gronde — grave, long, la gorge qui vibre. Il ne fait rien d'autre. Il regarde.</p>
+			</div>
+		</div>
+
+		<div class="ligne">
+			<div class="rail"><b>Retour</b>30 j</div>
+			<div class="corps">
+				<p class="nom">Il te reconnaît de loin</p>
+				<p>Après trente jours passés ensemble, quand tu reviens d'une longue absence : il te repère à vingt blocs et court vers toi. Une seule fois par absence.</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- =========================== MODELE =========================== -->
+
+<section>
+	<h2><span class="index">06 — Le modèle 3D</span>Ce qu'il faut ajouter, et ce que ça rapporte</h2>
+
+	<p class="intro">Tu as raison de dire qu'il ne faut pas figer le modèle avant de penser aux animations. Voici les modifications rangées par <b>ce qu'elles débloquent divisé par ce qu'elles coûtent</b>. La première est de très loin la meilleure affaire du mod.</p>
+
+	<h3>Mouette — trois os, et elle change de catégorie</h3>
+
+	<div class="defile">
+		<table>
+			<thead><tr><th>À ajouter</th><th>Ce que ça débloque</th></tr></thead>
+			<tbody>
+				<tr>
+					<td class="mono"><b>bec_haut</b> / <b>bec_bas</b><br><span style="color:var(--encre-3)">couper <span class="mono">beak</span> en deux</span></td>
+					<td><b>Aujourd'hui elle ne peut pas ouvrir le bec.</b> Une mouette qui crie le bec fermé, c'est un mime. Un seul os, et le cri de guerre, le péage, le dépeçage et le vol du casse-croûte deviennent possibles — plus tous les cris d'ambiance qu'elle pousse déjà. <b>C'est la modification la plus rentable du mod entier.</b></td>
+				</tr>
+				<tr>
+					<td class="mono"><b>paupiere_l</b> / <b>paupiere_r</b></td>
+					<td>Elle n'a pas de paupières : elle dort les yeux ouverts, et elle ne peut pas cligner. Deux petits cubes, et la statue, la sieste et le regard fixe deviennent lisibles.</td>
+				</tr>
+				<tr>
+					<td class="mono"><b>point_bec</b><br><span style="color:var(--encre-3)">os vide, sans cube</span></td>
+					<td>Une simple attache au bout du bec, pour y accrocher l'objet volé — ou n'importe quoi qu'elle rapporte. Coût nul, et le vol du casse-croûte n'existe pas sans ça.</td>
+				</tr>
+				<tr>
+					<td class="mono">langue <span style="color:var(--encre-3)">(facultatif)</span></td>
+					<td>Utile seulement si tu veux qu'elle halète par temps chaud.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h3>Oiseau bleu — deux modifications</h3>
+
+	<div class="defile">
+		<table>
+			<thead><tr><th>À ajouter</th><th>Ce que ça débloque</th></tr></thead>
+			<tbody>
+				<tr>
+					<td class="mono"><b>crete1 / crete2 / crete3</b><br><span style="color:var(--encre-3)">couper <span class="mono">feathers</span> en trois</span></td>
+					<td>La crête est un seul bloc : elle ne peut que se lever d'un coup. En trois segments, elle ondule — et la parade, la vague et la colère se distinguent enfin.</td>
+				</tr>
+				<tr>
+					<td class="mono"><b>paupiere_nict</b></td>
+					<td>Une membrane translucide qui passe sur l'œil <b>en vol seulement</b>. C'est ce que font les vrais oiseaux à grande vitesse, et ça ne se voit qu'en vol : le genre de détail que trois joueurs remarqueront et raconteront.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h3>Dragonnet — de quoi cracher quelque chose</h3>
+
+	<div class="defile">
+		<table>
+			<thead><tr><th>À ajouter</th><th>Ce que ça débloque</th></tr></thead>
+			<tbody>
+				<tr>
+					<td class="mono"><b>gorge_lueur</b><br><span style="color:var(--encre-3)">3 petits cubes émissifs sur <span class="mono">neck2</span>, <span class="mono">neck</span>, <span class="mono">head</span> — échelle 0 au repos</span></td>
+					<td>La lueur qui <b>monte</b> dans la gorge, cube après cube. C'est ça qui fait la charge, et c'est ça qui fait qu'on retient son souffle avant le souffle.</td>
+				</tr>
+				<tr>
+					<td class="mono"><b>bouche_lueur</b><br><span style="color:var(--encre-3)">1 cube émissif derrière <span class="mono">teeth_lower</span></span></td>
+					<td>La bouche qui s'allume de l'intérieur. Invisible tant que la mâchoire est fermée : aucun coût quand ce n'est pas le moment.</td>
+				</tr>
+				<tr>
+					<td class="mono"><b>souffle</b><br><span style="color:var(--encre-3)">un cône à la bouche, échelle 0</span></td>
+					<td>Le trait de plasma lui-même, en géométrie. <b>Zéro particule.</b></td>
+				</tr>
+				<tr>
+					<td class="mono"><b>naseau_l</b> / <b>naseau_r</b><br><span style="color:var(--encre-3)">os vides</span></td>
+					<td>Deux attaches pour que la fumée sorte du bon endroit — pas du milieu de la tête.</td>
+				</tr>
+				<tr>
+					<td class="mono">bord_membrane <span style="color:var(--encre-3)">(facultatif)</span></td>
+					<td>Un liseré émissif sur les membranes d'ailes, qui s'allume à contre-jour. Purement décoratif, très beau au coucher du soleil.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="note">
+		<h3>Le principe à garder pour toutes les futures bêtes</h3>
+		<p><b>Une lueur qui grandit par l'échelle d'un os coûte zéro particule et se voit de loin.</b> Une particule coûte un paquet réseau par joueur qui regarde. Sur un serveur à mille personnes, c'est la différence entre une bonne idée et une bonne idée qu'on peut livrer.</p>
+		<p>Donc : <b>la géométrie pour ce qui dure</b> (une lueur, un souffle, une aura), <b>la particule pour ce qui claque</b> (l'instant du crachat, les étincelles qui retombent).</p>
+	</div>
+</section>
+
+<!-- =========================== SUITE =========================== -->
+
+<section>
+	<h2><span class="index">07 — Ce que ça change dans les fichiers</span>Trois listes au lieu d'une</h2>
+
+	<p class="intro">Rien à reconstruire. <span class="mono">niveaux.json</span> a besoin d'un champ de plus, et les fiches d'espèce d'une section de plus.</p>
+
+	<ol class="pas">
+		<li><b>Sortir de la roue les six doublons</b>, et les brancher là où ils servent déjà.</li>
+		<li><b>Sortir de la roue la vingtaine d'animations de vie</b> — <span class="mono">blink</span>, <span class="mono">scratch</span>, <span class="mono">look_around</span>, <span class="mono">stretch</span>, <span class="mono">preen</span>, <span class="mono">idle2/4/5</span>… Elles ne disparaissent pas : elles passent dans la voie VIE, où le joueur les verra <b>plus souvent</b> qu'aujourd'hui.</li>
+		<li><b>Ajouter une section <span class="mono">vie</span> à la fiche d'espèce</b>, à côté de <span class="mono">locomotion</span> et <span class="mono">reactions</span> : une liste d'animations avec leur condition (froid, vent, fatigue, danger, hasard). C'est là que vont les 52 animations mortes.</li>
+		<li><b>Brancher les transitions</b> — décoller, se poser, s'asseoir, se relever. C'est le trou le plus visible du mod et les fichiers existent déjà.</li>
+		<li><b>Remplir la roue</b> avec huit à dix gestes par espèce, un tous les cinq à six niveaux. Laisser les autres paliers vides <b>exprès</b>.</li>
+		<li><b>Nommer chaque geste dans le fichier de langue.</b> Une récompense qui s'affiche <span class="mono">amb_head_tilt</span> n'est pas une récompense.</li>
+	</ol>
+
+	<h3>Ce qu'on ne fait pas</h3>
+
+	<ul class="pas">
+		<li><b>Une animation par niveau.</b> Cinquante récompenses, c'est zéro récompense.</li>
+		<li><b>La même animation pour deux espèces sous deux noms.</b> C'est le contraire exact de ce qu'on cherche.</li>
+		<li><b>Une animation qui ne se voit que si on sait où regarder.</b> Elle va dans la voie VIE, pas dans la roue.</li>
+		<li><b>Une animation déblocable qui blesse, tue, ou change le monde.</b> Le crachat de plasma ne fait aucun dégât, et c'est ce qui permet de le donner à mille joueurs.</li>
+		<li><b>Une animation de plus de huit secondes qu'on ne peut pas interrompre</b> — sauf le sommeil du dragon, qui est fait pour ça et qui le dit.</li>
+		<li><b>Des particules là où un os suffit.</b></li>
+	</ul>
+
+	<p class="regle">Le but n'est pas qu'un joueur ait plus d'animations. C'est qu'il se demande ce que <em>son</em> compagnon sait faire que celui d'à côté ne sait pas.</p>
+</section>
+
+<footer>
+	<p>Compagnon — document de conception. Les chiffres viennent de <span class="mono">niveaux.json</span>, des trois fiches d'espèce et des trois fichiers <span class="mono">.animation.json</span> du dépôt. Aucune ligne de code n'a été écrite pour ce document.</p>
+</footer>
+
+</div>

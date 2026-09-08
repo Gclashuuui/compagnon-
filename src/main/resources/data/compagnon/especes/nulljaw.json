@@ -1,0 +1,77 @@
+{
+	"_comment": [
+		"Minuscule, et il ne marche pas : il flotte.",
+		"",
+		"C'est le BEBE de l'espece. L'adulte fait entre seize et soixante blocs",
+		"d'envergure : c'est un boss, pas un compagnon. Le bebe a son propre",
+		"modele, ses propres animations et ses propres textures.",
+		"",
+		"Il ne vole pas : le bebe n'a aucune animation de vol.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Bébé Nulljaw",
+	"geometrie": "compagnon:geo/baby_nulljaw.geo.json",
+	"animations": "compagnon:animations/baby_nulljaw.animation.json",
+	"taille": {
+		"largeur": 0.5,
+		"hauteur": 0.5
+	},
+	"vole": false,
+	"nom_a_la_voix": "nulljaw",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/baby_nulljaw.png",
+		"femelle": "compagnon:textures/entity/baby_nulljaw_female.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, en attendant mieux : les vrais fichiers son",
+		"de cette bete existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes — deux especes qui",
+		"parlent pareil sont deux especes qu'on confond."
+	],
+	"sons": {
+		"ambiance": "entity.phantom.ambient",
+		"content": "entity.phantom.flap",
+		"mal": "entity.phantom.hurt",
+		"alerte": "entity.phantom.swoop"
+	},
+	"_comment_roles": [
+		"Les roles vides sont des roles qu'on n'a pas encore remplis : le modele",
+		"n'a pas d'animation honnete pour eux. Un role vide ne joue rien, ce qui",
+		"vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.nulljaw.idle",
+		"marche": "animation.nulljaw.hover",
+		"course": "animation.nulljaw.hover",
+		"vol": "",
+		"assis": "",
+		"couche": ""
+	},
+	"reactions": {
+		"caresse": "",
+		"joyeux": "animation.nulljaw.dance",
+		"triste": "",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.nulljaw.dance",
+		"salut": "",
+		"reconnait": "",
+		"ramasse": "animation.nulljaw.eat",
+		"reveil": ""
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				0.25,
+				0
+			],
+			"largeur": 0.5,
+			"hauteur": 0.4
+		}
+	]
+}

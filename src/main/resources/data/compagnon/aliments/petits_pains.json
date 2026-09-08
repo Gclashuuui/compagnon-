@@ -1,0 +1,8 @@
+{
+	"nom": "Panier de petits pains",
+	"effets": {
+		"faim": 25,
+		"energie": 9
+	},
+	"modele": 8
+}

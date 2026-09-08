@@ -1,0 +1,8 @@
+{
+	"nom": "Œuf dans son nid",
+	"effets": {
+		"faim": 30,
+		"energie": 12
+	},
+	"modele": 26
+}

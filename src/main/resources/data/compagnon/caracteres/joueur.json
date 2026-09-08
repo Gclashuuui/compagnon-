@@ -1,0 +1,10 @@
+{
+	"nom": "Joueur",
+	"traits": {
+		"sociabilite": 0.75,
+		"attachement": 0.5,
+		"vivacite": 0.95,
+		"calin": 0.6,
+		"curiosite": 0.9
+	}
+}

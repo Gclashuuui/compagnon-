@@ -1,0 +1,8 @@
+{
+	"nom": "Plume en sucre",
+	"effets": {
+		"faim": 8,
+		"energie": 25
+	},
+	"modele": 35
+}

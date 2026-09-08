@@ -1,0 +1,83 @@
+{
+	"_comment": [
+		"Long et serpentin, dix blocs du museau au bout de la queue.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans varasuchus.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Varasuchus adulte",
+	"geometrie": "compagnon:geo/varasuchus_adulte.geo.json",
+	"animations": "compagnon:animations/varasuchus_adulte.animation.json",
+	"taille": {
+		"largeur": 3.5,
+		"hauteur": 4.5
+	},
+	"vole": false,
+	"nom_a_la_voix": "varasuchus",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/varasuchus_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/varasuchus_adulte_femelle.png",
+		"marque_du_vide": "compagnon:textures/entity/varasuchus_adulte_marque_du_vide.png",
+		"marque_du_vide_femelle": "compagnon:textures/entity/varasuchus_adulte_marque_du_vide_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.warden.ambient",
+		"content": "entity.warden.heartbeat",
+		"mal": "entity.warden.hurt",
+		"alerte": "entity.warden.roar"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.varasuchus_adulte.idle",
+		"marche": "animation.varasuchus_adulte.walk",
+		"course": "animation.varasuchus_adulte.run",
+		"vol": "",
+		"assis": "animation.varasuchus_adulte.sit",
+		"couche": "animation.varasuchus_adulte.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.varasuchus_adulte.grumble1",
+		"joyeux": "animation.varasuchus_adulte.flex",
+		"triste": "animation.varasuchus_adulte.grumble3",
+		"ecoute": "animation.varasuchus_adulte.investigating",
+		"tourne": "",
+		"joie": "animation.varasuchus_adulte.flex",
+		"salut": "animation.varasuchus_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.varasuchus_adulte.eat",
+		"reveil": "animation.varasuchus_adulte.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				2.25,
+				0
+			],
+			"largeur": 3.5,
+			"hauteur": 3.6
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				3.6,
+				2.4499999999999997
+			],
+			"largeur": 1.75,
+			"hauteur": 1.8
+		}
+	]
+}

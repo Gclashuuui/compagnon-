@@ -1,0 +1,81 @@
+{
+	"_comment": [
+		"Un herbivore a plaques dorsales, paisible et lourd.",
+		"",
+		"C'est l'ADULTE. Le bebe de la meme espece vit dans stegonaut.json :",
+		"autre modele, autres animations, autres textures.",
+		"",
+		"Les morceaux de collision sont en BLOCS et dans l'ordre [droite, haut,",
+		"avant]. Le haut se compte depuis ses pattes, et l'avant va vers la tete."
+	],
+	"titre": "Stegonaut adulte",
+	"geometrie": "compagnon:geo/stegonaut_adulte.geo.json",
+	"animations": "compagnon:animations/stegonaut_adulte.animation.json",
+	"taille": {
+		"largeur": 2.5,
+		"hauteur": 3
+	},
+	"vole": false,
+	"nom_a_la_voix": "stegonaut",
+	"variante_par_defaut": "normal",
+	"variantes": {
+		"normal": "compagnon:textures/entity/stegonaut_adulte_normal.png",
+		"femelle": "compagnon:textures/entity/stegonaut_adulte_femelle.png"
+	},
+	"_comment_sons": [
+		"Une voix EMPRUNTEE au jeu, plus grave que celle de son petit. Les vrais",
+		"fichiers son existent dans le dossier d'origine et meritent un second",
+		"passage. Une voix par espece, toutes differentes."
+	],
+	"sons": {
+		"ambiance": "entity.goat.ambient",
+		"content": "entity.goat.eat",
+		"mal": "entity.goat.hurt",
+		"alerte": "entity.ravager.roar"
+	},
+	"_comment_roles": [
+		"Un role vide ne joue rien, ce qui vaut mieux que jouer de travers."
+	],
+	"locomotion": {
+		"immobile": "animation.stegonaut_adulte.idle",
+		"marche": "animation.stegonaut_adulte.walk",
+		"course": "animation.stegonaut_adulte.run",
+		"vol": "",
+		"assis": "animation.stegonaut_adulte.sit",
+		"couche": "animation.stegonaut_adulte.sleep"
+	},
+	"reactions": {
+		"caresse": "animation.stegonaut_adulte.grumble1",
+		"joyeux": "animation.stegonaut_adulte.flex",
+		"triste": "animation.stegonaut_adulte.grumble3",
+		"ecoute": "",
+		"tourne": "",
+		"joie": "animation.stegonaut_adulte.flex",
+		"salut": "animation.stegonaut_adulte.grumble2",
+		"reconnait": "",
+		"ramasse": "animation.stegonaut_adulte.eat",
+		"reveil": "animation.stegonaut_adulte.wake_up"
+	},
+	"parties": [
+		{
+			"nom": "corps",
+			"decalage": [
+				0,
+				1.5,
+				0
+			],
+			"largeur": 2.5,
+			"hauteur": 2.4000000000000004
+		},
+		{
+			"nom": "tete",
+			"decalage": [
+				0,
+				2.4000000000000004,
+				1.75
+			],
+			"largeur": 1.25,
+			"hauteur": 1.2000000000000002
+		}
+	]
+}

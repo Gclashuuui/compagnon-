@@ -1,0 +1,18 @@
+{
+	"_comment": [
+		"Une competence. Un point la prend, et on ne peut pas la reprendre.",
+		"",
+		"Les effets qui MULTIPLIENT vont sous 1 pour ameliorer (faim, energie,",
+		"bobos) et au-dessus pour ameliorer (experience). Celui qui S AJOUTE est",
+		"oreille, en blocs.",
+		"",
+		"especes vide = toutes les especes."
+	],
+	"nom": "Solide",
+	"description": "Il tombe deux fois moins souvent malade.",
+	"niveau_requis": 10,
+	"especes": [],
+	"effets": {
+		"bobos": 0.5
+	}
+}

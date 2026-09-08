@@ -1,0 +1,8 @@
+{
+	"nom": "Biscuit en forme de dragon",
+	"effets": {
+		"faim": 15,
+		"complicite": 14
+	},
+	"modele": 11
+}

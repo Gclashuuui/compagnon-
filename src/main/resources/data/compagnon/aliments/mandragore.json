@@ -1,0 +1,8 @@
+{
+	"nom": "Mandragore",
+	"effets": {
+		"sante": 40,
+		"energie": 15
+	},
+	"modele": 23
+}

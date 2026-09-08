@@ -1,0 +1,18 @@
+{
+	"_comment": [
+		"Une competence propre a une espece : les autres ne la verront jamais.",
+		"",
+		"Le champ especes existait depuis le debut et ne servait a rien. C est lui",
+		"qui permet a deux especes davoir des avenirs differents, sans une ligne",
+		"de code."
+	],
+	"nom": "Oeil de mouette",
+	"description": "Elle repere ce qui traine de tres loin.",
+	"niveau_requis": 15,
+	"especes": [
+		"mouette"
+	],
+	"effets": {
+		"oreille": 8
+	}
+}

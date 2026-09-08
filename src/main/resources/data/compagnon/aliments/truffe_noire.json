@@ -1,0 +1,8 @@
+{
+	"nom": "Truffe noire",
+	"effets": {
+		"faim": 20,
+		"complicite": 15
+	},
+	"modele": 29
+}

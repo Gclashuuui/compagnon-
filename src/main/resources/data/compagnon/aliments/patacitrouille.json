@@ -1,0 +1,8 @@
+{
+	"nom": "Patacitrouille",
+	"effets": {
+		"faim": 35,
+		"energie": 15
+	},
+	"modele": 33
+}

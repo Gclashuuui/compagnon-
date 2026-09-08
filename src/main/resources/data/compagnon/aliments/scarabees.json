@@ -1,0 +1,8 @@
+{
+	"nom": "Scarabées en chocolat",
+	"effets": {
+		"faim": 25,
+		"energie": 10
+	},
+	"modele": 40
+}

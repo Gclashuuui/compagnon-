@@ -1,0 +1,8 @@
+{
+	"nom": "Écorce d'arbre",
+	"effets": {
+		"faim": 8,
+		"sante": 15
+	},
+	"modele": 27
+}

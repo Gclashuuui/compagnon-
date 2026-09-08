@@ -1,0 +1,19 @@
+{
+	"_comment": [
+		"Une competence qui FAIT quelque chose, au lieu de changer un nombre.",
+		"",
+		"Quand il te previent d une creature, elle s entoure d un lisere visible a",
+		"travers les murs pendant six secondes. Suivre le regard d une bete dans un",
+		"couloir noir ne suffisait pas : on savait qu il y avait quelque chose, on ne",
+		"savait pas ou.",
+		"",
+		"revele au-dessus de zero = active. Ce n est pas une quantite."
+	],
+	"nom": "Guetteur",
+	"description": "Ce qu il te signale devient visible a travers les murs.",
+	"niveau_requis": 15,
+	"especes": [],
+	"effets": {
+		"revele": 1
+	}
+}
