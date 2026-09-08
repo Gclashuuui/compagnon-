@@ -9,6 +9,10 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 /**
  * Les objets du mod, et le composant qu'ils portent.
@@ -66,6 +70,17 @@ public final class Objets {
 	/** L'os a macher. Se lance aussi : c'est le geste, pas l'objet, qui compte. */
 	public static final Item OS_A_MACHER = enregistrer("os_a_macher", new ObjetJouet(
 			new Item.Properties().stacksTo(1)));
+
+	/** Les trois meubles posables du coin personnel du compagnon. */
+	public static final Block COUSSIN = enregistrerBloc("coussin", new BlocCoin(
+			BlocCoin.Forme.COUSSIN, BlockBehaviour.Properties.of()
+					.strength(0.3F).sound(SoundType.WOOL).noOcclusion()));
+	public static final Block GAMELLE = enregistrerBloc("gamelle", new BlocCoin(
+			BlocCoin.Forme.GAMELLE, BlockBehaviour.Properties.of()
+					.strength(0.8F).sound(SoundType.DECORATED_POT).noOcclusion()));
+	public static final Block PERCHOIR = enregistrerBloc("perchoir", new BlocCoin(
+			BlocCoin.Forme.PERCHOIR, BlockBehaviour.Properties.of()
+					.strength(1.4F).sound(SoundType.WOOD).noOcclusion()));
 
 	/**
 	 * Le jouet pendant qu'il vole.
@@ -136,6 +151,12 @@ public final class Objets {
 
 	private static Item enregistrer(String nom, Item objet) {
 		return Registry.register(BuiltInRegistries.ITEM, Compagnon.id(nom), objet);
+	}
+
+	private static Block enregistrerBloc(String nom, Block bloc) {
+		Block enregistre = Registry.register(BuiltInRegistries.BLOCK, Compagnon.id(nom), bloc);
+		enregistrer(nom, new BlockItem(enregistre, new Item.Properties()));
+		return enregistre;
 	}
 
 	/** Force le chargement de la classe, donc les enregistrements ci-dessus. */

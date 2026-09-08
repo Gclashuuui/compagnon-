@@ -70,3 +70,5 @@ nouvelles ; elles ne servent pas de tutoriel quotidien.
   conserves dans sa sauvegarde.
 - Des reactions differentes a table ; une preference n'apparait dans le carnet
   qu'apres avoir ete decouverte en donnant vraiment l'aliment.
+- Un coussin, une gamelle enchantee et un perchoir en vrais modeles posables,
+  disponibles dans l'onglet creatif du mod.

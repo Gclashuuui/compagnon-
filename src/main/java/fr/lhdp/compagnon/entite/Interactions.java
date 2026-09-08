@@ -26,7 +26,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Ce qui se passe quand un joueur clique droit sur un compagnon.
@@ -54,6 +56,7 @@ public final class Interactions {
 
 	/** Duree du geste de caresse, en ticks. Valeur inventee. */
 	private static final int DUREE_CARESSE = 45;
+	private static final Map<UUID, Long> CARESSES_EN_COURS = new HashMap<>();
 
 	/**
 	 * Distance maximale pour caresser, mesuree depuis la <b>boite de collision</b>
@@ -503,6 +506,12 @@ public final class Interactions {
 			echec(joueur, Component.translatable("caresse.compagnon.pas_en_face", fiche.nom()));
 			return InteractionResult.FAIL;
 		}
+		long maintenant = System.currentTimeMillis();
+		if (CARESSES_EN_COURS.getOrDefault(joueur.getUUID(), 0L) > maintenant) {
+			echec(joueur, Component.translatable("caresse.compagnon.en_cours"));
+			return InteractionResult.FAIL;
+		}
+		CARESSES_EN_COURS.put(joueur.getUUID(), maintenant + DUREE_CARESSE * 50L);
 
 		// Le compagnon reagit pour tout le monde : c'est ce qu'on voit dans les
 		// couloirs. Seul le proprietaire fait monter la complicite.
@@ -531,9 +540,9 @@ public final class Interactions {
 		if (!joueur.getUUID().equals(fiche.proprietaire())) {
 			fiche.incrementer(Compteurs.CARESSES_AMIS);
 		}
-		fiche.marquer("premiere_caresse", System.currentTimeMillis());
+		fiche.marquer("premiere_caresse", maintenant);
 
-		int gagne = fiche.gagnerXp(SourceXp.AFFECTION, table, System.currentTimeMillis());
+		int gagne = fiche.gagnerXp(SourceXp.AFFECTION, table, maintenant);
 		fiches.setDirty();
 
 		dire(joueur, fiche.nom() + " se laisse faire.", gagne);

@@ -1,5 +1,7 @@
 package fr.lhdp.compagnon.client;
 
+import fr.lhdp.compagnon.objet.Objets;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import fr.lhdp.compagnon.Compagnon;
 import fr.lhdp.compagnon.espece.Especes;
 import fr.lhdp.compagnon.reseau.PaquetCaresse;
@@ -18,6 +20,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 
 /**
  * Point d'entree du mod, cote client. N'existe que pour l'affichage et les
@@ -30,6 +33,9 @@ public class CompagnonClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		// Les coins transparents des petits meubles gardent leur vraie silhouette.
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(),
+				Objets.COUSSIN, Objets.GAMELLE);
 		EntityRendererRegistry.register(Compagnon.COMPAGNON, CompagnonRenderer::new);
 
 		// Le catalogue des especes : geometrie, animations, textures des variantes.

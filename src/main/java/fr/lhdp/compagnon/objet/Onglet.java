@@ -66,6 +66,9 @@ public final class Onglet {
 				.title(Component.translatable("itemGroup.compagnon.general"))
 				.displayItems((parametres, sortie) -> {
 					sortie.accept(new ItemStack(Objets.OEUF));
+					sortie.accept(new ItemStack(Objets.COUSSIN));
+					sortie.accept(new ItemStack(Objets.GAMELLE));
+					sortie.accept(new ItemStack(Objets.PERCHOIR));
 					sortie.accept(new ItemStack(Objets.BALLE));
 					sortie.accept(new ItemStack(Objets.OS_A_MACHER));
 					for (ItemStack pile : varietes("aliments", Objets.ALIMENT)) {

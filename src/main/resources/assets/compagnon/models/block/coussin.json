@@ -1,0 +1,7 @@
+{
+	"textures":{"tissu":"compagnon:block/coussin","particle":"compagnon:block/coussin"},
+	"elements":[
+		{"from":[2,0,2],"to":[14,2,14],"faces":{"north":{"texture":"#tissu"},"east":{"texture":"#tissu"},"south":{"texture":"#tissu"},"west":{"texture":"#tissu"},"up":{"texture":"#tissu"},"down":{"texture":"#tissu"}}},
+		{"from":[3,2,3],"to":[13,3,13],"faces":{"north":{"texture":"#tissu"},"east":{"texture":"#tissu"},"south":{"texture":"#tissu"},"west":{"texture":"#tissu"},"up":{"texture":"#tissu"}}}
+	]
+}

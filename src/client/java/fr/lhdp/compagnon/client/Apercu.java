@@ -63,7 +63,7 @@ public final class Apercu {
 	private static final float UNITES_PAR_BLOC = 16.0F;
 
 	/** Ce qu'on garde de vide autour de la bete, en part de la boite. */
-	private static final float MARGE = 0.82F;
+	private static final float MARGE = 0.72F;
 
 	/** En dessous, la bete serait un point ; au-dessus, un mur de pixels. */
 	private static final int ECHELLE_MINIMUM = 3;

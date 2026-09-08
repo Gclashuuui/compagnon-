@@ -132,6 +132,7 @@ public class EcranLivre extends EcranCompagnon {
 
 	private static final int HAUTEUR_JAUGE = 8;
 	private static final int LIGNE = 11;
+	private static final int HAUTEUR_RITUEL = 30;
 
 	/** Les signets de navigation, poses sur le bord droit du livre. */
 	private static final int SIGNET_LARGEUR = 72;
@@ -173,6 +174,8 @@ public class EcranLivre extends EcranCompagnon {
 
 	/** Le sceau quotidien sous la souris, ou {@code null}. */
 	private SourceXp rituelSurvole;
+	/** La phrase complete du souvenir sous la souris. */
+	private Component momentSurvole;
 
 	/** L'introduction ne se joue qu'a la premiere ouverture sur ce client. */
 	private boolean decouverte;
@@ -213,6 +216,7 @@ public class EcranLivre extends EcranCompagnon {
 		ambiance(g);
 
 		this.missionSurvolee = -1;
+		this.momentSurvole = null;
 		onglets(g, sourisX, sourisY, partiel);
 		this.apparitionPage = Peinture.vers(this.apparitionPage, 1.0F, 0.24F, partiel);
 		float arrivee = Peinture.adoucir(this.apparitionPage);
@@ -227,7 +231,7 @@ public class EcranLivre extends EcranCompagnon {
 			pageAujourdhui(g, sourisX, sourisY);
 		} else if (this.page == PAGE_HISTOIRE) {
 			pageHistoire(g);
-			pageMoments(g);
+			pageMoments(g, sourisX, sourisY);
 		} else if (this.page == PAGE_COMPETENCES) {
 			pageCompetences(g, sourisX, sourisY);
 		} else {
@@ -250,6 +254,9 @@ public class EcranLivre extends EcranCompagnon {
 		if (this.page == PAGE_IDENTITE) {
 			aideExperience(g, sourisX, sourisY);
 			aideRituel(g, sourisX, sourisY);
+		}
+		if (this.momentSurvole != null) {
+			g.renderTooltip(this.font, this.momentSurvole, sourisX, sourisY);
 		}
 		dessinerDecouverte(g, sourisX, sourisY);
 	}
@@ -533,7 +540,7 @@ public class EcranLivre extends EcranCompagnon {
 				0.0F, 0.0F, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE);
 		// Le dragonnet est tres long mais bas : on remonte son rendu. Surtout pas de
 		// zone de coupe ici, car ses ailes depassent naturellement du petit cadre.
-		Apercu.dessiner(g, x + 5, y - 8, PAGE_LARGEUR - 10, PORTRAIT - 8,
+		Apercu.dessiner(g, x + 8, y + 2, PAGE_LARGEUR - 16, PORTRAIT - 4,
 				this.donnees.espece(), this.donnees.variante(), sourisX, sourisY);
 	}
 
@@ -560,7 +567,7 @@ public class EcranLivre extends EcranCompagnon {
 		y += LIGNE + 1;
 		rituelsDuJour(g, x, y, sourisX, sourisY);
 
-		y += 28;
+		y += HAUTEUR_RITUEL + 4;
 		filet(g, x, y);
 		y += 7;
 		g.drawString(this.font, Component.translatable("livre.compagnon.a_faire_ensemble"),
@@ -633,30 +640,38 @@ public class EcranLivre extends EcranCompagnon {
 	private void carteRituel(GuiGraphics g, int x, int y, int large, SourceXp source,
 			String icone, String cle, int sourisX, int sourisY) {
 		boolean fait = this.donnees.rituelAccompli(source);
-		int fond = fait ? 0x243F6B37 : 0x147A6A55;
+		int couleur = switch (source) {
+			case SOINS -> 0xFF9A6338;
+			case AFFECTION -> 0xFF9A4964;
+			case BALADE -> 0xFF4F7448;
+		};
+		int fond = fait ? Peinture.melanger(0x20EFD29B, couleur, 0.32F) : 0x147A6A55;
 		boolean tous = this.donnees.rituelsAccomplis() == SourceXp.values().length;
 		float lueur = (float) (Math.sin(System.currentTimeMillis() / 420.0D) * 0.5D + 0.5D);
-		int bord = tous ? Peinture.melanger(0xAA3F6B37, 0xCCB17B28, lueur)
-				: fait ? 0xAA3F6B37 : 0x667A6A55;
+		int bord = tous ? Peinture.melanger(couleur, 0xFFB17B28, lueur)
+				: fait ? couleur : 0x667A6A55;
 
 		// Un petit carton aux coins coupes, comme une etiquette collee dans le livre.
-		g.fill(x + 1, y, x + large - 1, y + 24, fond);
-		g.fill(x, y + 1, x + large, y + 23, fond);
+		g.fill(x + 1, y, x + large - 1, y + HAUTEUR_RITUEL, fond);
+		g.fill(x, y + 1, x + large, y + HAUTEUR_RITUEL - 1, fond);
 		g.fill(x + 1, y, x + large - 1, y + 1, bord);
-		g.fill(x + 1, y + 23, x + large - 1, y + 24, bord);
+		g.fill(x + 1, y + HAUTEUR_RITUEL - 1, x + large - 1, y + HAUTEUR_RITUEL, bord);
+		g.fill(x, y + 4, x + 1, y + HAUTEUR_RITUEL - 4, bord);
 
-		g.drawString(this.font, Icones.de(icone), x + 4, y + 4,
-				fait ? ENCRE_VERTE : ENCRE_PALE, false);
+		Component symbole = Icones.de(icone);
+		g.drawString(this.font, symbole, x + (large - this.font.width(symbole)) / 2, y + 4,
+				fait ? couleur : ENCRE_PALE, false);
 		if (fait) {
-			g.drawString(this.font, Component.literal("✔"), x + large - 11, y + 3,
-					ENCRE_VERTE, false);
+			g.drawString(this.font, Component.literal("✓"), x + large - 10, y + 2,
+					couleur, false);
 		}
 		String nom = Component.translatable(cle).getString();
 		nom = this.font.plainSubstrByWidth(nom, large - 6);
-		g.drawString(this.font, nom, x + (large - this.font.width(nom)) / 2, y + 14,
-				fait ? ENCRE_VERTE : ENCRE_PALE, false);
+		g.drawString(this.font, nom, x + (large - this.font.width(nom)) / 2, y + 18,
+				fait ? couleur : ENCRE_PALE, false);
 
-		if (sourisX >= x && sourisX < x + large && sourisY >= y && sourisY < y + 24) {
+		if (sourisX >= x && sourisX < x + large
+				&& sourisY >= y && sourisY < y + HAUTEUR_RITUEL) {
 			this.rituelSurvole = source;
 		}
 	}
@@ -960,7 +975,7 @@ public class EcranLivre extends EcranCompagnon {
 		return null;
 	}
 
-	private void pageMoments(GuiGraphics g) {
+	private void pageMoments(GuiGraphics g, int sourisX, int sourisY) {
 		int x = this.gauche + PAGE_DROITE_X;
 		int y = this.haut + PAGE_Y;
 
@@ -1002,8 +1017,13 @@ public class EcranLivre extends EcranCompagnon {
 			// qu'ils appartiennent tous a la meme vie.
 			g.fill(x + 2, y + 4, x + 3, y + LIGNE + 2, FILET);
 			g.fill(x, y + 3, x + 5, y + 8, ENCRE_PALE);
+			String phrase = libelleMoment(moment.cle());
 			deuxColonnesDans(g, x + 9, y, PAGE_LARGEUR - 9,
-					libelleMoment(moment.cle()), quand, ENCRE, ENCRE_PALE);
+					phrase, quand, ENCRE, ENCRE_PALE);
+			if (sourisX >= x && sourisX < x + PAGE_LARGEUR
+					&& sourisY >= y && sourisY < y + LIGNE) {
+				this.momentSurvole = Component.literal(phrase);
+			}
 			y += LIGNE;
 		}
 	}

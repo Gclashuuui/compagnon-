@@ -1,6 +1,7 @@
 package fr.lhdp.compagnon.client;
 
 import fr.lhdp.compagnon.Compagnon;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -105,6 +106,7 @@ public final class Caresses {
 		if (enCours.isEmpty()) {
 			return;
 		}
+		immobiliserJoueurLocal();
 
 		enCours.entrySet().removeIf(entree -> {
 			Caresse caresse = entree.getValue();
@@ -115,6 +117,23 @@ public final class Caresses {
 			}
 			return true;
 		});
+	}
+
+	/** Pendant le geste, les touches et l'elan ne peuvent pas lancer une seconde action. */
+	private static void immobiliserJoueurLocal() {
+		Minecraft client = Minecraft.getInstance();
+		if (client.player == null || !enCours.containsKey(client.player.getId())) {
+			return;
+		}
+		client.player.input.leftImpulse = 0.0F;
+		client.player.input.forwardImpulse = 0.0F;
+		client.player.input.up = false;
+		client.player.input.down = false;
+		client.player.input.left = false;
+		client.player.input.right = false;
+		client.player.input.jumping = false;
+		Vec3 mouvement = client.player.getDeltaMovement();
+		client.player.setDeltaMovement(0.0D, Math.min(0.0D, mouvement.y), 0.0D);
 	}
 
 	/** Le monde a change ou on s'est deconnecte : on repart de zero. */

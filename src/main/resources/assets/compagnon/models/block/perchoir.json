@@ -1,0 +1,10 @@
+{
+	"textures":{"bois":"compagnon:block/perchoir","particle":"compagnon:block/perchoir"},
+	"elements":[
+		{"from":[2,0,3],"to":[14,2,13],"faces":{"north":{"texture":"#bois"},"east":{"texture":"#bois"},"south":{"texture":"#bois"},"west":{"texture":"#bois"},"up":{"texture":"#bois"},"down":{"texture":"#bois"}}},
+		{"from":[7,2,7],"to":[9,12,9],"faces":{"north":{"texture":"#bois"},"east":{"texture":"#bois"},"south":{"texture":"#bois"},"west":{"texture":"#bois"},"up":{"texture":"#bois"}}},
+		{"from":[2,11,7],"to":[14,13,9],"faces":{"north":{"texture":"#bois"},"east":{"texture":"#bois"},"south":{"texture":"#bois"},"west":{"texture":"#bois"},"up":{"texture":"#bois"},"down":{"texture":"#bois"}}},
+		{"from":[1,11.5,7.25],"to":[3,12.5,8.75],"faces":{"north":{"texture":"#bois"},"east":{"texture":"#bois"},"south":{"texture":"#bois"},"west":{"texture":"#bois"},"up":{"texture":"#bois"}}},
+		{"from":[13,11.5,7.25],"to":[15,12.5,8.75],"faces":{"north":{"texture":"#bois"},"east":{"texture":"#bois"},"south":{"texture":"#bois"},"west":{"texture":"#bois"},"up":{"texture":"#bois"}}}
+	]
+}
