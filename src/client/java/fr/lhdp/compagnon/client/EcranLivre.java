@@ -1,6 +1,5 @@
 package fr.lhdp.compagnon.client;
 
-import fr.lhdp.compagnon.Compagnon;
 import fr.lhdp.compagnon.Icones;
 import fr.lhdp.compagnon.fiche.Barre;
 import fr.lhdp.compagnon.livre.DonneesLivre;
@@ -41,12 +40,19 @@ import java.util.Map;
  */
 public class EcranLivre extends EcranCompagnon {
 
-	private static final ResourceLocation FOND = Compagnon.id("textures/gui/livre/book.png");
-	private static final ResourceLocation SALISSURES = Compagnon.id("textures/gui/livre/smudges.png");
-	private static final ResourceLocation CADRE_PORTRAIT = Compagnon.id("textures/gui/livre/iconbacking.png");
-	private static final ResourceLocation SOULIGNEMENT = Compagnon.id("textures/gui/livre/underline.png");
-	private static final ResourceLocation FLECHE_GAUCHE = Compagnon.id("textures/gui/livre/pageturnlargeleft.png");
-	private static final ResourceLocation FLECHE_DROITE = Compagnon.id("textures/gui/livre/pageturnlargeright.png");
+	private ResourceLocation FOND;
+	private ResourceLocation SALISSURES;
+	private ResourceLocation CADRE_PORTRAIT;
+	private ResourceLocation SOULIGNEMENT;
+	private ResourceLocation SIGNETS_TEXTURE;
+	private ResourceLocation FLECHE_GAUCHE;
+	private ResourceLocation FLECHE_GAUCHE_SURVOL;
+	private ResourceLocation FLECHE_GAUCHE_PRESSEE;
+	private ResourceLocation FLECHE_DROITE;
+	private ResourceLocation FLECHE_DROITE_SURVOL;
+	private ResourceLocation FLECHE_DROITE_PRESSEE;
+	private ResourceLocation PAGE_TOURNE_RTL;
+	private ResourceLocation PAGE_TOURNE_LTR;
 
 	/**
 	 * La texture du livre fait 384 x 256, pas 256 x 256. Il faut donc l'appel long
@@ -58,8 +64,9 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int FLECHE_LARGEUR = 29;
 	private static final int FLECHE_HAUTEUR = 28;
 
-	private static final int PORTRAIT = 68;
-	private static final int PORTRAIT_SOURCE = 88;
+	private static final int PORTRAIT = 76;
+	private static final int PORTRAIT_SOURCE_L = 142;
+	private static final int PORTRAIT_SOURCE_H = 76;
 	private static final int SOULIGNEMENT_SOURCE_L = 159;
 	private static final int SOULIGNEMENT_SOURCE_H = 11;
 
@@ -69,10 +76,10 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int PAGE_LARGEUR = 142;
 	private static final int PAGE_Y = 28;
 
-	private static final int ENCRE = 0xFF3A2A18;
-	private static final int ENCRE_PALE = 0xFF7A6A55;
-	private static final int ENCRE_ROUGE = 0xFF8A2F2F;
-	private static final int FILET = 0x557A6A55;
+	private int ENCRE;
+	private int ENCRE_PALE;
+	private int ENCRE_ROUGE;
+	private int FILET;
 
 	private static final int ONGLET_HAUTEUR = 18;
 	private static final int ONGLET_MARGE = 10;
@@ -80,14 +87,15 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int ONGLET_AU_DESSUS = 6;
 	private static final int BORD = 4;
 
-	private static final int ONGLET_FOND = 0x99000000;
-	private static final int ONGLET_FOND_ACTIF = 0xCC3F6B37;
-	private static final int ONGLET_BORD = 0xFFC8BCA4;
-	private static final int ONGLET_TEXTE = 0xFFE8E0D0;
+	private int ONGLET_FOND;
+	private int ONGLET_FOND_ACTIF;
+	private int ONGLET_BORD;
+	private int ONGLET_TEXTE;
 
-	private static final int CADRE = 0xFF5A4632;
-	private static final int CREUX_HAUT = 0xFFB9A886;
-	private static final int CREUX_BAS = 0xFFD9CBAE;
+	private int CADRE;
+	private int CREUX_HAUT;
+	private int CREUX_BAS;
+	private int PAPIER;
 
 	/**
 	 * En dessous, le livre dit quoi faire au lieu de se contenter du chiffre.
@@ -124,7 +132,7 @@ public class EcranLivre extends EcranCompagnon {
 	/** Hauteur d'une ligne de competence, description comprise. */
 	private static final int LIGNE_COMPETENCE = 21;
 
-	private static final int ENCRE_VERTE = 0xFF3F6B37;
+	private int ENCRE_VERTE;
 
 	private static final int ECART_COLONNES = 4;
 
@@ -136,9 +144,14 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int HAUTEUR_RITUEL = 30;
 
 	/** Les signets de navigation, poses sur le bord droit du livre. */
-	private static final int SIGNET_LARGEUR = 72;
-	private static final int SIGNET_HAUTEUR = 18;
-	private static final int SIGNET_ECART = 3;
+	private static final int SIGNET_LARGEUR = 24;
+	private static final int SIGNET_HAUTEUR = 24;
+	private static final int SIGNET_ECART = 6;
+	private static final int SIGNETS_SOURCE_L = 120;
+	private static final int SIGNETS_SOURCE_H = 72;
+	private static final int THEME_TAILLE = 20;
+	private static final long PAGE_IMAGE_MS = 110L;
+	private static final long PAGE_ANIMATION_MS = PAGE_IMAGE_MS * 8L;
 	private static final String[] SIGNETS = {
 		"livre.compagnon.onglet.aujourdhui",
 		"livre.compagnon.onglet.histoire",
@@ -165,11 +178,18 @@ public class EcranLivre extends EcranCompagnon {
 	private int haut;
 	private int page;
 
-	/** De zero a un pendant que l'encre de la nouvelle double-page apparait. */
-	private float apparitionPage;
-
-	/** Le cote d'ou arrive la page : un pour la droite, moins un pour la gauche. */
+	/** Le cote d'ou arrive la page : un pour avancer, moins un pour revenir. */
 	private int sensPage = 1;
+	/** Page demandee pendant que la feuille la rejoint, ou -1 au repos. */
+	private int pageCible = -1;
+	private long debutTournePage;
+	/** Garde l'etat presse assez longtemps pour etre perceptible. */
+	private int boutonPresseSens;
+	private long boutonPresseJusqua;
+
+	private ThemeLivre theme;
+	private int signetSurvole = -1;
+	private boolean themeSurvole;
 
 	/** La vraie boite de la jauge d'XP, renseignee pendant le dessin. */
 	private int xpX, xpY, xpLargeur;
@@ -193,6 +213,38 @@ public class EcranLivre extends EcranCompagnon {
 		this.combien = combien;
 		this.index = index;
 		this.compagnons = compagnons;
+		appliquerTheme(ThemeLivre.charger());
+	}
+
+	/** Change ensemble le cuir, les controles et les encres. */
+	private void appliquerTheme(ThemeLivre nouveau) {
+		this.theme = nouveau;
+		this.FOND = nouveau.texture("book_astra_v2");
+		this.SALISSURES = nouveau.texture("book_details_overlay");
+		this.CADRE_PORTRAIT = nouveau.texture("portrait_frame");
+		this.SOULIGNEMENT = nouveau.texture("underline_astra");
+		this.SIGNETS_TEXTURE = nouveau.texture("bookmark_tabs");
+		this.FLECHE_GAUCHE = nouveau.texture("page_turn_left_normal");
+		this.FLECHE_GAUCHE_SURVOL = nouveau.texture("page_turn_left_hover");
+		this.FLECHE_GAUCHE_PRESSEE = nouveau.texture("page_turn_left_pressed");
+		this.FLECHE_DROITE = nouveau.texture("page_turn_right_normal");
+		this.FLECHE_DROITE_SURVOL = nouveau.texture("page_turn_right_hover");
+		this.FLECHE_DROITE_PRESSEE = nouveau.texture("page_turn_right_pressed");
+		this.PAGE_TOURNE_RTL = nouveau.texture("page_turn_rtl_strip");
+		this.PAGE_TOURNE_LTR = nouveau.texture("page_turn_ltr_strip");
+		this.ENCRE = nouveau.encre;
+		this.ENCRE_PALE = nouveau.encrePale;
+		this.ENCRE_ROUGE = nouveau.encreRouge;
+		this.FILET = nouveau.filet;
+		this.ENCRE_VERTE = nouveau.encreVerte;
+		this.CADRE = nouveau.cadre;
+		this.CREUX_HAUT = nouveau.creuxHaut;
+		this.CREUX_BAS = nouveau.creuxBas;
+		this.PAPIER = nouveau.papier;
+		this.ONGLET_FOND = nouveau.ongletFond;
+		this.ONGLET_FOND_ACTIF = nouveau.ongletFondActif;
+		this.ONGLET_BORD = nouveau.ongletBord;
+		this.ONGLET_TEXTE = nouveau.ongletTexte;
 	}
 
 	@Override
@@ -222,13 +274,10 @@ public class EcranLivre extends EcranCompagnon {
 		this.missionSurvolee = -1;
 		this.momentSurvole = null;
 		this.lieuSurvole = null;
+		this.signetSurvole = -1;
+		this.themeSurvole = false;
 		onglets(g, sourisX, sourisY, partiel);
-		this.apparitionPage = Peinture.vers(this.apparitionPage, 1.0F, 0.24F, partiel);
-		float arrivee = Peinture.adoucir(this.apparitionPage);
-		int glissement = Math.round((1.0F - arrivee) * 9.0F) * this.sensPage;
-
-		g.pose().pushPose();
-		g.pose().translate(glissement, 0, 0);
+		mettreAJourAnimationPage();
 
 		if (this.page == PAGE_IDENTITE) {
 			pageIdentite(g, sourisX, sourisY);
@@ -244,19 +293,11 @@ public class EcranLivre extends EcranCompagnon {
 		} else {
 			pageMissions(g, sourisX, sourisY);
 		}
-		g.pose().popPose();
 
-		// Un voile couleur papier se retire pendant le glissement. Le fond du livre
-		// reste immobile : seule l'encre donne l'impression d'arriver avec la page.
-		int opacite = Math.round((1.0F - arrivee) * 150.0F);
-		if (opacite > 0) {
-			int papier = (opacite << 24) | 0x00EFD29B;
-			g.fill(this.gauche + 27, this.haut + 21,
-					this.gauche + LARGEUR - 27, this.haut + HAUTEUR - 42, papier);
-		}
-
-		bordDePage(g);
+		dessinerAnimationPage(g);
+		bordDePage(g, sourisX, sourisY);
 		signets(g, sourisX, sourisY, partiel);
+		selecteurTheme(g, sourisX, sourisY, partiel);
 		clochette(g, sourisX, sourisY, partiel);
 		if (this.page == PAGE_IDENTITE) {
 			aideExperience(g, sourisX, sourisY);
@@ -267,6 +308,14 @@ public class EcranLivre extends EcranCompagnon {
 		}
 		if (this.lieuSurvole != null) {
 			g.renderTooltip(this.font, this.lieuSurvole, sourisX, sourisY);
+		}
+		if (this.signetSurvole >= 0) {
+			g.renderTooltip(this.font, Component.translatable(SIGNETS[this.signetSurvole]),
+					sourisX, sourisY);
+		}
+		if (this.themeSurvole) {
+			g.renderTooltip(this.font, Component.translatable("livre.compagnon.theme",
+					Component.translatable(this.theme.traduction())), sourisX, sourisY);
 		}
 		dessinerDecouverte(g, sourisX, sourisY);
 	}
@@ -306,7 +355,7 @@ public class EcranLivre extends EcranCompagnon {
 		float sortie = Math.min(1.0F, (4_200L - ecoule) / 650.0F);
 		float presence = Peinture.adoucir(Math.min(entree, sortie));
 		int alpha = Math.round(238.0F * presence);
-		int papier = (alpha << 24) | 0x00EFD29B;
+		int papier = (alpha << 24) | (this.PAPIER & 0x00FFFFFF);
 		g.fill(this.gauche + 27, this.haut + 21,
 				this.gauche + LARGEUR - 27, this.haut + HAUTEUR - 42, papier);
 		if (presence < 0.25F) {
@@ -344,8 +393,8 @@ public class EcranLivre extends EcranCompagnon {
 		g.drawString(this.font, this.font.plainSubstrByWidth(espece, PAGE_LARGEUR),
 				x, y + 16, ENCRE_PALE, false);
 
-		portrait(g, x, y + 29, sourisX, sourisY);
-		y += 103;
+		portrait(g, x, y + 27, sourisX, sourisY);
+		y += 109;
 
 		String humeur = this.donnees.humeurBouille() + "  " + this.donnees.humeurLibelle();
 		g.drawString(this.font, humeur, x, y, ENCRE_VERTE, false);
@@ -547,11 +596,12 @@ public class EcranLivre extends EcranCompagnon {
 	 */
 	private void portrait(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
 		g.blit(CADRE_PORTRAIT, x, y, PAGE_LARGEUR, PORTRAIT,
-				0.0F, 0.0F, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE);
+				0.0F, 0.0F, PORTRAIT_SOURCE_L, PORTRAIT_SOURCE_H,
+				PORTRAIT_SOURCE_L, PORTRAIT_SOURCE_H);
 		portraitVivant(g, x, y);
-		// Le dragonnet est tres long mais bas : on remonte son rendu. Surtout pas de
-		// zone de coupe ici, car ses ailes depassent naturellement du petit cadre.
-		Apercu.dessiner(g, x + 8, y + 2, PAGE_LARGEUR - 16, PORTRAIT - 4,
+		// La zone sure garde huit pixels tout autour des ailes, cornes et queues.
+		// Le cadre est transparent : rien ne masque le dessous du modele.
+		Apercu.dessiner(g, x + 8, y + 8, PAGE_LARGEUR - 16, PORTRAIT - 16,
 				this.donnees.espece(), this.donnees.variante(), sourisX, sourisY);
 	}
 
@@ -684,7 +734,8 @@ public class EcranLivre extends EcranCompagnon {
 			case AFFECTION -> 0xFF9A4964;
 			case BALADE -> 0xFF4F7448;
 		};
-		int fond = fait ? Peinture.melanger(0x20EFD29B, couleur, 0.32F) : 0x147A6A55;
+		int papier = (this.PAPIER & 0x00FFFFFF) | 0x20000000;
+		int fond = fait ? Peinture.melanger(papier, couleur, 0.32F) : 0x147A6A55;
 		boolean tous = this.donnees.rituelsAccomplis() == SourceXp.values().length;
 		float lueur = (float) (Math.sin(System.currentTimeMillis() / 420.0D) * 0.5D + 0.5D);
 		int bord = tous ? Peinture.melanger(couleur, 0xFFB17B28, lueur)
@@ -1249,7 +1300,7 @@ public class EcranLivre extends EcranCompagnon {
 		return Icones.PATTE;
 	}
 
-	private static int couleurMoment(String cle) {
+	private int couleurMoment(String cle) {
 		if (cle.startsWith("defaut.")) {
 			return ENCRE_ROUGE;
 		}
@@ -1407,10 +1458,7 @@ public class EcranLivre extends EcranCompagnon {
 
 	// --- Navigation -------------------------------------------------------------
 
-	/** Une chaleur par signet : celui qu'on quitte s'eteint pendant que l'autre monte. */
-	private final float[] chaleurSignets = new float[SIGNETS.length];
-
-	/** Les quatre pages sont accessibles directement, sans feuilleter a l'aveugle. */
+	/** Les cinq pages sont accessibles directement par les signets dessines. */
 	private void signets(GuiGraphics g, int sourisX, int sourisY, float partiel) {
 		int x = signetX();
 		int y = signetY();
@@ -1418,29 +1466,23 @@ public class EcranLivre extends EcranCompagnon {
 			boolean actif = i == this.page;
 			boolean survole = sourisX >= x && sourisX < x + SIGNET_LARGEUR
 					&& sourisY >= y && sourisY < y + SIGNET_HAUTEUR;
-			this.chaleurSignets[i] = Peinture.vers(this.chaleurSignets[i],
-					survole ? 1.0F : 0.0F, 0.30F, partiel);
-			Peinture.boutonPeint(g, x, y, SIGNET_LARGEUR, SIGNET_HAUTEUR,
-					this.chaleurSignets[i], false,
-					actif ? 0xEE3F6B37 : 0xCC70462F,
-					actif ? 0xFF4F8246 : 0xEE8D5A38,
-					0xFFC8BCA4);
-			Component nom = Component.translatable(SIGNETS[i]);
-			g.drawString(this.font, nom,
-					x + (SIGNET_LARGEUR - this.font.width(nom)) / 2,
-					y + (SIGNET_HAUTEUR - 8) / 2,
-					actif || survole ? 0xFFFFFFFF : ONGLET_TEXTE, false);
+			int etat = actif ? 2 : survole ? 1 : 0;
+			g.blit(this.SIGNETS_TEXTURE, x, y, i * SIGNET_LARGEUR,
+					etat * SIGNET_HAUTEUR, SIGNET_LARGEUR, SIGNET_HAUTEUR,
+					SIGNETS_SOURCE_L, SIGNETS_SOURCE_H);
+			if (survole) {
+				this.signetSurvole = i;
+			}
 			y += SIGNET_HAUTEUR + SIGNET_ECART;
 		}
 	}
 
 	private int signetX() {
-		return Math.min(this.width - SIGNET_LARGEUR - BORD,
-				this.gauche + LARGEUR - 10);
+		return this.gauche + 360;
 	}
 
 	private int signetY() {
-		return this.haut + 32;
+		return this.haut + 43;
 	}
 
 	private int signetSous(double sourisX, double sourisY) {
@@ -1458,27 +1500,67 @@ public class EcranLivre extends EcranCompagnon {
 		return -1;
 	}
 
-	/** Change de double-page et relance le petit glissement de l'encre. */
+	/** Lance une vraie feuille animee ; le contenu bascule lorsqu'elle passe la reliure. */
 	private void allerPage(int nouvelle) {
 		int bornee = Math.max(0, Math.min(DERNIERE_PAGE, nouvelle));
-		if (bornee == this.page) {
+		if (bornee == this.page || pageEnMouvement()) {
 			return;
 		}
 		this.sensPage = bornee > this.page ? 1 : -1;
-		this.page = bornee;
-		this.apparitionPage = 0.0F;
+		this.pageCible = bornee;
+		this.debutTournePage = System.currentTimeMillis();
+		this.boutonPresseSens = this.sensPage;
+		this.boutonPresseJusqua = this.debutTournePage + 120L;
 		Bruits.page();
 	}
 
-	private void bordDePage(GuiGraphics g) {
-		int y = this.haut + HAUTEUR - 44;
+	private boolean pageEnMouvement() {
+		return this.pageCible >= 0;
+	}
+
+	private void mettreAJourAnimationPage() {
+		if (!pageEnMouvement()) {
+			return;
+		}
+		long ecoule = System.currentTimeMillis() - this.debutTournePage;
+		if (ecoule >= PAGE_ANIMATION_MS / 2L) {
+			this.page = this.pageCible;
+		}
+		if (ecoule >= PAGE_ANIMATION_MS) {
+			this.page = this.pageCible;
+			this.pageCible = -1;
+		}
+	}
+
+	private void dessinerAnimationPage(GuiGraphics g) {
+		if (!pageEnMouvement()) {
+			return;
+		}
+		long ecoule = Math.max(0L, System.currentTimeMillis() - this.debutTournePage);
+		int image = Math.min(7, (int) (ecoule / PAGE_IMAGE_MS));
+		ResourceLocation bande = this.sensPage > 0 ? this.PAGE_TOURNE_RTL : this.PAGE_TOURNE_LTR;
+		g.blit(bande, this.gauche, this.haut, image * LARGEUR, 0.0F,
+				LARGEUR, HAUTEUR, LARGEUR * 8, HAUTEUR);
+	}
+
+	private void bordDePage(GuiGraphics g, int sourisX, int sourisY) {
+		int y = this.haut + 207;
+		long maintenant = System.currentTimeMillis();
 
 		if (this.page > 0) {
-			g.blit(FLECHE_GAUCHE, this.gauche + 32, y, 0.0F, 0.0F,
+			boolean survole = dansBoutonPage(sourisX, sourisY, this.gauche + 22, y);
+			ResourceLocation texture = maintenant < this.boutonPresseJusqua
+					&& this.boutonPresseSens < 0 ? this.FLECHE_GAUCHE_PRESSEE
+					: survole ? this.FLECHE_GAUCHE_SURVOL : this.FLECHE_GAUCHE;
+			g.blit(texture, this.gauche + 22, y, 0.0F, 0.0F,
 					FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
 		}
 		if (this.page < DERNIERE_PAGE) {
-			g.blit(FLECHE_DROITE, this.gauche + LARGEUR - 61, y, 0.0F, 0.0F,
+			boolean survole = dansBoutonPage(sourisX, sourisY, this.gauche + 333, y);
+			ResourceLocation texture = maintenant < this.boutonPresseJusqua
+					&& this.boutonPresseSens > 0 ? this.FLECHE_DROITE_PRESSEE
+					: survole ? this.FLECHE_DROITE_SURVOL : this.FLECHE_DROITE;
+			g.blit(texture, this.gauche + 333, y, 0.0F, 0.0F,
 					FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
 		}
 
@@ -1491,6 +1573,41 @@ public class EcranLivre extends EcranCompagnon {
 		}
 	}
 
+	/** Petit nuancier sur la tranche gauche, persistant d'une ouverture a l'autre. */
+	private void selecteurTheme(GuiGraphics g, int sourisX, int sourisY, float partiel) {
+		int x = themeX();
+		int y = themeY();
+		this.themeSurvole = sourisX >= x && sourisX < x + THEME_TAILLE
+				&& sourisY >= y && sourisY < y + THEME_TAILLE;
+		Peinture.boutonPeint(g, x, y, THEME_TAILLE, THEME_TAILLE,
+				this.themeSurvole ? 1.0F : 0.0F, false,
+				this.ONGLET_FOND, this.ONGLET_FOND_ACTIF, this.ONGLET_BORD);
+		int c = THEME_TAILLE / 2;
+		g.fill(x + 5, y + 5, x + c, y + c, this.theme.encre);
+		g.fill(x + c, y + 5, x + 15, y + c, this.theme.encreVerte);
+		g.fill(x + 5, y + c, x + c, y + 15, this.theme.creuxHaut);
+		g.fill(x + c, y + c, x + 15, y + 15, this.theme.ongletBord);
+	}
+
+	private int themeX() {
+		return Math.max(1, this.gauche + 1);
+	}
+
+	private int themeY() {
+		return this.haut + 43;
+	}
+
+	private boolean themeSous(double sourisX, double sourisY) {
+		return sourisX >= themeX() && sourisX < themeX() + THEME_TAILLE
+				&& sourisY >= themeY() && sourisY < themeY() + THEME_TAILLE;
+	}
+
+	private void changerTheme() {
+		appliquerTheme(this.theme.suivant());
+		this.theme.sauvegarder();
+		Bruits.clic();
+	}
+
 	@Override
 	public boolean mouseClicked(double sourisX, double sourisY, int bouton) {
 		if (this.decouverte) {
@@ -1498,7 +1615,14 @@ public class EcranLivre extends EcranCompagnon {
 			Bruits.clic();
 			return true;
 		}
+		if (bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT && themeSous(sourisX, sourisY)) {
+			changerTheme();
+			return true;
+		}
 		if (clochetteCliquee(sourisX, sourisY, bouton)) {
+			return true;
+		}
+		if (pageEnMouvement()) {
 			return true;
 		}
 		int onglet = ongletSous(sourisX, sourisY);
@@ -1533,13 +1657,14 @@ public class EcranLivre extends EcranCompagnon {
 			return true;
 		}
 
-		int y = this.haut + HAUTEUR - 44;
+		int y = this.haut + 207;
 		if (sourisY >= y && sourisY <= y + FLECHE_HAUTEUR) {
-			if (this.page > 0 && dansX(sourisX, this.gauche + 32)) {
+			if (this.page > 0 && dansBoutonPage(sourisX, sourisY, this.gauche + 22, y)) {
 				allerPage(this.page - 1);
 				return true;
 			}
-			if (this.page < DERNIERE_PAGE && dansX(sourisX, this.gauche + LARGEUR - 61)) {
+			if (this.page < DERNIERE_PAGE
+					&& dansBoutonPage(sourisX, sourisY, this.gauche + 333, y)) {
 				allerPage(this.page + 1);
 				return true;
 			}
@@ -1646,8 +1771,9 @@ public class EcranLivre extends EcranCompagnon {
 		return -1;
 	}
 
-	private boolean dansX(double sourisX, int x) {
-		return sourisX >= x && sourisX <= x + FLECHE_LARGEUR;
+	private boolean dansBoutonPage(double sourisX, double sourisY, int x, int y) {
+		return sourisX >= x && sourisX < x + FLECHE_LARGEUR
+				&& sourisY >= y && sourisY < y + FLECHE_HAUTEUR;
 	}
 
 	@Override
@@ -1656,11 +1782,16 @@ public class EcranLivre extends EcranCompagnon {
 			this.decouverte = false;
 			return true;
 		}
-		if (touche == GLFW.GLFW_KEY_LEFT && this.page > 0) {
+		if (touche == GLFW.GLFW_KEY_C) {
+			changerTheme();
+			return true;
+		}
+		if (touche == GLFW.GLFW_KEY_LEFT && this.page > 0 && !pageEnMouvement()) {
 			allerPage(this.page - 1);
 			return true;
 		}
-		if (touche == GLFW.GLFW_KEY_RIGHT && this.page < DERNIERE_PAGE) {
+		if (touche == GLFW.GLFW_KEY_RIGHT && this.page < DERNIERE_PAGE
+				&& !pageEnMouvement()) {
 			allerPage(this.page + 1);
 			return true;
 		}

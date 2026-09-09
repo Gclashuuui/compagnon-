@@ -23,6 +23,12 @@ Le compagnon possede notamment :
 - un cerveau commun visible par un petit bandeau discret, avec diagnostic F8
   pour relier intention, locomotion et animation pendant la creation d'une espece.
 
+Le livre et le carnet proposent quatre apparences pixel art : Classique, Ocean,
+Obsidienne et Aurore boreale. Le petit nuancier sur la tranche gauche, ou la
+touche `C`, change le theme. Le choix est conserve uniquement sur le client. Les
+signets illustres ouvrent directement une section et les coins de feuille jouent
+une animation complete dans les deux sens.
+
 Les profils de cerveau sont dans `data/compagnon/cerveaux/`. Une espèce utilise
 automatiquement `aerien` ou `terrestre`, ou choisit un autre profil avec la clé
 `"cerveau"`. La liste de production Blockbench est dans

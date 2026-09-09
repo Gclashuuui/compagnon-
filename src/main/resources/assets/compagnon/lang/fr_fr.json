@@ -501,5 +501,10 @@
 	"moment.compagnon.premiere_sieste_coussin": "Il a choisi son coussin pour y dormir pour la première fois.",
 	"perchoir.compagnon.selectionne": "Perchoir choisi — clique maintenant sur ton compagnon.",
 	"perchoir.compagnon.ordre": "%s va rejoindre le perchoir.",
-	"moment.compagnon.premier_perchoir": "Il a rejoint son perchoir pour la première fois."
+	"moment.compagnon.premier_perchoir": "Il a rejoint son perchoir pour la première fois.",
+	"livre.compagnon.theme": "Style du livre : %s · clique ou appuie sur C",
+	"livre.compagnon.theme.classique": "Classique",
+	"livre.compagnon.theme.ocean": "Océan",
+	"livre.compagnon.theme.obsidienne": "Obsidienne",
+	"livre.compagnon.theme.aurore_boreale": "Aurore boréale"
 }

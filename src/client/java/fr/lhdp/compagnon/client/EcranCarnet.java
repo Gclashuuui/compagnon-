@@ -1,6 +1,5 @@
 package fr.lhdp.compagnon.client;
 
-import fr.lhdp.compagnon.Compagnon;
 import fr.lhdp.compagnon.livre.EntreeCarnet;
 import fr.lhdp.compagnon.reseau.PaquetInvoquer;
 import fr.lhdp.compagnon.reseau.PaquetLivre;
@@ -38,12 +37,16 @@ import java.util.List;
  */
 public class EcranCarnet extends EcranCompagnon {
 
-	private static final ResourceLocation FOND = Compagnon.id("textures/gui/livre/book.png");
-	private static final ResourceLocation SALISSURES = Compagnon.id("textures/gui/livre/smudges.png");
-	private static final ResourceLocation CADRE_PORTRAIT = Compagnon.id("textures/gui/livre/iconbacking.png");
-	private static final ResourceLocation SOULIGNEMENT = Compagnon.id("textures/gui/livre/underline.png");
-	private static final ResourceLocation FLECHE_GAUCHE = Compagnon.id("textures/gui/livre/pageturnsmallleft.png");
-	private static final ResourceLocation FLECHE_DROITE = Compagnon.id("textures/gui/livre/pageturnsmallright.png");
+	private ResourceLocation FOND;
+	private ResourceLocation SALISSURES;
+	private ResourceLocation CADRE_PORTRAIT;
+	private ResourceLocation SOULIGNEMENT;
+	private ResourceLocation FLECHE_GAUCHE;
+	private ResourceLocation FLECHE_GAUCHE_SURVOL;
+	private ResourceLocation FLECHE_DROITE;
+	private ResourceLocation FLECHE_DROITE_SURVOL;
+	private ResourceLocation PAGE_TOURNE_RTL;
+	private ResourceLocation PAGE_TOURNE_LTR;
 
 	/** Le livre fait 384 x 256 et non 256 : il faut l'appel long de {@code blit}. */
 	private static final int LARGEUR = 384;
@@ -52,7 +55,8 @@ public class EcranCarnet extends EcranCompagnon {
 	private static final int FLECHE_LARGEUR = 29;
 	private static final int FLECHE_HAUTEUR = 28;
 
-	private static final int PORTRAIT_SOURCE = 88;
+	private static final int PORTRAIT_SOURCE_L = 142;
+	private static final int PORTRAIT_SOURCE_H = 76;
 	private static final int SOULIGNEMENT_SOURCE_L = 159;
 	private static final int SOULIGNEMENT_SOURCE_H = 11;
 
@@ -64,15 +68,17 @@ public class EcranCarnet extends EcranCompagnon {
 	private static final int PAGE_LARGEUR = 142;
 	private static final int PAGE_Y = 28;
 
-	private static final int ENCRE = 0xFF3A2A18;
-	private static final int ENCRE_PALE = 0xFF7A6A55;
-	private static final int ENCRE_VERTE = 0xFF3F6B37;
-	private static final int CADRE = 0xFF5A4632;
-	private static final int CREUX_HAUT = 0xFFB9A886;
-	private static final int CREUX_BAS = 0xFFD9CBAE;
+	private int ENCRE;
+	private int ENCRE_PALE;
+	private int ENCRE_VERTE;
+	private int CADRE;
+	private int CREUX_HAUT;
 
 	/** Le cadre du modele, en pixels. Assez grand pour voir la bete. */
-	private static final int PORTRAIT = 100;
+	private static final int PORTRAIT = 76;
+	private static final int THEME_TAILLE = 20;
+	private static final long PAGE_IMAGE_MS = 110L;
+	private static final long PAGE_ANIMATION_MS = PAGE_IMAGE_MS * 8L;
 
 	/** Hauteur d'une carte de la collection. */
 	private static final int LIGNE = 30;
@@ -91,6 +97,11 @@ public class EcranCarnet extends EcranCompagnon {
 
 	/** La page de la <b>liste</b>, a droite. Rien a voir avec le compagnon choisi. */
 	private int page;
+	private int pageCible = -1;
+	private int sensPage = 1;
+	private long debutTournePage;
+	private ThemeLivre theme;
+	private boolean themeSurvole;
 
 	/** De zero a un : le bouton est en train de s allumer. */
 	private float chaleurDuBouton;
@@ -106,6 +117,26 @@ public class EcranCarnet extends EcranCompagnon {
 		this.entrees = entrees;
 		this.choisi = borner(choisi, entrees.size());
 		this.page = this.choisi / PAR_PAGE;
+		appliquerTheme(ThemeLivre.charger());
+	}
+
+	private void appliquerTheme(ThemeLivre nouveau) {
+		this.theme = nouveau;
+		this.FOND = nouveau.texture("book_astra_v2");
+		this.SALISSURES = nouveau.texture("book_details_overlay");
+		this.CADRE_PORTRAIT = nouveau.texture("portrait_frame");
+		this.SOULIGNEMENT = nouveau.texture("underline_astra");
+		this.FLECHE_GAUCHE = nouveau.texture("page_turn_left_normal");
+		this.FLECHE_GAUCHE_SURVOL = nouveau.texture("page_turn_left_hover");
+		this.FLECHE_DROITE = nouveau.texture("page_turn_right_normal");
+		this.FLECHE_DROITE_SURVOL = nouveau.texture("page_turn_right_hover");
+		this.PAGE_TOURNE_RTL = nouveau.texture("page_turn_rtl_strip");
+		this.PAGE_TOURNE_LTR = nouveau.texture("page_turn_ltr_strip");
+		this.ENCRE = nouveau.encre;
+		this.ENCRE_PALE = nouveau.encrePale;
+		this.ENCRE_VERTE = nouveau.encreVerte;
+		this.CADRE = nouveau.cadre;
+		this.CREUX_HAUT = nouveau.creuxHaut;
 	}
 
 	/**
@@ -118,6 +149,7 @@ public class EcranCarnet extends EcranCompagnon {
 	public void mettreAJour(int choisi, List<EntreeCarnet> entrees) {
 		this.entrees = entrees;
 		this.choisi = borner(choisi, entrees.size());
+		this.pageCible = -1;
 		this.page = Math.min(this.page, pagesMaximum() - 1);
 		if (this.page < 0) {
 			this.page = 0;
@@ -156,10 +188,18 @@ public class EcranCarnet extends EcranCompagnon {
 		g.blit(FOND, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
 		g.blit(SALISSURES, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
 
+		mettreAJourAnimationPage();
+		this.themeSurvole = false;
 		this.arriveePortrait = Peinture.vers(this.arriveePortrait, 1.0F, 0.25F, partiel);
 		pageDuChoisi(g, sourisX, sourisY);
 		pageDeLaListe(g, sourisX, sourisY, partiel);
+		dessinerAnimationPage(g);
+		selecteurTheme(g, sourisX, sourisY);
 		clochette(g, sourisX, sourisY, partiel);
+		if (this.themeSurvole) {
+			g.renderTooltip(this.font, Component.translatable("livre.compagnon.theme",
+					Component.translatable(this.theme.traduction())), sourisX, sourisY);
+		}
 	}
 
 	/** A gauche : celui qu'on regarde, en grand, et le bouton. */
@@ -174,7 +214,7 @@ public class EcranCarnet extends EcranCompagnon {
 
 		titre(g, x, y, entree.nom());
 
-		int cadreX = x + (PAGE_LARGEUR - PORTRAIT) / 2;
+		int cadreX = x;
 		int cadreY = y + 20;
 		portrait(g, entree, cadreX, cadreY, sourisX, sourisY);
 
@@ -229,15 +269,22 @@ public class EcranCarnet extends EcranCompagnon {
 		}
 
 		if (pagesMaximum() > 1) {
-			int flecheY = this.haut + HAUTEUR - 52;
+			int flecheY = this.haut + 207;
 			if (this.page > 0) {
-				g.blit(FLECHE_GAUCHE, x, flecheY, FLECHE_LARGEUR, FLECHE_HAUTEUR,
-						0.0F, 0.0F, FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
+				int flecheX = this.gauche + 22;
+				ResourceLocation texture = dansLaBoite(sourisX, sourisY, flecheX, flecheY,
+						FLECHE_LARGEUR, FLECHE_HAUTEUR)
+						? this.FLECHE_GAUCHE_SURVOL : this.FLECHE_GAUCHE;
+				g.blit(texture, flecheX, flecheY, 0.0F, 0.0F,
+						FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
 			}
 			if (this.page < pagesMaximum() - 1) {
-				g.blit(FLECHE_DROITE, x + PAGE_LARGEUR - FLECHE_LARGEUR, flecheY,
-						FLECHE_LARGEUR, FLECHE_HAUTEUR,
-						0.0F, 0.0F, FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
+				int flecheX = this.gauche + 333;
+				ResourceLocation texture = dansLaBoite(sourisX, sourisY, flecheX, flecheY,
+						FLECHE_LARGEUR, FLECHE_HAUTEUR)
+						? this.FLECHE_DROITE_SURVOL : this.FLECHE_DROITE;
+				g.blit(texture, flecheX, flecheY, 0.0F, 0.0F,
+						FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
 			}
 			String compte = (this.page + 1) + " / " + pagesMaximum();
 			g.drawString(this.font, compte,
@@ -322,13 +369,14 @@ public class EcranCarnet extends EcranCompagnon {
 	private void portrait(GuiGraphics g, EntreeCarnet entree, int x, int y,
 			int sourisX, int sourisY) {
 
-		g.blit(CADRE_PORTRAIT, x, y, PORTRAIT, PORTRAIT,
-				0.0F, 0.0F, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE, PORTRAIT_SOURCE);
+		g.blit(CADRE_PORTRAIT, x, y, PAGE_LARGEUR, PORTRAIT,
+				0.0F, 0.0F, PORTRAIT_SOURCE_L, PORTRAIT_SOURCE_H,
+				PORTRAIT_SOURCE_L, PORTRAIT_SOURCE_H);
 
 		int marge = 8;
 		int glissement = Math.round((1.0F - Peinture.adoucir(this.arriveePortrait)) * 8.0F);
 		Apercu.dessiner(g, x + marge, y + marge + glissement,
-				PORTRAIT - marge * 2, PORTRAIT - marge * 2 - glissement,
+				PAGE_LARGEUR - marge * 2, PORTRAIT - marge * 2 - glissement,
 				entree.espece(), entree.variante(), sourisX, sourisY);
 	}
 
@@ -378,15 +426,87 @@ public class EcranCarnet extends EcranCompagnon {
 		return sourisX >= x && sourisX < x + largeur && sourisY >= y && sourisY < y + hauteur;
 	}
 
+	private boolean pageEnMouvement() {
+		return this.pageCible >= 0;
+	}
+
+	private void allerPageListe(int nouvelle) {
+		int bornee = Math.max(0, Math.min(pagesMaximum() - 1, nouvelle));
+		if (bornee == this.page || pageEnMouvement()) {
+			return;
+		}
+		this.sensPage = bornee > this.page ? 1 : -1;
+		this.pageCible = bornee;
+		this.debutTournePage = System.currentTimeMillis();
+		Bruits.page();
+	}
+
+	private void mettreAJourAnimationPage() {
+		if (!pageEnMouvement()) {
+			return;
+		}
+		long ecoule = System.currentTimeMillis() - this.debutTournePage;
+		if (ecoule >= PAGE_ANIMATION_MS / 2L) {
+			this.page = this.pageCible;
+		}
+		if (ecoule >= PAGE_ANIMATION_MS) {
+			this.page = this.pageCible;
+			this.pageCible = -1;
+		}
+	}
+
+	private void dessinerAnimationPage(GuiGraphics g) {
+		if (!pageEnMouvement()) {
+			return;
+		}
+		long ecoule = Math.max(0L, System.currentTimeMillis() - this.debutTournePage);
+		int image = Math.min(7, (int) (ecoule / PAGE_IMAGE_MS));
+		ResourceLocation bande = this.sensPage > 0 ? this.PAGE_TOURNE_RTL : this.PAGE_TOURNE_LTR;
+		g.blit(bande, this.gauche, this.haut, image * LARGEUR, 0.0F,
+				LARGEUR, HAUTEUR, LARGEUR * 8, HAUTEUR);
+	}
+
+	private void selecteurTheme(GuiGraphics g, int sourisX, int sourisY) {
+		int x = Math.max(1, this.gauche + 1);
+		int y = this.haut + 43;
+		this.themeSurvole = dansLaBoite(sourisX, sourisY, x, y, THEME_TAILLE, THEME_TAILLE);
+		Peinture.boutonPeint(g, x, y, THEME_TAILLE, THEME_TAILLE,
+				this.themeSurvole ? 1.0F : 0.0F, false,
+				this.theme.ongletFond, this.theme.ongletFondActif, this.theme.ongletBord);
+		int c = THEME_TAILLE / 2;
+		g.fill(x + 5, y + 5, x + c, y + c, this.theme.encre);
+		g.fill(x + c, y + 5, x + 15, y + c, this.theme.encreVerte);
+		g.fill(x + 5, y + c, x + c, y + 15, this.theme.creuxHaut);
+		g.fill(x + c, y + c, x + 15, y + 15, this.theme.ongletBord);
+	}
+
+	private boolean themeSous(double sourisX, double sourisY) {
+		return dansLaBoite(sourisX, sourisY, Math.max(1, this.gauche + 1),
+				this.haut + 43, THEME_TAILLE, THEME_TAILLE);
+	}
+
+	private void changerTheme() {
+		appliquerTheme(this.theme.suivant());
+		this.theme.sauvegarder();
+		Bruits.clic();
+	}
+
 	// --- Ce qu'on peut faire ------------------------------------------------------------
 
 	@Override
 	public boolean mouseClicked(double sourisX, double sourisY, int bouton) {
+		if (bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT && themeSous(sourisX, sourisY)) {
+			changerTheme();
+			return true;
+		}
 		if (clochetteCliquee(sourisX, sourisY, bouton)) {
 			return true;
 		}
 		if (bouton != 0 || this.entrees.isEmpty()) {
 			return super.mouseClicked(sourisX, sourisY, bouton);
+		}
+		if (pageEnMouvement()) {
+			return true;
 		}
 
 		if (dansLaBoite(sourisX, sourisY, boutonX(), boutonY(), BOUTON_LARGEUR, BOUTON_HAUTEUR)) {
@@ -411,18 +531,16 @@ public class EcranCarnet extends EcranCompagnon {
 		}
 
 		if (pagesMaximum() > 1) {
-			int flecheY = this.haut + HAUTEUR - 52;
+			int flecheY = this.haut + 207;
 			if (this.page > 0 && dansLaBoite(sourisX, sourisY,
-					listeX, flecheY, FLECHE_LARGEUR, FLECHE_HAUTEUR)) {
-				this.page--;
-				Bruits.page();
+					this.gauche + 22, flecheY, FLECHE_LARGEUR, FLECHE_HAUTEUR)) {
+				allerPageListe(this.page - 1);
 				return true;
 			}
 			if (this.page < pagesMaximum() - 1 && dansLaBoite(sourisX, sourisY,
-					listeX + PAGE_LARGEUR - FLECHE_LARGEUR, flecheY,
+					this.gauche + 333, flecheY,
 					FLECHE_LARGEUR, FLECHE_HAUTEUR)) {
-				this.page++;
-				Bruits.page();
+				allerPageListe(this.page + 1);
 				return true;
 			}
 		}
@@ -431,6 +549,10 @@ public class EcranCarnet extends EcranCompagnon {
 
 	@Override
 	public boolean keyPressed(int touche, int codeMateriel, int modificateurs) {
+		if (touche == GLFW.GLFW_KEY_C) {
+			changerTheme();
+			return true;
+		}
 		if (this.entrees.isEmpty()) {
 			return super.keyPressed(touche, codeMateriel, modificateurs);
 		}
