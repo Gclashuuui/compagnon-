@@ -1,5 +1,11 @@
 # Compagnon
 
+Documentation de production :
+
+- [Architecture du cerveau](CERVEAU.md)
+- [Animations pilotées par le cerveau](ANIMATIONS_CERVEAU.md)
+- [Starter packs de 60 et 70 animations](PACKS_ANIMATIONS.md)
+
 Compagnon est un mod Minecraft Fabric 1.21.1 pour un serveur RP francophone.
 Chaque joueur peut faire grandir une creature vivante, la nourrir, la soigner,
 la caresser, lui parler et construire une relation qui evolue avec le temps.

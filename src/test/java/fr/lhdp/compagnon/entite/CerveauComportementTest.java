@@ -24,6 +24,10 @@ class CerveauComportementTest {
 				CerveauComportement.Noeud.SUIVRE));
 		assertTrue(prioritaire(CerveauComportement.Noeud.REPAS,
 				CerveauComportement.Noeud.CURIOSITE));
+		assertTrue(prioritaire(CerveauComportement.Noeud.REPAS,
+				CerveauComportement.Noeud.BOISSON));
+		assertTrue(prioritaire(CerveauComportement.Noeud.BOISSON,
+				CerveauComportement.Noeud.SOMMEIL));
 		assertTrue(prioritaire(CerveauComportement.Noeud.SOMMEIL,
 				CerveauComportement.Noeud.JOUEUR));
 		assertTrue(prioritaire(CerveauComportement.Noeud.HABITUDE,

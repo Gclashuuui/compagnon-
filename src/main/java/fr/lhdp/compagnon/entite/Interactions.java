@@ -58,7 +58,9 @@ public final class Interactions {
 
 	/** Duree du geste de caresse, en ticks. Valeur inventee. */
 	private static final int DUREE_CARESSE = 45;
-	private static final Map<UUID, Long> CARESSES_EN_COURS = new HashMap<>();
+	private static final Map<UUID, CaresseServeur> CARESSES_EN_COURS = new HashMap<>();
+	private record CaresseServeur(UUID compagnon, long fin, boolean proprietaire,
+			boolean recompensee) {}
 
 	/**
 	 * Distance maximale pour caresser, mesuree depuis la <b>boite de collision</b>
@@ -584,11 +586,13 @@ public final class Interactions {
 			return InteractionResult.FAIL;
 		}
 		long maintenant = System.currentTimeMillis();
-		if (CARESSES_EN_COURS.getOrDefault(joueur.getUUID(), 0L) > maintenant) {
+		CaresseServeur deja = CARESSES_EN_COURS.get(joueur.getUUID());
+		if (deja != null && deja.fin() > maintenant) {
 			echec(joueur, Component.translatable("caresse.compagnon.en_cours"));
 			return InteractionResult.FAIL;
 		}
-		CARESSES_EN_COURS.put(joueur.getUUID(), maintenant + DUREE_CARESSE * 50L);
+		CARESSES_EN_COURS.put(joueur.getUUID(), new CaresseServeur(compagnon.getUUID(),
+				maintenant + DUREE_CARESSE * 50L, proprietaire, false));
 
 		// Le compagnon reagit pour tout le monde : c'est ce qu'on voit dans les
 		// couloirs. Seul le proprietaire fait monter la complicite.
@@ -624,6 +628,44 @@ public final class Interactions {
 
 		dire(joueur, fiche.nom() + " se laisse faire.", gagne);
 		return InteractionResult.SUCCESS;
+	}
+
+	/**
+	 * Valide les trois temps du petit jeu. Le client ne peut ni choisir une autre
+	 * bête, ni réclamer deux fois le bonus, ni envoyer un score supérieur à trois.
+	 */
+	public static void terminerCaresse(CompagnonEntity compagnon, ServerPlayer joueur,
+			int reussites) {
+		CaresseServeur session = CARESSES_EN_COURS.get(joueur.getUUID());
+		long maintenant = System.currentTimeMillis();
+		if (session == null || session.recompensee()
+				|| !session.compagnon().equals(compagnon.getUUID())
+				|| maintenant < session.fin() - DUREE_CARESSE * 50L
+				|| maintenant > session.fin() + 2_000L) {
+			return;
+		}
+		int score = Math.max(0, Math.min(3, reussites));
+		CARESSES_EN_COURS.put(joueur.getUUID(), new CaresseServeur(
+				session.compagnon(), session.fin(), session.proprietaire(), true));
+		if (!session.proprietaire() || score == 0
+				|| !(compagnon.level() instanceof net.minecraft.server.level.ServerLevel niveau)
+				|| compagnon.ficheId() == null) {
+			return;
+		}
+
+		Fiches fiches = Fiches.de(niveau.getServer());
+		FicheCompagnon fiche = fiches.get(compagnon.ficheId());
+		if (fiche == null) {
+			return;
+		}
+		float bonus = score == 3 ? 2.0F : score * 0.5F;
+		fiche.ajouterBarre(Barre.COMPLICITE, bonus, Niveaux.progression());
+		fiches.setDirty();
+		if (score == 3) {
+			Etincelles.coeurs(compagnon, 4);
+			joueur.displayClientMessage(Component.translatable(
+					"caresse.compagnon.parfaite", fiche.nom()), true);
+		}
 	}
 
 	// --- Le perchoir d'epaule ---------------------------------------------------

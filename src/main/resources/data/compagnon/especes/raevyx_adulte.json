@@ -48,6 +48,7 @@
 	},
 	"reactions": {
 		"caresse": "animation.raevyx_adulte.grumble1",
+		"boit": "animation.raevyx_adulte.drinking",
 		"joyeux": "animation.raevyx_adulte.flex",
 		"triste": "animation.raevyx_adulte.grumble3",
 		"ecoute": "animation.raevyx_adulte.investigating",

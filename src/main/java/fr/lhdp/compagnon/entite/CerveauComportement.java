@@ -24,21 +24,22 @@ public final class CerveauComportement {
 		SUIVRE(6),
 		ABRI(7),
 		REPAS(8),
-		SOMMEIL(9),
-		HABITUDE(10),
-		AFFECTION(11),
-		CURIOSITE(12),
-		CADEAU_SPONTANE(13),
-		JOUEUR(14),
-		AMI(15),
-		SOUVENIR(16),
-		SALUT(17),
-		FLANERIE(18),
-		REGARD_JOUEUR(19),
-		REGARD_OBJET(20),
-		REGARD_LIBRE(21),
+		BOISSON(9),
+		SOMMEIL(10),
+		HABITUDE(11),
+		AFFECTION(12),
+		CURIOSITE(13),
+		CADEAU_SPONTANE(14),
+		JOUEUR(15),
+		AMI(16),
+		SOUVENIR(17),
+		SALUT(18),
+		FLANERIE(19),
+		REGARD_JOUEUR(20),
+		REGARD_OBJET(21),
+		REGARD_LIBRE(22),
 		/** Aucun but ne deplace la bete : elle profite simplement du moment. */
-		REPOS(22);
+		REPOS(23);
 
 		private final int priorite;
 
@@ -80,7 +81,8 @@ public final class CerveauComportement {
 			}
 
 			@Override public boolean canUse() {
-				return autorise() && comportement.canUse();
+				return autorise() && compagnon.peutEvaluer(noeud)
+						&& comportement.canUse();
 			}
 
 			@Override public boolean canContinueToUse() {

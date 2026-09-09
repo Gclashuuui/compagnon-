@@ -62,6 +62,7 @@
 	},
 	"reactions": {
 		"caresse": "animation.mouette.settle_feathers",
+		"boit": "animation.mouette.drink",
 		"joyeux": "animation.mouette.idle3",
 		"triste": "animation.mouette.idle_rest",
 		"ecoute": "animation.mouette.watch_player",

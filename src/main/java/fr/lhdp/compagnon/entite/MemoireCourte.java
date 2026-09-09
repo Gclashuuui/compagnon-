@@ -31,7 +31,8 @@ public final class MemoireCourte {
 		NEIGE,
 		FROID,
 		OBSCURITE,
-		EAU
+		EAU,
+		A_BU_RECEMMENT
 	}
 
 	private final long[] expiration = new long[Signal.values().length];

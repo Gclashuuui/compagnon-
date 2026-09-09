@@ -119,6 +119,13 @@
 			"mange ton repas",
 			"à table"
 		],
+		"boire": [
+			"bois",
+			"va boire",
+			"bois de l'eau",
+			"va à la gamelle",
+			"tu peux boire"
+		],
 		"perchoir": [
 			"va au perchoir",
 			"au perchoir",

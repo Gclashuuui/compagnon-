@@ -1,7 +1,10 @@
 package fr.lhdp.compagnon.client;
 
 import fr.lhdp.compagnon.Compagnon;
+import fr.lhdp.compagnon.reseau.PaquetResultatCaresse;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -70,8 +73,27 @@ public final class Caresses {
 
 	/** Numero d'entite du joueur, puis ce qu'il caresse et pour combien de temps. */
 	private static final Map<Integer, Caresse> enCours = new HashMap<>();
+	private static final float[] TEMPS_RYTHME = {0.34F, 0.55F, 0.76F};
+	private static final float FENETRE_RYTHME = 0.075F;
+	private static int scoreAffiche = -1;
+	private static int ticksScoreAffiche;
+	private static boolean gaucheAvant;
+	private static boolean droiteAvant;
 
-	private record Caresse(int compagnon, int ticksRestants, int ticksTotal) {
+	private static final class Caresse {
+		private final int compagnon;
+		private final int ticksTotal;
+		private int ticksRestants;
+		private int etape;
+		private int score;
+		private int reussites;
+
+		private Caresse(int compagnon, int ticksRestants, int ticksTotal) {
+			this.compagnon = compagnon;
+			this.ticksRestants = ticksRestants;
+			this.ticksTotal = ticksTotal;
+		}
+
 		/** De zero au debut du geste a un a la fin. */
 		float progression(float partiel) {
 			if (this.ticksTotal <= 0) {
@@ -103,20 +125,57 @@ public final class Caresses {
 
 	/** A appeler a chaque tick du client. */
 	public static void tick() {
+		if (ticksScoreAffiche > 0) {
+			ticksScoreAffiche--;
+		}
 		if (enCours.isEmpty()) {
 			return;
 		}
+		jouerLeRythmeLocal();
 		immobiliserJoueurLocal();
 
 		enCours.entrySet().removeIf(entree -> {
 			Caresse caresse = entree.getValue();
-			if (caresse.ticksRestants() > 1) {
-				entree.setValue(new Caresse(caresse.compagnon(),
-						caresse.ticksRestants() - 1, caresse.ticksTotal()));
+			if (caresse.ticksRestants > 1) {
+				caresse.ticksRestants--;
 				return false;
+			}
+			Minecraft client = Minecraft.getInstance();
+			if (client.player != null && entree.getKey() == client.player.getId()) {
+				ClientPlayNetworking.send(new PaquetResultatCaresse(
+						caresse.compagnon, caresse.score));
+				scoreAffiche = caresse.score;
+				ticksScoreAffiche = 20 * 2;
 			}
 			return true;
 		});
+	}
+
+	/** Trois appuis alternés, pris avant d'annuler le déplacement du joueur. */
+	private static void jouerLeRythmeLocal() {
+		Minecraft client = Minecraft.getInstance();
+		if (client.player == null) {
+			return;
+		}
+		Caresse caresse = enCours.get(client.player.getId());
+		if (caresse == null || caresse.etape >= TEMPS_RYTHME.length) {
+			return;
+		}
+		boolean gauche = client.options.keyLeft.isDown();
+		boolean droite = client.options.keyRight.isDown();
+		boolean nouvelAppui = caresse.etape % 2 == 0
+				? gauche && !gaucheAvant : droite && !droiteAvant;
+		float t = caresse.progression(0.0F);
+		float cible = TEMPS_RYTHME[caresse.etape];
+		if (nouvelAppui && Math.abs(t - cible) <= FENETRE_RYTHME) {
+			caresse.reussites |= 1 << caresse.etape;
+			caresse.score++;
+			caresse.etape++;
+		} else if (t > cible + FENETRE_RYTHME) {
+			caresse.etape++;
+		}
+		gaucheAvant = gauche;
+		droiteAvant = droite;
 	}
 
 	/** Pendant le geste, les touches et l'elan ne peuvent pas lancer une seconde action. */
@@ -139,6 +198,49 @@ public final class Caresses {
 	/** Le monde a change ou on s'est deconnecte : on repart de zero. */
 	public static void oublier() {
 		enCours.clear();
+		scoreAffiche = -1;
+		ticksScoreAffiche = 0;
+		gaucheAvant = false;
+		droiteAvant = false;
+	}
+
+	/** Petit bandeau au-dessus de la barre d'objets : jamais au milieu de l'écran. */
+	public static void dessiner(GuiGraphics g, float partiel) {
+		Minecraft client = Minecraft.getInstance();
+		if (client.player == null || client.options.hideGui || client.screen != null) {
+			return;
+		}
+		Caresse caresse = enCours.get(client.player.getId());
+		if (caresse == null) {
+			if (ticksScoreAffiche > 0 && scoreAffiche >= 0) {
+				String texte = net.minecraft.network.chat.Component.translatable(
+						"caresse.compagnon.score", scoreAffiche, 3).getString();
+				g.drawCenteredString(client.font, texte, g.guiWidth() / 2,
+						g.guiHeight() - 66, scoreAffiche == 3 ? 0xFFFFD76A : 0xFFF1E4C4);
+			}
+			return;
+		}
+
+		int largeur = 142;
+		int x = (g.guiWidth() - largeur) / 2;
+		int y = g.guiHeight() - 76;
+		g.fill(x, y, x + largeur, y + 26, 0xCC2B2118);
+		g.fill(x + 1, y + 1, x + largeur - 1, y + 25, 0xE6EBD2A5);
+		String titre = net.minecraft.network.chat.Component.translatable(
+				"caresse.compagnon.rythme").getString();
+		g.drawCenteredString(client.font, titre, x + largeur / 2, y + 4, 0xFF3A2A18);
+
+		for (int i = 0; i < TEMPS_RYTHME.length; i++) {
+			int centre = x + 36 + i * 35;
+			boolean fait = i < caresse.etape;
+			boolean reussi = (caresse.reussites & (1 << i)) != 0;
+			int couleur = reussi ? 0xFF4C9A55 : fait ? 0xFF8B7660 : 0xFFD39B32;
+			g.fill(centre - 9, y + 15, centre + 9, y + 23, couleur);
+			String touche = i % 2 == 0
+					? client.options.keyLeft.getTranslatedKeyMessage().getString()
+					: client.options.keyRight.getTranslatedKeyMessage().getString();
+			g.drawCenteredString(client.font, touche, centre, y + 15, 0xFFFFFFFF);
+		}
 	}
 
 	// --- Le geste ---------------------------------------------------------------
@@ -170,7 +272,7 @@ public final class Caresses {
 			// bras tendu : sinon elle gigoterait pendant l'approche.
 			float vaEtVient = (float) Math.sin(t * Math.PI * 2.0 * ALLERS_RETOURS);
 
-			float vise = angleVise(joueur, caresse.compagnon());
+			float vise = angleVise(joueur, caresse.compagnon);
 			float angle = vise * tension + AMPLITUDE * vaEtVient * tension;
 
 			bras.xRot = Math.max(ANGLE_MIN, Math.min(ANGLE_MAX, angle));

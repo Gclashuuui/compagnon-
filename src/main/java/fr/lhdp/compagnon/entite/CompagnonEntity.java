@@ -239,6 +239,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	/** Mémoire de travail fixe ; la mémoire durable reste dans la fiche. */
 	private final MemoireCourte memoireCourte = new MemoireCourte();
 
+	/** Niveau de detail du cerveau, recalcule lentement par la perception. */
+	private NiveauActiviteCerveau niveauActiviteCerveau = NiveauActiviteCerveau.PROCHE;
+
 	/** Un geste commencé ne cède qu'à une raison plus importante. */
 	private PrioriteAction prioriteAction = PrioriteAction.AMBIANCE;
 
@@ -390,6 +393,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 				CerveauComportement.Noeud.ABRI, new AbriGoal(this));
 		ajouterBut(
 				CerveauComportement.Noeud.REPAS, new MangerDansGamelleGoal(this));
+		ajouterBut(
+				CerveauComportement.Noeud.BOISSON, new BoireDansGamelleGoal(this));
 		ajouterBut(
 				CerveauComportement.Noeud.SOMMEIL, new SiesteGoal(this));
 		ajouterBut(
@@ -551,6 +556,28 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	public MemoireCourte memoireCourte() {
 		return this.memoireCourte;
+	}
+
+	public NiveauActiviteCerveau niveauActiviteCerveau() {
+		return this.niveauActiviteCerveau;
+	}
+
+	void setNiveauActiviteCerveau(NiveauActiviteCerveau niveau) {
+		this.niveauActiviteCerveau = niveau == null
+				? NiveauActiviteCerveau.PROCHE : niveau;
+	}
+
+	/**
+	 * Les envies invisibles sont espacees quand aucun joueur n'est proche. Un but
+	 * deja lance continue normalement : cette methode ne sert qu'a son examen.
+	 */
+	public boolean peutEvaluer(CerveauComportement.Noeud noeud) {
+		int cadence = this.niveauActiviteCerveau.cadence(noeud);
+		if (cadence <= 1) {
+			return true;
+		}
+		return Math.floorMod(this.tickCount + getUUID().hashCode()
+				+ noeud.ordinal() * 17, cadence) == 0;
 	}
 
 	/** Retrouve une entité sans la garder en référence dans la mémoire. */

@@ -50,6 +50,7 @@
 	},
 	"reactions": {
 		"caresse": "animation.cindervane_adulte.grumble1",
+		"boit": "animation.cindervane_adulte.drinking",
 		"joyeux": "animation.cindervane_adulte.flex",
 		"triste": "animation.cindervane_adulte.grumble3",
 		"ecoute": "",

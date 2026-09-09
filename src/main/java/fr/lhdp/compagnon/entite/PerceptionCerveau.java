@@ -35,6 +35,9 @@ public final class PerceptionCerveau {
 	private static final double PORTEE_AMI = 12.0D;
 	private static final float VIE_INQUIETANTE = 0.4F;
 	private static final int SOMBRE = 6;
+	private static final int RECALCUL_DISTANCE = 20 * 2;
+	private static final double DISTANCE_PROCHE = 24.0D;
+	private static final double DISTANCE_MOYEN = 64.0D;
 
 	private PerceptionCerveau() {
 	}
@@ -45,7 +48,11 @@ public final class PerceptionCerveau {
 		}
 		MemoireCourte memoire = compagnon.memoireCourte();
 		memoire.avancer();
-		if (leTourDe(compagnon, CAPTEURS_RAPIDES, 0)) {
+		if (leTourDe(compagnon, RECALCUL_DISTANCE, 91)) {
+			actualiserNiveauActivite(compagnon);
+		}
+		int multiplicateur = compagnon.niveauActiviteCerveau().multiplierPerception();
+		if (leTourDe(compagnon, CAPTEURS_RAPIDES * multiplicateur, 0)) {
 			capteursRapides(compagnon, memoire);
 		}
 
@@ -55,12 +62,25 @@ public final class PerceptionCerveau {
 		int intervalleMenaces = maitrePresent
 				&& memoire.contient(MemoireCourte.Signal.OBSCURITE)
 				? MENACES_ACTIF : MENACES_CALME;
-		if (leTourDe(compagnon, intervalleMenaces, 17)) {
+		if (leTourDe(compagnon, intervalleMenaces * multiplicateur, 17)) {
 			chercherMenace(compagnon, memoire, maitrePresent);
 		}
-		if (leTourDe(compagnon, COMPAGNONS, 43)) {
+		if (compagnon.niveauActiviteCerveau() != NiveauActiviteCerveau.LOINTAIN
+				&& leTourDe(compagnon, COMPAGNONS * multiplicateur, 43)) {
 			chercherAmi(compagnon, memoire);
 		}
+	}
+
+	private static void actualiserNiveauActivite(CompagnonEntity compagnon) {
+		Player proche = compagnon.level().getNearestPlayer(compagnon,
+				DISTANCE_MOYEN);
+		if (proche == null) {
+			compagnon.setNiveauActiviteCerveau(NiveauActiviteCerveau.LOINTAIN);
+			return;
+		}
+		double distance = compagnon.distanceToSqr(proche);
+		compagnon.setNiveauActiviteCerveau(distance <= DISTANCE_PROCHE * DISTANCE_PROCHE
+				? NiveauActiviteCerveau.PROCHE : NiveauActiviteCerveau.MOYEN);
 	}
 
 	private static void capteursRapides(CompagnonEntity compagnon, MemoireCourte memoire) {

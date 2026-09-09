@@ -1,1 +1,6 @@
-{"variants":{"":{"model":"compagnon:block/gamelle"}}}
+{
+	"variants": {
+		"eau=false": {"model": "compagnon:block/gamelle"},
+		"eau=true": {"model": "compagnon:block/gamelle_eau"}
+	}
+}

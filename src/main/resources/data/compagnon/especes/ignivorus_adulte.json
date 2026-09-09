@@ -48,6 +48,7 @@
 	},
 	"reactions": {
 		"caresse": "animation.ignivorus_adulte.grumble1",
+		"boit": "animation.ignivorus_adulte.drinking",
 		"joyeux": "animation.ignivorus_adulte.flex",
 		"triste": "animation.ignivorus_adulte.grumble3",
 		"ecoute": "animation.ignivorus_adulte.investigating",

@@ -7,6 +7,20 @@ Son trajet est toujours le même :
 
 `capteurs → mémoire courte → motivation → but → engagement → animation`
 
+## Niveau de détail permanent
+
+Le cerveau possède trois rythmes automatiques : **proche** (moins de 24 blocs),
+**moyen** (24 à 64 blocs) et **lointain**. Les ordres, le suivi, la survie, la
+nourriture, l'eau et le sommeil restent immédiats. Les envies invisibles comme
+flâner, observer ou chercher un ami sont espacées quand aucun joueur ne peut les
+voir. Les capteurs suivent le même rythme et chaque UUID conserve son décalage :
+les compagnons ne réfléchissent jamais tous sur le même tick.
+
+La gamelle d'eau utilise un index par chunks. Chercher à boire consulte seulement
+les chunks voisins au lieu de parcourir tous les blocs de la maison. Sa position
+n'est gardée que tant que le monde existe et les entrées devenues invalides sont
+nettoyées au passage.
+
 ## Deux mémoires, pas une sauvegarde infinie
 
 La mémoire longue existante reste dans la fiche : personnes et compagnons

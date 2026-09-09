@@ -84,6 +84,8 @@ public final class Reseau {
 		PayloadTypeRegistry.playS2C().register(PaquetDonneesRoue.TYPE, PaquetDonneesRoue.CODEC);
 		PayloadTypeRegistry.playC2S().register(PaquetAction.TYPE, PaquetAction.CODEC);
 		PayloadTypeRegistry.playS2C().register(PaquetCaresse.TYPE, PaquetCaresse.CODEC);
+		PayloadTypeRegistry.playC2S().register(PaquetResultatCaresse.TYPE,
+				PaquetResultatCaresse.CODEC);
 		PayloadTypeRegistry.playC2S().register(PaquetCarnet.TYPE, PaquetCarnet.CODEC);
 		PayloadTypeRegistry.playC2S().register(PaquetInvoquer.TYPE, PaquetInvoquer.CODEC);
 		PayloadTypeRegistry.playC2S().register(PaquetApprendre.TYPE, PaquetApprendre.CODEC);
@@ -146,6 +148,15 @@ public final class Reseau {
 				contexte.server().execute(() ->
 						jouerAction(contexte.player(), paquet.index(), paquet.nom(),
 								paquet.apercu())));
+
+		ServerPlayNetworking.registerGlobalReceiver(PaquetResultatCaresse.TYPE,
+				(paquet, contexte) -> contexte.server().execute(() -> {
+					Entity entite = contexte.player().level().getEntity(paquet.compagnon());
+					if (entite instanceof CompagnonEntity compagnon) {
+						fr.lhdp.compagnon.entite.Interactions.terminerCaresse(
+								compagnon, contexte.player(), paquet.reussites());
+					}
+				}));
 
 		// Ce crochet se declenche a la connexion d'un joueur ET apres chaque
 		// /reload : un seul endroit pour les deux cas, donc aucun risque d'en

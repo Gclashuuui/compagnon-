@@ -129,6 +129,7 @@ public class CompagnonClient implements ClientModInitializer {
 			Panneau.dessiner(graphismes, delta.getRealtimeDeltaTicks());
 			AnnonceNiveau.dessiner(graphismes, delta.getRealtimeDeltaTicks());
 			BandeauIntention.dessiner(graphismes, delta.getRealtimeDeltaTicks());
+			Caresses.dessiner(graphismes, delta.getRealtimeDeltaTicks());
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {

@@ -57,6 +57,9 @@ public enum CommandeVocale {
 	/** Il rejoint le repas visible dans sa gamelle et le mange. */
 	MANGER("manger", null, Geste.MANGER),
 
+	/** Il rejoint une gamelle remplie d'eau. */
+	BOIRE("boire", null, Geste.BOIRE),
+
 	/** Il retourne au perchoir qu'on lui a déjà montré. */
 	PERCHOIR("perchoir", null, Geste.PERCHOIR),
 
@@ -77,6 +80,7 @@ public enum CommandeVocale {
 		DESCENDRE,
 		TOURNER,
 		MANGER,
+		BOIRE,
 		PERCHOIR,
 		FELICITER
 	}

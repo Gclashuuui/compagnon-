@@ -2,6 +2,7 @@ package fr.lhdp.compagnon.voix;
 
 import fr.lhdp.compagnon.entite.CompagnonEntity;
 import fr.lhdp.compagnon.entite.MangerDansGamelleGoal;
+import fr.lhdp.compagnon.entite.BoireDansGamelleGoal;
 import fr.lhdp.compagnon.entite.AllerAuPerchoirGoal;
 import fr.lhdp.compagnon.entite.Obeissance;
 import fr.lhdp.compagnon.entite.PrioriteAction;
@@ -482,6 +483,16 @@ public final class EcouteVocale {
 				compagnon.appliquerMode(Mode.RESTE);
 				fiches.setDirty();
 				return new Resultat(true, fiche.nom() + " va manger dans sa gamelle.");
+			}
+			case BOIRE -> {
+				if (!BoireDansGamelleGoal.ordonner(compagnon)) {
+					return new Resultat(false,
+							"aucune gamelle d'eau ne se trouve près de lui.");
+				}
+				fiche.setMode(Mode.RESTE);
+				compagnon.appliquerMode(Mode.RESTE);
+				fiches.setDirty();
+				return new Resultat(true, fiche.nom() + " va boire dans sa gamelle.");
 			}
 			case PERCHOIR -> {
 				BlockPos perchoir = null;

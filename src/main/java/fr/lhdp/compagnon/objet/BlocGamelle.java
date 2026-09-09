@@ -10,11 +10,16 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -33,11 +38,22 @@ import java.util.List;
  */
 public final class BlocGamelle extends Block {
 
+	public static final BooleanProperty EAU = BooleanProperty.create("eau");
 	private static final VoxelShape FORME = Block.box(3, 0, 3, 13, 3, 13);
 	private static final AABB INTERIEUR = new AABB(0.16D, 0.0D, 0.16D, 0.84D, 0.58D, 0.84D);
 
 	public BlocGamelle(BlockBehaviour.Properties proprietes) {
 		super(proprietes);
+		registerDefaultState(stateDefinition.any().setValue(EAU, false));
+	}
+
+	@Override
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> constructeur) {
+		constructeur.add(EAU);
+	}
+
+	public static boolean contientEau(BlockState etat) {
+		return etat.getBlock() instanceof BlocGamelle && etat.getValue(EAU);
 	}
 
 	@Override
@@ -75,13 +91,48 @@ public final class BlocGamelle extends Block {
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack pile, BlockState etat, Level monde,
 			BlockPos position, Player joueur, InteractionHand main, BlockHitResult touche) {
+		if (pile.is(Items.WATER_BUCKET)) {
+			if (etat.getValue(EAU) || contenu(monde, position) != null) {
+				if (!monde.isClientSide()) {
+					joueur.displayClientMessage(Component.translatable("gamelle.compagnon.pleine"), true);
+				}
+				return ItemInteractionResult.FAIL;
+			}
+			if (!monde.isClientSide()) {
+				monde.setBlock(position, etat.setValue(EAU, true), Block.UPDATE_ALL);
+				GamellesEau.ajouter(monde, position);
+				monde.scheduleTick(position, this, 20 * 30);
+				if (!joueur.getAbilities().instabuild) {
+					joueur.setItemInHand(main, new ItemStack(Items.BUCKET));
+				}
+				joueur.displayClientMessage(Component.translatable("gamelle.compagnon.eau_verse"), true);
+			}
+			return ItemInteractionResult.SUCCESS;
+		}
+		if (pile.is(Items.BUCKET) && etat.getValue(EAU)) {
+			if (!monde.isClientSide()) {
+				monde.setBlock(position, etat.setValue(EAU, false), Block.UPDATE_ALL);
+				GamellesEau.retirer(monde, position);
+				if (!joueur.getAbilities().instabuild) {
+					pile.shrink(1);
+					ItemStack pleine = new ItemStack(Items.WATER_BUCKET);
+					if (pile.isEmpty()) {
+						joueur.setItemInHand(main, pleine);
+					} else if (!joueur.getInventory().add(pleine)) {
+						joueur.drop(pleine, false);
+					}
+				}
+				joueur.displayClientMessage(Component.translatable("gamelle.compagnon.eau_reprise"), true);
+			}
+			return ItemInteractionResult.SUCCESS;
+		}
 		if (!accepte(pile)) {
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 		if (monde.isClientSide()) {
 			return ItemInteractionResult.SUCCESS;
 		}
-		if (contenu(monde, position) != null) {
+		if (etat.getValue(EAU) || contenu(monde, position) != null) {
 			joueur.displayClientMessage(Component.translatable("gamelle.compagnon.pleine"), true);
 			return ItemInteractionResult.FAIL;
 		}
@@ -108,6 +159,10 @@ public final class BlocGamelle extends Block {
 		if (monde.isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
+		if (etat.getValue(EAU)) {
+			joueur.displayClientMessage(Component.translatable("gamelle.compagnon.eau_visible"), true);
+			return InteractionResult.SUCCESS;
+		}
 		ItemEntity pose = contenu(monde, position);
 		if (pose == null) {
 			joueur.displayClientMessage(Component.translatable("gamelle.compagnon.vide"), true);
@@ -128,6 +183,7 @@ public final class BlocGamelle extends Block {
 	protected void onRemove(BlockState ancien, Level monde, BlockPos position,
 			BlockState nouveau, boolean piston) {
 		if (!ancien.is(nouveau.getBlock()) && !monde.isClientSide()) {
+			GamellesEau.retirer(monde, position);
 			ItemEntity pose = contenu(monde, position);
 			if (pose != null) {
 				pose.setNoGravity(false);
@@ -136,5 +192,14 @@ public final class BlocGamelle extends Block {
 			}
 		}
 		super.onRemove(ancien, monde, position, nouveau, piston);
+	}
+
+	@Override
+	protected void tick(BlockState etat, ServerLevel monde, BlockPos position,
+			RandomSource aleatoire) {
+		if (etat.getValue(EAU)) {
+			GamellesEau.ajouter(monde, position);
+			monde.scheduleTick(position, this, 20 * 30);
+		}
 	}
 }
