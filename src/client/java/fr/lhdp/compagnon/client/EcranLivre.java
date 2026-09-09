@@ -45,6 +45,7 @@ public class EcranLivre extends EcranCompagnon {
 	private ResourceLocation CADRE_PORTRAIT;
 	private ResourceLocation SOULIGNEMENT;
 	private ResourceLocation SIGNETS_TEXTURE;
+	private ResourceLocation CARTES_RITUELS;
 	private ResourceLocation FLECHE_GAUCHE;
 	private ResourceLocation FLECHE_GAUCHE_SURVOL;
 	private ResourceLocation FLECHE_GAUCHE_PRESSEE;
@@ -142,6 +143,9 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int HAUTEUR_JAUGE = 8;
 	private static final int LIGNE = 11;
 	private static final int HAUTEUR_RITUEL = 30;
+	private static final int LARGEUR_RITUEL = 45;
+	private static final int RITUELS_SOURCE_L = 135;
+	private static final int RITUELS_SOURCE_H = 90;
 
 	/** Les signets de navigation, poses sur le bord droit du livre. */
 	private static final int SIGNET_LARGEUR = 24;
@@ -224,6 +228,7 @@ public class EcranLivre extends EcranCompagnon {
 		this.CADRE_PORTRAIT = nouveau.texture("portrait_frame");
 		this.SOULIGNEMENT = nouveau.texture("underline_astra");
 		this.SIGNETS_TEXTURE = nouveau.texture("bookmark_tabs");
+		this.CARTES_RITUELS = nouveau.texture("ritual_cards");
 		this.FLECHE_GAUCHE = nouveau.texture("page_turn_left_normal");
 		this.FLECHE_GAUCHE_SURVOL = nouveau.texture("page_turn_left_hover");
 		this.FLECHE_GAUCHE_PRESSEE = nouveau.texture("page_turn_left_pressed");
@@ -717,54 +722,41 @@ public class EcranLivre extends EcranCompagnon {
 	 */
 	private void rituelsDuJour(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
 		int ecart = 3;
-		int large = (PAGE_LARGEUR - ecart * 2) / 3;
-		carteRituel(g, x, y, large, SourceXp.SOINS, Icones.SOIN,
+		carteRituel(g, x, y, 0, SourceXp.SOINS,
 				"livre.compagnon.rituel.soins", sourisX, sourisY);
-		carteRituel(g, x + large + ecart, y, large, SourceXp.AFFECTION, Icones.COEUR,
+		carteRituel(g, x + LARGEUR_RITUEL + ecart, y, 1, SourceXp.AFFECTION,
 				"livre.compagnon.rituel.affection", sourisX, sourisY);
-		carteRituel(g, x + (large + ecart) * 2, y, large, SourceXp.BALADE, Icones.PLUME,
+		carteRituel(g, x + (LARGEUR_RITUEL + ecart) * 2, y, 2, SourceXp.BALADE,
 				"livre.compagnon.rituel.balade", sourisX, sourisY);
 	}
 
-	private void carteRituel(GuiGraphics g, int x, int y, int large, SourceXp source,
-			String icone, String cle, int sourisX, int sourisY) {
+	private void carteRituel(GuiGraphics g, int x, int y, int colonne, SourceXp source,
+			String cle, int sourisX, int sourisY) {
 		boolean fait = this.donnees.rituelAccompli(source);
-		int couleur = switch (source) {
-			case SOINS -> 0xFF9A6338;
-			case AFFECTION -> 0xFF9A4964;
-			case BALADE -> 0xFF4F7448;
-		};
-		int papier = (this.PAPIER & 0x00FFFFFF) | 0x20000000;
-		int fond = fait ? Peinture.melanger(papier, couleur, 0.32F) : 0x147A6A55;
-		boolean tous = this.donnees.rituelsAccomplis() == SourceXp.values().length;
-		float lueur = (float) (Math.sin(System.currentTimeMillis() / 420.0D) * 0.5D + 0.5D);
-		int bord = tous ? Peinture.melanger(couleur, 0xFFB17B28, lueur)
-				: fait ? couleur : 0x667A6A55;
-
-		// Un petit carton aux coins coupes, comme une etiquette collee dans le livre.
-		g.fill(x + 1, y, x + large - 1, y + HAUTEUR_RITUEL, fond);
-		g.fill(x, y + 1, x + large, y + HAUTEUR_RITUEL - 1, fond);
-		g.fill(x + 1, y, x + large - 1, y + 1, bord);
-		g.fill(x + 1, y + HAUTEUR_RITUEL - 1, x + large - 1, y + HAUTEUR_RITUEL, bord);
-		g.fill(x, y + 4, x + 1, y + HAUTEUR_RITUEL - 4, bord);
-		g.fill(x + large - 1, y + 4, x + large, y + HAUTEUR_RITUEL - 4, bord);
-
-		Component symbole = Icones.de(icone);
-		g.drawString(this.font, symbole, x + (large - this.font.width(symbole)) / 2, y + 4,
-				fait ? couleur : ENCRE_PALE, false);
-		if (fait) {
-			g.drawString(this.font, Component.literal("✓"), x + large - 10, y + 2,
-					couleur, false);
-		}
+		boolean survole = sourisX >= x && sourisX < x + LARGEUR_RITUEL
+				&& sourisY >= y && sourisY < y + HAUTEUR_RITUEL;
+		int ligne = fait ? 2 : survole ? 1 : 0;
+		g.blit(this.CARTES_RITUELS, x, y,
+				colonne * LARGEUR_RITUEL, ligne * HAUTEUR_RITUEL,
+				LARGEUR_RITUEL, HAUTEUR_RITUEL, RITUELS_SOURCE_L, RITUELS_SOURCE_H);
 		String nom = Component.translatable(cle).getString();
-		nom = this.font.plainSubstrByWidth(nom, large - 6);
-		g.drawString(this.font, nom, x + (large - this.font.width(nom)) / 2, y + 18,
-				fait ? couleur : ENCRE_PALE, false);
+		dessinerLibelleRituel(g, nom, x, y + 19, fait ? ENCRE_VERTE : ENCRE);
 
-		if (sourisX >= x && sourisX < x + large
-				&& sourisY >= y && sourisY < y + HAUTEUR_RITUEL) {
+		if (survole) {
 			this.rituelSurvole = source;
 		}
+	}
+
+	/** Garde le mot entier dans les 39 pixels de parchemin reserves par l'asset. */
+	private void dessinerLibelleRituel(GuiGraphics g, String texte, int x, int y,
+			int couleur) {
+		int largeur = this.font.width(texte);
+		float echelle = Math.min(1.0F, 39.0F / Math.max(1, largeur));
+		g.pose().pushPose();
+		g.pose().translate(x + LARGEUR_RITUEL / 2.0F, y, 0.0F);
+		g.pose().scale(echelle, echelle, 1.0F);
+		g.drawString(this.font, texte, -largeur / 2, 0, couleur, false);
+		g.pose().popPose();
 	}
 
 	/** Explique le geste du sceau sans charger la page de texte permanent. */
@@ -1602,8 +1594,8 @@ public class EcranLivre extends EcranCompagnon {
 				&& sourisY >= themeY() && sourisY < themeY() + THEME_TAILLE;
 	}
 
-	private void changerTheme() {
-		appliquerTheme(this.theme.suivant());
+	private void changerTheme(boolean precedent) {
+		appliquerTheme(precedent ? this.theme.precedent() : this.theme.suivant());
 		this.theme.sauvegarder();
 		Bruits.clic();
 	}
@@ -1615,8 +1607,9 @@ public class EcranLivre extends EcranCompagnon {
 			Bruits.clic();
 			return true;
 		}
-		if (bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT && themeSous(sourisX, sourisY)) {
-			changerTheme();
+		if ((bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT || bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT)
+				&& themeSous(sourisX, sourisY)) {
+			changerTheme(bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT);
 			return true;
 		}
 		if (clochetteCliquee(sourisX, sourisY, bouton)) {
@@ -1783,7 +1776,7 @@ public class EcranLivre extends EcranCompagnon {
 			return true;
 		}
 		if (touche == GLFW.GLFW_KEY_C) {
-			changerTheme();
+			changerTheme((modificateurs & GLFW.GLFW_MOD_SHIFT) != 0);
 			return true;
 		}
 		if (touche == GLFW.GLFW_KEY_LEFT && this.page > 0 && !pageEnMouvement()) {

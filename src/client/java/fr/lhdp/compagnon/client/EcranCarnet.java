@@ -485,8 +485,8 @@ public class EcranCarnet extends EcranCompagnon {
 				this.haut + 43, THEME_TAILLE, THEME_TAILLE);
 	}
 
-	private void changerTheme() {
-		appliquerTheme(this.theme.suivant());
+	private void changerTheme(boolean precedent) {
+		appliquerTheme(precedent ? this.theme.precedent() : this.theme.suivant());
 		this.theme.sauvegarder();
 		Bruits.clic();
 	}
@@ -495,8 +495,9 @@ public class EcranCarnet extends EcranCompagnon {
 
 	@Override
 	public boolean mouseClicked(double sourisX, double sourisY, int bouton) {
-		if (bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT && themeSous(sourisX, sourisY)) {
-			changerTheme();
+		if ((bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT || bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT)
+				&& themeSous(sourisX, sourisY)) {
+			changerTheme(bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT);
 			return true;
 		}
 		if (clochetteCliquee(sourisX, sourisY, bouton)) {
@@ -550,7 +551,7 @@ public class EcranCarnet extends EcranCompagnon {
 	@Override
 	public boolean keyPressed(int touche, int codeMateriel, int modificateurs) {
 		if (touche == GLFW.GLFW_KEY_C) {
-			changerTheme();
+			changerTheme((modificateurs & GLFW.GLFW_MOD_SHIFT) != 0);
 			return true;
 		}
 		if (this.entrees.isEmpty()) {

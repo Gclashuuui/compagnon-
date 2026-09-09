@@ -502,9 +502,21 @@
 	"perchoir.compagnon.selectionne": "Perchoir choisi — clique maintenant sur ton compagnon.",
 	"perchoir.compagnon.ordre": "%s va rejoindre le perchoir.",
 	"moment.compagnon.premier_perchoir": "Il a rejoint son perchoir pour la première fois.",
-	"livre.compagnon.theme": "Style du livre : %s · clique ou appuie sur C",
+	"livre.compagnon.theme": "Style : %s · gauche/C suivant · droite/Maj+C précédent",
 	"livre.compagnon.theme.classique": "Classique",
 	"livre.compagnon.theme.ocean": "Océan",
 	"livre.compagnon.theme.obsidienne": "Obsidienne",
-	"livre.compagnon.theme.aurore_boreale": "Aurore boréale"
+	"livre.compagnon.theme.aurore_boreale": "Aurore boréale",
+	"livre.compagnon.theme.ciel": "Ciel",
+	"livre.compagnon.theme.nuage": "Nuage",
+	"livre.compagnon.theme.princesse": "Princesse",
+	"livre.compagnon.theme.volcan": "Volcan",
+	"livre.compagnon.theme.arc_en_ciel": "Arc-en-ciel",
+	"livre.compagnon.theme.chat": "Chat blanc & noir",
+	"livre.compagnon.theme.galaxie": "Galaxie noire",
+	"livre.compagnon.theme.pomme": "Pomme",
+	"livre.compagnon.theme.rouge_noir": "Rouge & noir",
+	"livre.compagnon.theme.soleil": "Soleil clair",
+	"livre.compagnon.theme.cerisier_japon": "Cerisier du Japon",
+	"livre.compagnon.theme.halloween": "Halloween"
 }
