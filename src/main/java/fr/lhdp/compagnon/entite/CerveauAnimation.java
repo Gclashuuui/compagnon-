@@ -16,11 +16,6 @@ import java.util.function.Predicate;
  */
 public final class CerveauAnimation {
 
-	private static final float COURSE_ENTREE = 0.68F;
-	private static final float COURSE_SORTIE = 0.46F;
-	private static final double PLANE_ENTREE = -0.075D;
-	private static final double PLANE_SORTIE = -0.015D;
-
 	/** La branche qui a pris la décision, utile au diagnostic et à la future UI. */
 	public enum Noeud {
 		EAU,
@@ -49,6 +44,11 @@ public final class CerveauAnimation {
 	 * animation universelle lorsqu'une espèce n'a pas encore un rôle spécialisé.
 	 */
 	public Decision choisir(Observation vue, Predicate<String> connu) {
+		return choisir(vue, connu, ProfilCerveau.parDefaut(true));
+	}
+
+	/** Même arbre, avec les seuils du profil JSON de cette espèce. */
+	public Decision choisir(Observation vue, Predicate<String> connu, ProfilCerveau profil) {
 		if (vue.dansLEau()) {
 			reinitialiserSolEtAir();
 			String role = vue.avance() && connu.test(Espece.NAGE)
@@ -61,8 +61,8 @@ public final class CerveauAnimation {
 		if (vue.enVol()) {
 			this.course = false;
 			this.plane = this.plane
-					? vue.vitesseVerticale() < PLANE_SORTIE
-					: vue.vitesseVerticale() < PLANE_ENTREE;
+					? vue.vitesseVerticale() < profil.planeSortie()
+					: vue.vitesseVerticale() < profil.planeEntree();
 			String role = this.plane && connu.test(Espece.PLANE)
 					? Espece.PLANE : Espece.VOL;
 			return new Decision(Noeud.AIR, role);
@@ -84,8 +84,8 @@ public final class CerveauAnimation {
 
 		if (vue.avance()) {
 			this.course = this.course
-					? vue.allure() > COURSE_SORTIE
-					: vue.allure() > COURSE_ENTREE;
+					? vue.allure() > profil.courseSortie()
+					: vue.allure() > profil.courseEntree();
 			String role = this.course && connu.test(Espece.COURSE)
 					? Espece.COURSE : Espece.MARCHE;
 			return new Decision(Noeud.DEPLACEMENT, role);

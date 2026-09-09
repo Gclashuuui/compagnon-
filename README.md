@@ -15,6 +15,11 @@ Le compagnon possede notamment :
 - un cerveau commun visible par un petit bandeau discret, avec diagnostic F8
   pour relier intention, locomotion et animation pendant la creation d'une espece.
 
+Les profils de cerveau sont dans `data/compagnon/cerveaux/`. Une espèce utilise
+automatiquement `aerien` ou `terrestre`, ou choisit un autre profil avec la clé
+`"cerveau"`. La liste de production Blockbench est dans
+`ANIMATIONS_CERVEAU.md`.
+
 ## Prerequis
 
 - Java 21

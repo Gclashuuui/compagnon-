@@ -39,6 +39,7 @@ public record PaquetEspeces(List<Espece> especes) implements CustomPacketPayload
 			ecrireVariantes(tampon, espece.variantes());
 			tampon.writeMap(espece.locomotion(), FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeUtf);
 			tampon.writeMap(espece.reactions(), FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeUtf);
+			espece.cerveau().ecrire(tampon);
 			tampon.writeMap(espece.sons(), FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeUtf);
 			tampon.writeFloat(espece.largeur());
 			tampon.writeFloat(espece.hauteur());
@@ -86,6 +87,8 @@ public record PaquetEspeces(List<Espece> especes) implements CustomPacketPayload
 					tampon.readMap(FriendlyByteBuf::readUtf, FriendlyByteBuf::readUtf);
 			Map<String, String> reactions =
 					tampon.readMap(FriendlyByteBuf::readUtf, FriendlyByteBuf::readUtf);
+			fr.lhdp.compagnon.entite.ProfilCerveau cerveau =
+					fr.lhdp.compagnon.entite.ProfilCerveau.lire(tampon);
 			Map<String, String> sons =
 					tampon.readMap(FriendlyByteBuf::readUtf, FriendlyByteBuf::readUtf);
 
@@ -112,7 +115,7 @@ public record PaquetEspeces(List<Espece> especes) implements CustomPacketPayload
 
 			especes.add(new Espece(nom, titre, geometrie, animations, varianteParDefaut,
 					java.util.Collections.unmodifiableMap(variantes),
-					Map.copyOf(locomotion), Map.copyOf(reactions), Map.copyOf(sons), largeur, hauteur,
+					Map.copyOf(locomotion), Map.copyOf(reactions), cerveau, Map.copyOf(sons), largeur, hauteur,
 					List.copyOf(parties), vole, nomVocal, selle, monterAuNiveau,
 				devient, devientAuNiveau));
 		}

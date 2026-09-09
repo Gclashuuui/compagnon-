@@ -41,7 +41,8 @@ public class AbriGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		if (!this.compagnon.estLibre() || !ilPleutSurLui()) {
+		if (!this.compagnon.profilCerveau().reagitPluie()
+				|| !this.compagnon.estLibre() || !ilPleutSurLui()) {
 			return false;
 		}
 		if (this.compagnon.getRandom().nextInt(RARETE) != 0) {

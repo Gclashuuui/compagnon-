@@ -68,8 +68,6 @@ public final class Presence {
 	private static final int AVANT_DE_REFAIRE_UNE_MANIE = 20 * 90;
 
 	/** En moyenne une proposition par minute, examinee deux fois par seconde. */
-	private static final int CHANCE_D_UN_GESTE_NATUREL = 120;
-
 	/** Les roles disponibles, dont chaque espece peut remplir tout ou partie. */
 	private static final List<String> GESTES_NATURELS =
 			List.of("ambiance", "ambiance_2", "ambiance_3", "ambiance_4");
@@ -162,7 +160,8 @@ public final class Presence {
 	 * aucune recherche dans le monde.
 	 */
 	private static boolean unGesteNaturel(CompagnonEntity compagnon, Attention attention) {
-		if (compagnon.getRandom().nextInt(CHANCE_D_UN_GESTE_NATUREL) != 0) {
+		if (compagnon.getRandom().nextInt(
+				compagnon.profilCerveau().chanceGesteNaturel()) != 0) {
 			return false;
 		}
 		Espece espece = Especes.get(compagnon.espece());
@@ -453,7 +452,8 @@ public final class Presence {
 		Biome biome = niveau.getBiome(ou).value();
 		// UN CASSE-COU NE FRISSONNE PAS. Il a froid comme les autres, il ne le
 		// montre simplement pas.
-		if (biome.coldEnoughToSnow(ou) && !Manies.CASSE_COU.equals(compagnon.defaut())
+		if (compagnon.profilCerveau().reagitFroid()
+				&& biome.coldEnoughToSnow(ou) && !Manies.CASSE_COU.equals(compagnon.defaut())
 				&& attention.permet("froid", AVANT_DE_REFRISSONNER)) {
 			compagnon.jouerActionPendant("@triste", 20);
 			compagnon.serrerLeMaitre();
@@ -469,7 +469,9 @@ public final class Presence {
 			return;
 		}
 
-		if (niveau.isRainingAt(ou.above()) && attention.permet("pluie", AVANT_DE_SE_REBROUER)) {
+		if (compagnon.profilCerveau().reagitPluie()
+				&& niveau.isRainingAt(ou.above())
+				&& attention.permet("pluie", AVANT_DE_SE_REBROUER)) {
 			compagnon.jouerActionPendant("@tourne", 18);
 		}
 	}

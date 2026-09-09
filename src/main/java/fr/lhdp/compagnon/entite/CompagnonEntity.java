@@ -351,7 +351,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		setPathfindingMalus(PathType.WATER, COUT_DE_L_EAU);
 		setPathfindingMalus(PathType.WATER_BORDER, COUT_DE_L_EAU / 2.0F);
 
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.SURVIE, new FloatGoal(this));
 		// Le suivi passe avant la promenade : quand on lui a dit de suivre, il suit.
 		// Un ordre passe avant tout le reste, meme avant suivre son maitre : on
@@ -360,71 +360,77 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// egales : deux buts de meme rang ne se remplacent jamais l'un l'autre, et
 		// « viens » restait donc sans effet tant qu'il etait parti chercher un
 		// objet. Un ordre de rappel doit toujours pouvoir interrompre le reste.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.RAPPEL, new VenirIciGoal(this));
 		// Un meuble que le joueur vient de montrer est un ordre précis, au même
 		// niveau que le rappel : la vie ambiante ne doit pas pouvoir le détourner.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.DESTINATION_DEMANDEE,
 				new AllerAuPerchoirGoal(this));
 
 		// « Monte. » Un ordre, donc au-dessus du suivi et de la flanerie — mais
 		// sous « viens » : si on le rappelle, il redescend.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.VOL_DEMANDE, new PlanerGoal(this));
 
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.OBJET_DEMANDE, new ChoperGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.SUIVRE, new SuivreProprietaireGoal(this));
 		// Avant les gens et les amis : quand il a un objet dans la gueule, il va
 		// jusqu'au bout. Un compagnon qui abandonne un cadeau en chemin est triste.
 		// AVANT le glanage : une balle qu'on vient de lui lancer n'est pas un
 		// objet qui traine, et il ne doit pas hesiter entre les deux.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.JEU_DEMANDE, new JouerGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.ABRI, new AbriGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.REPAS, new MangerDansGamelleGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.SOMMEIL, new SiesteGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.HABITUDE, new AttendreLHeureGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.CURIOSITE, new AllerVoirGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.CADEAU_SPONTANE, new RapporterGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.JOUEUR, new AllerVersLesGensGoal(this));
 		// Il va voir les compagnons qu'il connait. Apres les gens : un ami de
 		// passage ne doit pas lui faire ignorer un joueur qui vient le caresser.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.AMI, new RetrouverGoal(this));
 
 		// « Il se souvient d'ici. » Juste avant la promenade : c'est un moment de
 		// flanerie, pas un ordre. Il ne doit jamais interrompre quoi que ce soit,
 		// et il ne coute rien tant qu'il fait autre chose.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.SOUVENIR, new SouvenirDuLieuGoal(this));
 
 		// Deux betes qui se connaissent s'arretent une seconde en se croisant.
 		// Tout en bas : ca ne coupe jamais un ordre, une course, ni un repas.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.SALUT, new SeSaluerGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.FLANERIE, promenade());
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.REGARD_JOUEUR,
 				new LookAtPlayerGoal(this, Player.class, DISTANCE_REGARD, PROBABILITE_REGARD));
 		// Il regarde ce que tu tiens. Sur la couche du REGARD seulement : il ne
 		// quitte pas sa place, donc il peut cohabiter avec a peu pres tout.
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.REGARD_OBJET,
 				new RegarderCeQueTuTiensGoal(this));
-		CerveauComportement.ajouter(this.goalSelector,
+		ajouterBut(
 				CerveauComportement.Noeud.REGARD_LIBRE,
 				new RandomLookAroundGoal(this));
+	}
+
+	/** Raccord court : chaque but passe par le profil JSON courant. */
+	private void ajouterBut(CerveauComportement.Noeud noeud,
+			net.minecraft.world.entity.ai.goal.Goal but) {
+		CerveauComportement.ajouter(this.goalSelector, noeud, this, but);
 	}
 
 	// --- Le caractere ------------------------------------------------------------
@@ -1405,6 +1411,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		tenirLeVol();
 
 		super.tick();
+		actualiserEtatVolVisuel();
 
 		// Le serveur expose la branche qui a gagne. Elle ne change presque jamais,
 		// SynchedEntityData n'enverra donc un paquet que lors d'une vraie transition.
@@ -1717,8 +1724,18 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		return espece != null && espece.vole();
 	}
 
+	/** Le cerveau de l'espèce actuelle, avec un repli toujours valide. */
+	public ProfilCerveau profilCerveau() {
+		Espece trouvee = Especes.get(espece());
+		return trouvee == null ? ProfilCerveau.parDefaut(false) : trouvee.cerveau();
+	}
+
 	/** Vrai depuis qu'il a decolle, jusqu'a ce qu'il retouche le sol. */
 	private boolean aVole;
+
+	/** État visuel amorti : un bord de bloc ne replie plus les ailes une image. */
+	private boolean enVolVisuel;
+	private int ticksVersAutreEtatDeVol;
 
 	/** Vrai si un but lui demande de battre des ailes en ce moment. */
 	public boolean volDemande() {
@@ -1959,7 +1976,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 				new CerveauAnimation.Observation(isInWater(), enVol(), dort(), mode(),
 						etat.isMoving(), etat.getLimbSwingAmount(), getDeltaMovement().y,
 						humeur()),
-				roleTeste -> espece.animation(roleTeste) != null);
+				roleTeste -> espece.animation(roleTeste) != null, espece.cerveau());
 		String role = decision.role();
 		this.noeudAnimationJoue = decision.noeud();
 
@@ -2052,6 +2069,31 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * decoller.
 	 */
 	private boolean enVol() {
+		return this.enVolVisuel;
+	}
+
+	/** Met à jour le vol une seule fois par tick, jamais une fois par contrôleur. */
+	private void actualiserEtatVolVisuel() {
+		boolean brut = etatVolBrut();
+		if (brut == this.enVolVisuel) {
+			this.ticksVersAutreEtatDeVol = 0;
+			return;
+		}
+		// Un vrai ordre de décollage se voit immédiatement. Les détections dues au
+		// terrain, elles, doivent rester stables quelques ticks avant de gagner.
+		if (brut && (volDemande() || isNoGravity())) {
+			this.enVolVisuel = true;
+			this.ticksVersAutreEtatDeVol = 0;
+			return;
+		}
+		if (++this.ticksVersAutreEtatDeVol >= profilCerveau().stabiliteVolTicks()) {
+			this.enVolVisuel = brut;
+			this.ticksVersAutreEtatDeVol = 0;
+		}
+	}
+
+	/** Observation brute du terrain, avant l'hystérésis du cerveau. */
+	private boolean etatVolBrut() {
 		if (!saitVoler()) {
 			return false;
 		}

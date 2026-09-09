@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fr.lhdp.compagnon.Compagnon;
 import fr.lhdp.compagnon.DossierDuServeur;
+import fr.lhdp.compagnon.entite.Cerveaux;
+import fr.lhdp.compagnon.entite.ProfilCerveau;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -100,6 +102,9 @@ public final class Especes {
 	}
 
 	public static void charger(ResourceManager gestionnaire) {
+		// Les espèces ne portent que le nom du cerveau qu'elles choisissent. Les
+		// profils doivent donc être prêts avant leur lecture.
+		Cerveaux.charger(gestionnaire);
 		Map<String, Espece> lues = new LinkedHashMap<>();
 
 		Map<ResourceLocation, Resource> fichiers =
@@ -191,6 +196,10 @@ public final class Especes {
 					"la variante par defaut \"" + varianteParDefaut + "\" n'est pas dans la liste des variantes");
 		}
 
+		// La capacité vient de l'espèce, jamais de la présence accidentelle d'une
+		// animation. Une créature terrestre n'a donc plus à fournir un faux vol.
+		boolean vole = objet.has("vole") && objet.get("vole").getAsBoolean();
+
 		JsonObject locomotionJson = objet.getAsJsonObject("locomotion");
 		Map<String, String> locomotion = new LinkedHashMap<>();
 		for (String role : Espece.ROLES) {
@@ -198,6 +207,16 @@ public final class Especes {
 				throw new IllegalArgumentException("il manque le role de locomotion \"" + role + "\"");
 			}
 			locomotion.put(role, locomotionJson.get(role).getAsString());
+		}
+		if (vole) {
+			for (String role : Espece.ROLES_AERIENS_OBLIGATOIRES) {
+				if (locomotionJson == null || !locomotionJson.has(role)
+						|| texteOuNull(locomotionJson, role) == null) {
+					throw new IllegalArgumentException(
+							"l'espèce vole mais il manque le rôle \"" + role + "\"");
+				}
+				locomotion.put(role, locomotionJson.get(role).getAsString());
+			}
 		}
 		// Les poses et les allures plus fines sont facultatives. L'entite choisit
 		// un repli qui a du sens quand une espece ne sait ni nager ni planer.
@@ -269,7 +288,13 @@ public final class Especes {
 		//
 		// Absent = elle ne vole pas. C'est le bon defaut : une espece ecrite
 		// avant que ce champ existe ne doit pas se mettre a decoller.
-		boolean vole = objet.has("vole") && objet.get("vole").getAsBoolean();
+		String idCerveau = objet.has("cerveau")
+				? objet.get("cerveau").getAsString().trim()
+				: (vole ? "aerien" : "terrestre");
+		if (objet.has("cerveau") && !Cerveaux.existe(idCerveau)) {
+			throw new IllegalArgumentException("le cerveau \"" + idCerveau + "\" n'existe pas");
+		}
+		ProfilCerveau cerveau = Cerveaux.get(idCerveau, vole);
 
 		// COMMENT ON L'APPELLE A VOIX HAUTE.
 		//
@@ -307,7 +332,7 @@ public final class Especes {
 
 		return new Espece(nom, titre, geometrie, animations, varianteParDefaut,
 				Collections.unmodifiableMap(variantes),
-				Map.copyOf(locomotion), Map.copyOf(reactions), Map.copyOf(sons),
+				Map.copyOf(locomotion), Map.copyOf(reactions), cerveau, Map.copyOf(sons),
 		largeur, hauteur,
 				List.copyOf(parties), vole, nomVocal, selle, monterAuNiveau,
 			devient, devientAuNiveau);

@@ -60,7 +60,8 @@ public class AllerVoirGoal extends Goal {
 
 		// Curieux et en forme : il y va. Sinon il laisse passer, et le point est
 		// oublie pour qu'il ne se demande pas cent fois la meme chose.
-		float envie = this.compagnon.caractere().curiosite() * this.compagnon.entrain();
+		float envie = Math.min(1.0F, this.compagnon.caractere().curiosite()
+				* this.compagnon.entrain() * this.compagnon.profilCerveau().curiosite());
 		if (this.compagnon.getRandom().nextFloat() > envie) {
 			this.compagnon.oublierLePoint();
 			return false;

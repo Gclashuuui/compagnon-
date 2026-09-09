@@ -1,5 +1,6 @@
 package fr.lhdp.compagnon.espece;
 
+import fr.lhdp.compagnon.entite.ProfilCerveau;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -51,6 +52,7 @@ public record Espece(
 		Map<String, ResourceLocation> variantes,
 		Map<String, String> locomotion,
 		Map<String, String> reactions,
+		ProfilCerveau cerveau,
 
 		/**
 		 * Sa voix : un son du jeu par role.
@@ -149,8 +151,11 @@ public record Espece(
 	public static final String JOYEUX = "joyeux";
 	public static final String TRISTE = "triste";
 
-	/** Les roles que le fichier doit obligatoirement donner. */
-	public static final List<String> ROLES = List.of(IMMOBILE, MARCHE, COURSE, VOL);
+	/** Les rôles réellement communs, y compris aux créatures sans ailes. */
+	public static final List<String> ROLES = List.of(IMMOBILE, MARCHE, COURSE);
+
+	/** Une espèce déclarée volante doit posséder celui-ci. */
+	public static final List<String> ROLES_AERIENS_OBLIGATOIRES = List.of(VOL);
 
 	/**
 	 * Les roles de locomotion facultatifs. Les poses retombent sur immobile ;

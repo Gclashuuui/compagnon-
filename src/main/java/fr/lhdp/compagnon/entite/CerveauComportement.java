@@ -66,6 +66,39 @@ public final class CerveauComportement {
 		selecteur.addGoal(noeud.priorite(), comportement);
 	}
 
+	/** Ajoute un but derrière le filtre dynamique du profil de l'espèce. */
+	public static void ajouter(GoalSelector selecteur, Noeud noeud,
+			CompagnonEntity compagnon, Goal comportement) {
+		Goal filtre = new Goal() {
+			{
+				setFlags(comportement.getFlags());
+			}
+
+			private boolean autorise() {
+				return compagnon.profilCerveau().autorise(noeud);
+			}
+
+			@Override public boolean canUse() {
+				return autorise() && comportement.canUse();
+			}
+
+			@Override public boolean canContinueToUse() {
+				return autorise() && comportement.canContinueToUse();
+			}
+
+			@Override public void start() { comportement.start(); }
+			@Override public void stop() { comportement.stop(); }
+			@Override public void tick() { comportement.tick(); }
+			@Override public boolean requiresUpdateEveryTick() {
+				return comportement.requiresUpdateEveryTick();
+			}
+			@Override public boolean isInterruptable() {
+				return comportement.isInterruptable();
+			}
+		};
+		ajouter(selecteur, noeud, filtre);
+	}
+
 	/**
 	 * Le nœud qui conduit réellement la bete à cet instant.
 	 *

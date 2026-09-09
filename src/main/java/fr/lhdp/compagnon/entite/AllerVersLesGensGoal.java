@@ -138,7 +138,7 @@ public class AllerVersLesGensGoal extends Goal {
 	 */
 	private float envie() {
 		return ENVIE * this.compagnon.caractere().sociabilite() * 2.0F
-				* this.compagnon.entrain();
+				* this.compagnon.entrain() * this.compagnon.profilCerveau().sociabilite();
 	}
 
 	/**

@@ -128,7 +128,8 @@ public final class BandeauIntention {
 				teinter(ENCRE, alpha), false);
 
 		if (diagnostic) {
-			String comportement = "IA  " + brute.name().toLowerCase(java.util.Locale.ROOT);
+			String comportement = "IA  " + compagnon.profilCerveau().id() + " / "
+					+ brute.name().toLowerCase(java.util.Locale.ROOT);
 			String animation = "VISUEL  " + compagnon.noeudAnimationJoue().name().toLowerCase(
 					java.util.Locale.ROOT) + " / " + compagnon.roleLocomotionJoue();
 			g.drawString(client.font, client.font.plainSubstrByWidth(comportement, largeur - 14),

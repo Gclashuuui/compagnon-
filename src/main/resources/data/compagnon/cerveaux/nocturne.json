@@ -1,0 +1,20 @@
+{
+	"noeuds_desactives": [],
+	"locomotion": {
+		"course_entree": 0.70,
+		"course_sortie": 0.45,
+		"plane_entree": -0.055,
+		"plane_sortie": -0.008,
+		"stabilite_vol_ticks": 5
+	},
+	"perception": {
+		"curiosite": 1.25,
+		"sociabilite": 0.8
+	},
+	"rythme": {
+		"geste_naturel_une_chance_sur": 95,
+		"reagit_pluie": false,
+		"reagit_froid": true,
+		"nocturne": true
+	}
+}

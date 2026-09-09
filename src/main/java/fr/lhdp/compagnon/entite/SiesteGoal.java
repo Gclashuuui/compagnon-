@@ -142,7 +142,10 @@ public class SiesteGoal extends Goal {
 		// La nuit, meme en forme, il pique du nez. Une bete nocturne, elle, non :
 		// son espece dira un jour laquelle, en attendant c'est la nuit pour tout
 		// le monde.
-		return this.compagnon.level().isNight() && this.compagnon.getRandom().nextInt(4) == 0;
+		boolean heureCreuse = this.compagnon.profilCerveau().nocturne()
+				? this.compagnon.level().isDay()
+				: this.compagnon.level().isNight();
+		return heureCreuse && this.compagnon.getRandom().nextInt(4) == 0;
 	}
 
 	/**
