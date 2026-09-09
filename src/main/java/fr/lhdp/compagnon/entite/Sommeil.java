@@ -127,7 +127,8 @@ public final class Sommeil {
 		fiche.setMode(avant);
 		compagnon.appliquerMode(avant);
 		// Il s'etire avant de se relever, si son espece sait le faire.
-		compagnon.jouerActionPendant(ROLE_REVEIL, DUREE_DU_REVEIL);
+		compagnon.jouerActionPendant(ROLE_REVEIL, DUREE_DU_REVEIL,
+				PrioriteAction.BESOIN);
 		return true;
 	}
 }

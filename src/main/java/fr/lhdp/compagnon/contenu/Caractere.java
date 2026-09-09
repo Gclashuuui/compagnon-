@@ -45,4 +45,19 @@ public record Caractere(
 	public static float peser(float base, float trait) {
 		return base * (0.5F + trait);
 	}
+
+	/**
+	 * Courage dérivé des mêmes cinq traits : aucune personnalité sauvegardée ne
+	 * change de format. Une bête vive et sociable affronte plus facilement ce
+	 * qu'elle ne connaît pas ; une bête calme ou timide cherche son maître.
+	 */
+	public float courage() {
+		return Math.max(0.0F,
+				Math.min(1.0F, this.vivacite * 0.65F + this.sociabilite * 0.35F));
+	}
+
+	/** La patience est l'autre lecture de la vivacité existante. */
+	public float patience() {
+		return 1.0F - this.vivacite;
+	}
 }

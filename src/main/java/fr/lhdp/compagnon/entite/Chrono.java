@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * <h2>Un poste par question</h2>
  *
- * <p>Trois compteurs separes, et ce n'est pas un detail : additionner deux
+	 * <p>Quatre compteurs separes, et ce n'est pas un detail : additionner deux
  * choses differentes dans le meme total donne un chiffre qui ne repond a aucune
  * question. Quand on cherche ou passe le temps, on veut savoir <b>lequel</b>
  * coute.
@@ -28,11 +28,13 @@ import java.util.concurrent.atomic.AtomicLong;
  *       Tourne a chaque tick, des deux cotes, pour chaque compagnon charge.</li>
  *   <li>{@link #PRESENCE} — les petits gestes : il te regarde, il te previent,
  *       il reclame. Toutes les dix ticks, et seulement cote serveur.</li>
- *   <li>{@link #CURIOSITE} — <b>le chemin le plus frequent du mod</b>, et le
+	 *   <li>{@link #CURIOSITE} — <b>le chemin le plus frequent du mod</b>, et le
  *       seul qui ne depende pas du nombre de compagnons mais du nombre de
  *       <b>joueurs</b> : une recherche d'entites a chaque bloc casse et a chaque
  *       clic droit sur un bloc. Un joueur qui creuse vite en declenche cinq par
- *       seconde ; mille joueurs qui creusent, cinq mille.</li>
+	 *       seconde ; mille joueurs qui creusent, cinq mille.</li>
+	 *   <li>{@link #CERVEAU} — capteurs espacés, mémoire courte et recherches
+	 *       mutualisées de menaces et d'amis.</li>
  * </ul>
  *
  * <p><b>Eteint, tout ca coute la lecture d'un booleen.</b> C'est pour ca que le
@@ -49,7 +51,10 @@ public final class Chrono {
 	/** Un bloc casse ou pose : qui l'a vu ? */
 	public static final Poste CURIOSITE = new Poste("Curiosite (un bloc casse ou pose)");
 
-	private static final List<Poste> POSTES = List.of(COLLISION, PRESENCE, CURIOSITE);
+	/** Capteurs espacés du cerveau : environnement, menaces et compagnons. */
+	public static final Poste CERVEAU = new Poste("Cerveau (perception et memoire)");
+
+	private static final List<Poste> POSTES = List.of(COLLISION, PRESENCE, CURIOSITE, CERVEAU);
 
 	private static volatile boolean enMarche;
 

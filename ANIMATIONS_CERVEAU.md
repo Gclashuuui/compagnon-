@@ -63,6 +63,15 @@ de croire un changement de terrain, mais un vrai décollage reste immédiat.
 | `triste` | boucle calme | humeur basse, froid ou pluie |
 | `tourne` | unique | s'ébroue ou manie simple |
 | `niveau` | unique | montée de niveau |
+| `affection` | unique | vient chercher un moment avec son maître |
+| `scene_ami` | unique | échange spontané entre deux compagnons |
+| `surpris` | unique court | neige, orage ou événement inattendu |
+| `peur` | unique ou boucle courte | menace ou orage chez une personnalité craintive |
+
+Les quatre derniers rôles sont facultatifs mais déjà compris par le cerveau.
+S'ils sont absents, il réutilise `joie`, `joyeux`, `salut`, `écoute` ou `triste`.
+Le rêve visible ne demande aucune animation : une particule Minecraft légère
+apparaît toutes les trois secondes pendant le sommeil.
 
 ## Priorité 4 — prochaine couche du cerveau
 
@@ -71,8 +80,6 @@ ajoutés à la roue : ils seront choisis automatiquement par un futur nœud.
 
 | Rôle proposé | Déclencheur futur |
 |---|---|
-| `surpris` | bruit ou apparition soudaine proche |
-| `peur` | menace vue, selon courage/personnalité |
 | `cherche` | objet ou maître perdu de vue |
 | `renifle` | nourriture ou nouvel objet proche |
 | `invite_jeu` | complicité haute et joueur immobile |

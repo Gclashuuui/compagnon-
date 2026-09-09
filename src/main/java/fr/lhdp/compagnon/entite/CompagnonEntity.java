@@ -236,6 +236,12 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 */
 	private final Attention attention = new Attention();
 
+	/** Mémoire de travail fixe ; la mémoire durable reste dans la fiche. */
+	private final MemoireCourte memoireCourte = new MemoireCourte();
+
+	/** Un geste commencé ne cède qu'à une raison plus importante. */
+	private PrioriteAction prioriteAction = PrioriteAction.AMBIANCE;
+
 	/** L'arbre visuel universel qui arbitre locomotion, poses et environnement. */
 	private final CerveauAnimation cerveauAnimation = new CerveauAnimation();
 
@@ -284,9 +290,6 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * chercher la fiche a chaque fois serait du gaspillage.
 	 */
 	private final java.util.Set<UUID> familiers = new java.util.HashSet<>();
-
-	/** Ce qui vient d'attirer son attention, ou {@code null}. */
-	private Vec3 pointDInteret;
 
 	/**
 	 * Vrai s'il vient de bouder un ordre.
@@ -391,6 +394,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 				CerveauComportement.Noeud.SOMMEIL, new SiesteGoal(this));
 		ajouterBut(
 				CerveauComportement.Noeud.HABITUDE, new AttendreLHeureGoal(this));
+		ajouterBut(
+				CerveauComportement.Noeud.AFFECTION, new SceneAffectiveGoal(this));
 		ajouterBut(
 				CerveauComportement.Noeud.CURIOSITE, new AllerVoirGoal(this));
 		ajouterBut(
@@ -544,6 +549,22 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		return this.attention;
 	}
 
+	public MemoireCourte memoireCourte() {
+		return this.memoireCourte;
+	}
+
+	/** Retrouve une entité sans la garder en référence dans la mémoire. */
+	public Entity entiteMemorisee(MemoireCourte.Signal signal) {
+		UUID id = this.memoireCourte.sourceDe(signal);
+		return id != null && this.level() instanceof ServerLevel niveau
+				? niveau.getEntity(id) : null;
+	}
+
+	public CompagnonEntity amiMemorise() {
+		return entiteMemorisee(MemoireCourte.Signal.AMI_PROCHE)
+				instanceof CompagnonEntity ami && ami.isAlive() ? ami : null;
+	}
+
 	/** Compte un pas de plus de regard, et rend le total en ticks. */
 	public int compterLeRegard(int pas) {
 		this.ticksDeRegard += pas;
@@ -604,15 +625,18 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	/** Quelque chose vient de se passer la. */
 	public void remarquer(Vec3 endroit) {
-		this.pointDInteret = endroit;
+		this.memoireCourte.retenir(MemoireCourte.Signal.EVENEMENT_DU_MONDE,
+				BlockPos.containing(endroit), 20 * 8);
 	}
 
 	public Vec3 pointDInteret() {
-		return this.pointDInteret;
+		BlockPos retenu = this.memoireCourte.positionDe(
+				MemoireCourte.Signal.EVENEMENT_DU_MONDE);
+		return retenu == null ? null : Vec3.atCenterOf(retenu);
 	}
 
 	public void oublierLePoint() {
-		this.pointDInteret = null;
+		this.memoireCourte.oublier(MemoireCourte.Signal.EVENEMENT_DU_MONDE);
 	}
 
 	/** Vrai si cette personne n'est plus une inconnue pour lui. */
@@ -912,7 +936,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			return;
 		}
 
-		jouerActionPendant("@joie", DUREE_REACTION);
+		jouerActionPendant("@joie", DUREE_REACTION, PrioriteAction.EVENEMENT);
 		Etincelles.progres(this, 10);
 		Sons.jouer(this, Sons.CONTENT, 0.9F);
 		if (getOwner() instanceof ServerPlayer joueur) {
@@ -1031,10 +1055,23 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		this.entityData.set(ACTION, nomAnimation);
 		this.entityData.set(ACTION_JETON, this.entityData.get(ACTION_JETON) + 1);
 		this.ticksAction = 0;
+		this.prioriteAction = PrioriteAction.AMBIANCE;
 	}
 
 	/** Joue une animation puis revient tout seul a la vie ordinaire. */
-	public void jouerActionPendant(String nomAnimation, int ticks) {
+	public boolean jouerActionPendant(String nomAnimation, int ticks) {
+		return jouerActionPendant(nomAnimation, ticks, PrioriteAction.AMBIANCE);
+	}
+
+	/**
+	 * Engage une animation. À priorité égale elle ne remplace jamais celle qui
+	 * joue déjà : les gestes vont enfin jusqu'à leur dernière image.
+	 */
+	public boolean jouerActionPendant(String nomAnimation, int ticks,
+			PrioriteAction priorite) {
+		if (occupe() && !priorite.interrompt(this.prioriteAction)) {
+			return false;
+		}
 		// UN ROLE DURE LE TEMPS DE SA VRAIE ANIMATION.
 		//
 		// Les anciens gestes faisaient deux secondes environ. Le nouveau dragon
@@ -1048,13 +1085,15 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			String animation = espece == null
 					? null : espece.reaction(nomAnimation.substring(PREFIXE_ROLE.length()));
 			if (animation == null || animation.isEmpty()) {
-				return;
+				return false;
 			}
 			ticks = Longueurs.de(animation);
 		}
 		this.entityData.set(ACTION, nomAnimation);
 		this.entityData.set(ACTION_JETON, this.entityData.get(ACTION_JETON) + 1);
 		this.ticksAction = Math.max(1, ticks);
+		this.prioriteAction = priorite;
+		return true;
 	}
 
 	/**
@@ -1318,7 +1357,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * monte quand meme.
 	 */
 	public void reagirCaresse() {
-		jouerActionPendant(PREFIXE_ROLE + Espece.CARESSE, DUREE_REACTION);
+		jouerActionPendant(PREFIXE_ROLE + Espece.CARESSE, DUREE_REACTION,
+				PrioriteAction.AFFECTIF);
 	}
 
 	/**
@@ -1343,7 +1383,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		if (animation == null || animation.isEmpty()) {
 			return;
 		}
-		jouerActionPendant(PREFIXE_ROLE + role, Longueurs.de(animation));
+		jouerActionPendant(PREFIXE_ROLE + role, Longueurs.de(animation),
+				PrioriteAction.EVENEMENT);
 	}
 
 	public UUID ficheId() {
@@ -1432,6 +1473,19 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 		if (this.level().isClientSide()) {
 			return;
+		}
+
+		// Les capteurs sont cadencés et décalés entre entités. Le chronomètre est
+		// entièrement inerte tant que /compagnon perf n'est pas lancé.
+		if (Chrono.enMarche()) {
+			long avant = System.nanoTime();
+			PerceptionCerveau.actualiser(this);
+			Chrono.CERVEAU.ajouter(System.nanoTime() - avant);
+		} else {
+			PerceptionCerveau.actualiser(this);
+		}
+		if (dort() && PerceptionCerveau.leTourDe(this, 20 * 3, 71)) {
+			Etincelles.reve(this);
 		}
 
 		if (this.tickCount % TICKS_ENTRAIN == 0) {
@@ -1652,6 +1706,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	private String roleLocomotionJoue = "";
 	private CerveauAnimation.Noeud noeudAnimationJoue = CerveauAnimation.Noeud.HUMEUR;
 	private RawAnimation sequenceLocomotion;
+	/** Jusqu'à la fin de la transition engagée, une hésitation ne la relance pas. */
+	private long locomotionVerrouilleeJusquaTick;
 
 	/**
 	 * Combien de ticks il lui reste a planer parce qu'on le lui a demande.
@@ -1979,6 +2035,14 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 				roleTeste -> espece.animation(roleTeste) != null, espece.cerveau());
 		String role = decision.role();
 		this.noeudAnimationJoue = decision.noeud();
+		if (!this.roleLocomotionJoue.isEmpty()
+				&& !this.roleLocomotionJoue.equals(role)
+				&& this.level().getGameTime() < this.locomotionVerrouilleeJusquaTick
+				&& memeFamilleVerrouillable(this.roleLocomotionJoue, role)) {
+			// Il a commencé à partir, accélérer ou planer : il finit d'abord ce
+			// passage au lieu de reconstruire sa séquence à chaque hésitation.
+			role = this.roleLocomotionJoue;
+		}
 
 		// Un role de pose que la fiche d'espece ne decrit pas retombe sur immobile,
 		// jamais sur rien : sans animation, les ailes se deploieraient.
@@ -1988,7 +2052,11 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			String avant = this.roleLocomotionJoue;
 			this.especeLocomotionJouee = espece.nom();
 			this.roleLocomotionJoue = role;
-			this.sequenceLocomotion = sequenceLocomotion(espece, avant, role);
+			String transition = transitionLocomotion(espece, avant, role);
+			this.sequenceLocomotion = sequenceLocomotion(espece, transition, role);
+			long maintenant = this.level().getGameTime();
+			this.locomotionVerrouilleeJusquaTick = transition == null ? maintenant
+					: maintenant + Math.min(20 * 3, Math.max(2, Longueurs.de(transition)));
 			etat.resetCurrentAnimation();
 		}
 		return etat.setAndContinue(this.sequenceLocomotion);
@@ -2001,9 +2069,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * ne les possede pas passe directement a sa boucle, sans nom d'animation
 	 * dragonnet ecrit dans le code.
 	 */
-	private static RawAnimation sequenceLocomotion(Espece espece, String avant, String apres) {
+	private static RawAnimation sequenceLocomotion(Espece espece, String transition,
+			String apres) {
 		RawAnimation sequence = RawAnimation.begin();
-		String transition = transitionLocomotion(espece, avant, apres);
 		if (transition != null) {
 			sequence = sequence.thenPlay(transition);
 		}
@@ -2055,6 +2123,13 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	private static boolean roleDeplacementAuSol(String role) {
 		return Espece.MARCHE.equals(role) || Espece.COURSE.equals(role);
+	}
+
+	/** Seules les hésitations d'une même famille attendent la fin du passage. */
+	private static boolean memeFamilleVerrouillable(String avant, String apres) {
+		boolean solAvant = Espece.IMMOBILE.equals(avant) || roleDeplacementAuSol(avant);
+		boolean solApres = Espece.IMMOBILE.equals(apres) || roleDeplacementAuSol(apres);
+		return solAvant && solApres || roleAerien(avant) && roleAerien(apres);
 	}
 
 	/**

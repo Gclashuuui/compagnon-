@@ -539,7 +539,7 @@ public final class Interactions {
 
 		// Si l'espece sait manger, elle joue toute l'animation ecrite dans son
 		// fichier. Une espece sans ce role garde simplement les miettes et le son.
-		compagnon.jouerActionPendant("@mange", 30);
+		compagnon.jouerActionPendant("@mange", 30, PrioriteAction.BESOIN);
 		Etincelles.miettes(compagnon, pile);
 		Sons.jouerCeSon(compagnon, net.minecraft.sounds.SoundEvents.GENERIC_EAT, 1.0F);
 		if (avis == Gouts.Avis.PREFERE) {

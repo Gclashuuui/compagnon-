@@ -4,7 +4,6 @@ import fr.lhdp.compagnon.contenu.Caractere;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * Il va voir un compagnon qu'il connait.
@@ -46,6 +45,7 @@ public class RetrouverGoal extends Goal {
 	private final CompagnonEntity compagnon;
 	private CompagnonEntity ami;
 	private int reste;
+	private boolean sceneJouee;
 
 	public RetrouverGoal(CompagnonEntity compagnon) {
 		this.compagnon = compagnon;
@@ -65,22 +65,16 @@ public class RetrouverGoal extends Goal {
 			return false;
 		}
 
-		List<CompagnonEntity> amis = this.compagnon.level().getEntitiesOfClass(
-				CompagnonEntity.class,
-				this.compagnon.getBoundingBox().inflate(PORTEE),
-				autre -> autre != this.compagnon
-						&& autre.ficheId() != null
-						&& this.compagnon.connait(autre.ficheId()));
-		if (amis.isEmpty()) {
-			return false;
-		}
-		this.ami = amis.get(this.compagnon.getRandom().nextInt(amis.size()));
-		return true;
+		// Le capteur social a déjà trouvé le plus proche. Aucun second parcours
+		// d'entités n'est lancé par ce but.
+		this.ami = this.compagnon.amiMemorise();
+		return this.ami != null;
 	}
 
 	@Override
 	public void start() {
 		this.reste = DUREE;
+		this.sceneJouee = false;
 	}
 
 	@Override
@@ -95,6 +89,7 @@ public class RetrouverGoal extends Goal {
 	@Override
 	public void stop() {
 		this.ami = null;
+		this.sceneJouee = false;
 		this.compagnon.getNavigation().stop();
 	}
 
@@ -109,6 +104,24 @@ public class RetrouverGoal extends Goal {
 		} else {
 			// Arrive : il ne pousse pas plus loin, il reste la et le regarde.
 			this.compagnon.getNavigation().stop();
+			jouerPetiteScene();
+		}
+	}
+
+	/** Les deux amis réutilisent leurs gestes existants et les jouent ensemble. */
+	private void jouerPetiteScene() {
+		if (this.sceneJouee || this.ami == null) {
+			return;
+		}
+		this.sceneJouee = true;
+		String mien = SceneAffectiveGoal.roleAmiDisponible(this.compagnon);
+		String sien = SceneAffectiveGoal.roleAmiDisponible(this.ami);
+		if (mien != null) {
+			this.compagnon.jouerActionPendant("@" + mien, 35, PrioriteAction.AFFECTIF);
+		}
+		if (sien != null && this.ami.peutFaireUnPetitGeste()) {
+			this.ami.getLookControl().setLookAt(this.compagnon, 30.0F, 30.0F);
+			this.ami.jouerActionPendant("@" + sien, 35, PrioriteAction.AFFECTIF);
 		}
 	}
 }

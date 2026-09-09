@@ -5,6 +5,7 @@ import fr.lhdp.compagnon.classement.Classement;
 import fr.lhdp.compagnon.Compagnon;
 import fr.lhdp.compagnon.entite.CompagnonEntity;
 import fr.lhdp.compagnon.entite.Obeissance;
+import fr.lhdp.compagnon.entite.PrioriteAction;
 import fr.lhdp.compagnon.espece.Especes;
 import fr.lhdp.compagnon.fiche.Barre;
 import fr.lhdp.compagnon.fiche.FicheCompagnon;
@@ -413,7 +414,7 @@ public final class Reseau {
 		boolean fatigue = fiche.barre(Barre.ENERGIE) < table.action().energieMinimum();
 		if (present != null && !etaitOccupe && present.lesMainsVides()) {
 			present.getLookControl().setLookAt(joueur, 30.0F, 30.0F);
-			present.jouerActionPendant("@ecoute", 25);
+			present.jouerActionPendant("@ecoute", 25, PrioriteAction.AFFECTIF);
 			// ET IL SE FAIT VOIR.
 			//
 			// Dans une cour a deux cents compagnons, retrouver le sien est le vrai
@@ -526,7 +527,8 @@ public final class Reseau {
 		// C'etait cinq secondes pour tout le monde. Une animation courte
 		// laissait donc la bete figee dans sa derniere pose pendant le reste du
 		// temps, et une longue etait coupee en plein milieu. Voir Longueurs.
-		compagnon.jouerActionPendant(nomDemande, Longueurs.de(nomDemande));
+		compagnon.jouerActionPendant(nomDemande, Longueurs.de(nomDemande),
+				PrioriteAction.ORDRE);
 		fiche.ajouterBarre(Barre.ENERGIE, table.action().energieDepensee(), table);
 		Fiches.de(joueur.server).setDirty();
 	}

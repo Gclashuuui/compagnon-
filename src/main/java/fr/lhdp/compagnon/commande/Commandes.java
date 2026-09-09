@@ -82,7 +82,7 @@ import java.util.UUID;
  * /compagnon envie objet &lt;item&gt;                 ... ou n'importe quel objet du jeu
  * /compagnon voix &lt;phrase&gt;                      dit une phrase, sans micro
  * /compagnon voix etat                          pourquoi la voix ne repond pas
- * /compagnon perf                               mesure les trois postes de depense
+ * /compagnon perf                               mesure les postes de dépense
  * /compagnon banc <combien>                     pose une foule de compagnons de test
  * /compagnon banc curiosite <passages>          mesure le cout d'un bloc casse
  * /compagnon banc net                           enleve les compagnons de test

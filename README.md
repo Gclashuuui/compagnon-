@@ -20,6 +20,10 @@ automatiquement `aerien` ou `terrestre`, ou choisit un autre profil avec la clé
 `"cerveau"`. La liste de production Blockbench est dans
 `ANIMATIONS_CERVEAU.md`.
 
+L'architecture complète, ses limites de mémoire, ses cadences de capteurs et
+les règles qui empêchent les animations de se couper sont détaillées dans
+`CERVEAU.md`.
+
 ## Prerequis
 
 - Java 21

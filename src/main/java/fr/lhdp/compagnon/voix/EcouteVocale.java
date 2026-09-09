@@ -4,6 +4,7 @@ import fr.lhdp.compagnon.entite.CompagnonEntity;
 import fr.lhdp.compagnon.entite.MangerDansGamelleGoal;
 import fr.lhdp.compagnon.entite.AllerAuPerchoirGoal;
 import fr.lhdp.compagnon.entite.Obeissance;
+import fr.lhdp.compagnon.entite.PrioriteAction;
 import fr.lhdp.compagnon.entite.RapporterGoal;
 import fr.lhdp.compagnon.espece.Espece;
 import fr.lhdp.compagnon.espece.Especes;
@@ -364,7 +365,8 @@ public final class EcouteVocale {
 		// role est court exprès — l'animation de l'ordre lui-meme le remplacera
 		// aussitot, et c'est tres bien ainsi.
 		compagnon.getLookControl().setLookAt(joueur, 30.0F, 30.0F);
-		compagnon.jouerActionPendant("@ecoute", DUREE_DE_L_ECOUTE);
+		compagnon.jouerActionPendant("@ecoute", DUREE_DE_L_ECOUTE,
+				PrioriteAction.ORDRE);
 
 		// UN MOT QU'IL A APPRIS, RIEN QU'A LUI.
 		//
@@ -465,7 +467,8 @@ public final class EcouteVocale {
 				return new Resultat(true, fiche.nom() + " redescend.");
 			}
 			case TOURNER -> {
-				compagnon.jouerActionPendant("@tourne", DUREE_DU_TOUR);
+				compagnon.jouerActionPendant("@tourne", DUREE_DU_TOUR,
+						PrioriteAction.ORDRE);
 				return new Resultat(true, fiche.nom() + " fait son tour.");
 			}
 			case MANGER -> {
@@ -843,7 +846,7 @@ public final class EcouteVocale {
 				< Niveaux.progression().action().energieMinimum()) {
 			return new Resultat(false, fiche.nom() + " est trop fatigue.");
 		}
-		compagnon.jouerActionPendant(geste, DUREE_DU_TOUR);
+		compagnon.jouerActionPendant(geste, DUREE_DU_TOUR, PrioriteAction.ORDRE);
 		return new Resultat(true, fiche.nom() + " fait son tour.");
 	}
 
@@ -861,7 +864,7 @@ public final class EcouteVocale {
 			FicheCompagnon fiche, Fiches fiches) {
 
 		compagnon.getLookControl().setLookAt(joueur, 30.0F, 30.0F);
-		compagnon.jouerActionPendant("@joie", DUREE_DU_TOUR);
+		compagnon.jouerActionPendant("@joie", DUREE_DU_TOUR, PrioriteAction.ORDRE);
 
 		Long dernier = derniersBravos.get(joueur.getUUID());
 		long maintenant = System.currentTimeMillis();

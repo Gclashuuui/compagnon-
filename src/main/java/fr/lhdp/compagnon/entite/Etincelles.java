@@ -18,13 +18,14 @@ import net.minecraft.world.item.ItemStack;
  *
  * <h2>La regle qu'on se donne</h2>
  *
- * <p><b>Une particule marque un evenement, jamais un etat.</b> Un compagnon
+ * <p><b>Une particule marque presque toujours un evenement.</b> Un compagnon
  * heureux n'emet rien en permanence — il emet quelque chose au moment ou il
  * devient heureux. Des particules continues deviennent du bruit visuel en une
  * heure, et on finit par installer un autre mod pour les enlever.
  *
- * <p>Corollaire : chacune de ces methodes se declenche sur un evenement precis,
- * et aucune ne tourne dans un tick.
+ * <p>Seule exception : le sommeil, demandé comme état lisible, émet une unique
+ * particule toutes les trois secondes. Elle est décalée entre compagnons et ne
+ * possède aucun contrôleur propre.
  */
 public final class Etincelles {
 
@@ -145,6 +146,22 @@ public final class Etincelles {
 	/** Des gouttes : il s'ebroue en sortant de l'eau. */
 	public static void gouttes(CompagnonEntity compagnon) {
 		semer(compagnon, ParticleTypes.SPLASH, 14, 0.5D);
+	}
+
+	/**
+	 * Une seule particule légère pendant le sommeil, toutes les trois secondes.
+	 * Aucun état ni animation supplémentaire : le serveur envoie seulement ce
+	 * petit signe aux joueurs qui suivent déjà l'entité.
+	 */
+	public static void reve(CompagnonEntity compagnon) {
+		if (!(compagnon.level() instanceof ServerLevel niveau)) {
+			return;
+		}
+		niveau.sendParticles(ParticleTypes.ENCHANT,
+				compagnon.getX(), compagnon.getY() + compagnon.getBbHeight() * 0.9D,
+				compagnon.getZ(), 1,
+				compagnon.getBbWidth() * 0.15D, 0.08D,
+				compagnon.getBbWidth() * 0.15D, 0.01D);
 	}
 
 	/**

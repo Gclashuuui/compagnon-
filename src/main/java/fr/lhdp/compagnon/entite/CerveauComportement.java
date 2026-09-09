@@ -26,18 +26,19 @@ public final class CerveauComportement {
 		REPAS(8),
 		SOMMEIL(9),
 		HABITUDE(10),
-		CURIOSITE(11),
-		CADEAU_SPONTANE(12),
-		JOUEUR(13),
-		AMI(14),
-		SOUVENIR(15),
-		SALUT(16),
-		FLANERIE(17),
-		REGARD_JOUEUR(18),
-		REGARD_OBJET(19),
-		REGARD_LIBRE(20),
+		AFFECTION(11),
+		CURIOSITE(12),
+		CADEAU_SPONTANE(13),
+		JOUEUR(14),
+		AMI(15),
+		SOUVENIR(16),
+		SALUT(17),
+		FLANERIE(18),
+		REGARD_JOUEUR(19),
+		REGARD_OBJET(20),
+		REGARD_LIBRE(21),
 		/** Aucun but ne deplace la bete : elle profite simplement du moment. */
-		REPOS(21);
+		REPOS(22);
 
 		private final int priorite;
 

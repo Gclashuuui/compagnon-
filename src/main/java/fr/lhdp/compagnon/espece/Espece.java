@@ -141,6 +141,12 @@ public record Espece(
 
 	// --- Roles optionnels : les reactions ---
 	public static final String CARESSE = "caresse";
+	public static final String ECOUTE = "ecoute";
+	public static final String SALUT = "salut";
+	public static final String AFFECTION = "affection";
+	public static final String SCENE_AMI = "scene_ami";
+	public static final String SURPRIS = "surpris";
+	public static final String PEUR = "peur";
 
 	/**
 	 * Les deux poses dattente qui montrent son humeur.

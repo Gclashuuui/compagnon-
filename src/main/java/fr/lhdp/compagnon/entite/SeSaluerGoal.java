@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * Deux betes qui se connaissent s'arretent une seconde en se croisant.
@@ -119,7 +118,7 @@ public class SeSaluerGoal extends Goal {
 		int duree = DUREE + enCommunAvec(this.ami) * EN_PLUS_PAR_POINT_COMMUN;
 		this.reste = duree;
 		this.compagnon.getNavigation().stop();
-		this.compagnon.jouerActionPendant(GESTE, duree);
+		this.compagnon.jouerActionPendant(GESTE, duree, PrioriteAction.AFFECTIF);
 
 		Compteurs.compter(this.compagnon, Compteurs.SALUTATIONS);
 		this.dernierSalue = this.ami.getUUID();
@@ -182,20 +181,11 @@ public class SeSaluerGoal extends Goal {
 	 * bonjour, et c'est ce qui donne du prix au fait que ces deux-la le fassent.
 	 */
 	private CompagnonEntity unFamilierACote() {
-		List<CompagnonEntity> autour = this.compagnon.level().getEntitiesOfClass(
-				CompagnonEntity.class,
-				this.compagnon.getBoundingBox().inflate(PORTEE),
-				autre -> autre != this.compagnon
-						&& autre.isAlive()
-						&& autre.ficheId() != null
-						&& this.compagnon.connait(autre.getUUID()));
-
-		for (CompagnonEntity autre : autour) {
-			if (this.avantDeResaluer > 0 && autre.getUUID().equals(this.dernierSalue)) {
-				continue;
-			}
-			return autre;
+		CompagnonEntity autre = this.compagnon.amiMemorise();
+		if (autre == null || this.compagnon.distanceToSqr(autre) > PORTEE * PORTEE
+				|| this.avantDeResaluer > 0 && autre.getUUID().equals(this.dernierSalue)) {
+			return null;
 		}
-		return null;
+		return autre;
 	}
 }

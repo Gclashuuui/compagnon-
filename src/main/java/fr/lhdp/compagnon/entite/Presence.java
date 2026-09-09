@@ -7,9 +7,7 @@ import net.minecraft.world.entity.monster.Monster;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -56,9 +54,6 @@ public final class Presence {
 	/** Combien de temps il faut le fixer avant qu'il ne reponde, en ticks. */
 	private static final int AVANT_DE_REPONDRE = 30;
 
-	/** En dessous de cette part de sa vie, le maitre va mal. */
-	private static final float VIE_INQUIETANTE = 0.4F;
-
 	/** Delais avant de refaire le meme geste, en ticks. */
 	private static final int AVANT_DE_REREGARDER = 20 * 25;
 	private static final int AVANT_DE_REFRISSONNER = 20 * 40;
@@ -84,9 +79,6 @@ public final class Presence {
 	/** A quelle distance il faut que son maitre soit pour qu'il le previenne. */
 	private static final double PORTEE_DU_MAITRE = 12.0D;
 
-	/** A quelle distance il repere une menace, en blocs. */
-	private static final double PORTEE_DE_LALERTE = 10.0D;
-
 	/** Au-dessus de cette lumiere, il fait jour : rien a signaler. */
 	private static final int CLAIR = 8;
 
@@ -95,6 +87,8 @@ public final class Presence {
 
 	/** Entre deux alertes. Trois secondes : le temps de comprendre. */
 	private static final int AVANT_DE_REPREVENIR = 20 * 3;
+	private static final int AVANT_DE_REAGIR_ORAGE = 20 * 120;
+	private static final int AVANT_DE_REDECOUVRIR_NEIGE = 20 * 180;
 
 	/**
 	 * Joue au plus un petit geste. A appeler cote serveur uniquement.
@@ -121,20 +115,23 @@ public final class Presence {
 	}
 
 	public static void jouer(CompagnonEntity compagnon, Attention attention) {
+		LivingEntity maitre = compagnon.getOwner();
+		// Une menace est la seule perception autorisée à passer avant un geste
+		// d'ambiance ou un besoin. La priorité URGENCE tranche ensuite proprement.
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.MENACE)
+				&& ilTePrevient(compagnon, maitre, attention)) {
+			return;
+		}
 		// peutFaireUnPetitGeste, et surtout pas estLibre : celle-la exige le mode
 		// « reste », or un compagnon passe l'essentiel de son temps a suivre.
 		if (!compagnon.peutFaireUnPetitGeste()) {
 			return;
 		}
 
-		LivingEntity maitre = compagnon.getOwner();
 		if (maitre != null && !maitre.isSpectator()) {
 			if (ilTeRegarde(compagnon, maitre, attention)) {
 				return;
 			}
-		}
-		if (ilTePrevient(compagnon, maitre, attention)) {
-			return;
 		}
 		if (ilReclameUneCaresse(compagnon, maitre, attention)) {
 			return;
@@ -386,35 +383,27 @@ public final class Presence {
 			&& compagnon.level().getMaxLocalRawBrightness(compagnon.blockPosition()) > CLAIR) {
 			return false;
 		}
-		// Le budget refuse AVANT la recherche : c'est lui qui fait que ca ne
-		// coute rien, pas la recherche elle-meme.
+		// Le capteur commun a déjà payé cette recherche et en a gardé uniquement
+		// l'UUID. Toutes les réactions réutilisent ce même résultat.
+		if (!(compagnon.entiteMemorisee(MemoireCourte.Signal.MENACE)
+				instanceof Monster laPlusProche) || !laPlusProche.isAlive()) {
+			return false;
+		}
 		if (!attention.permet("alerte", AVANT_DE_REPREVENIR)) {
 			return false;
 		}
 
-		// La portee vient de l'espece : c'est ce que la competence « oreille »
-		// et l'oiseau qui voit de loin viendront modifier un jour.
-		List<Monster> menaces = compagnon.level().getEntitiesOfClass(Monster.class,
-			compagnon.getBoundingBox().inflate(PORTEE_DE_LALERTE),
-			monstre -> monstre.isAlive() && !monstre.isInvisible());
-		if (menaces.isEmpty()) {
-			return false;
-		}
-
-		// LA PLUS PROCHE, jamais une au hasard : on doit pouvoir suivre son
-		// regard et trouver ce qu'il regarde.
-		Monster laPlusProche = menaces.get(0);
-		double meilleure = compagnon.distanceToSqr(laPlusProche);
-		for (Monster autre : menaces) {
-			double distance = compagnon.distanceToSqr(autre);
-			if (distance < meilleure) {
-				meilleure = distance;
-				laPlusProche = autre;
-			}
-		}
-
 		compagnon.getLookControl().setLookAt(laPlusProche, 30.0F, 30.0F);
-		compagnon.jouerActionPendant("@ecoute", 30);
+		boolean peur = Manies.PEUREUX.equals(compagnon.defaut())
+				|| compagnon.caractere().courage() < 0.42F;
+		String role = peur
+				? SceneAffectiveGoal.premierRoleDisponible(compagnon,
+						Espece.PEUR, Espece.TRISTE, Espece.ECOUTE)
+				: SceneAffectiveGoal.premierRoleDisponible(compagnon,
+						Espece.SURPRIS, Espece.ECOUTE);
+		if (role != null) {
+			compagnon.jouerActionPendant("@" + role, 30, PrioriteAction.URGENCE);
+		}
 		Sons.jouer(compagnon, Sons.ALERTE, 0.9F);
 
 		// ET S'IL SAIT REVELER, IL MONTRE.
@@ -430,7 +419,7 @@ public final class Presence {
 		}
 		// UN CRAINTIF SE RAPPROCHE, UN BRAVE NON. Le meme signal, deux facons de
 		// le donner — et on finit par savoir laquelle est la sienne.
-		if (compagnon.caractere().sociabilite() < 0.45F) {
+		if (peur) {
 			compagnon.serrerLeMaitre();
 		}
 		return true;
@@ -448,12 +437,45 @@ public final class Presence {
 		Level niveau = compagnon.level();
 		BlockPos ou = compagnon.blockPosition();
 
+		// UN ORAGE N'A PAS LE MEME SENS POUR TOUT LE MONDE. Le peureux se
+		// rapproche ; le brave lève la tête. Les rôles spécialisés sont optionnels
+		// et retombent sur les gestes déjà présents dans les espèces actuelles.
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.ORAGE)
+				&& attention.permet("orage", AVANT_DE_REAGIR_ORAGE)) {
+			boolean peur = Manies.PEUREUX.equals(compagnon.defaut())
+					|| compagnon.caractere().courage() < 0.42F;
+			String role = peur
+					? SceneAffectiveGoal.premierRoleDisponible(compagnon,
+							Espece.PEUR, Espece.TRISTE, Espece.ECOUTE)
+					: SceneAffectiveGoal.premierRoleDisponible(compagnon,
+							Espece.SURPRIS, Espece.ECOUTE, Espece.JOYEUX);
+			if (role != null) {
+				compagnon.jouerActionPendant("@" + role, 30, PrioriteAction.AFFECTIF);
+			}
+			if (peur) {
+				compagnon.serrerLeMaitre();
+			}
+			return;
+		}
+
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.NEIGE)
+				&& attention.permet("neige", AVANT_DE_REDECOUVRIR_NEIGE)) {
+			String role = SceneAffectiveGoal.premierRoleDisponible(compagnon,
+					Espece.SURPRIS,
+					compagnon.caractere().curiosite() >= 0.5F ? Espece.JOYEUX : Espece.ECOUTE,
+					Espece.ECOUTE);
+			if (role != null) {
+				compagnon.jouerActionPendant("@" + role, 28, PrioriteAction.AFFECTIF);
+			}
+			return;
+		}
+
 		// IL A FROID. Il frissonne, et il se rapproche.
-		Biome biome = niveau.getBiome(ou).value();
 		// UN CASSE-COU NE FRISSONNE PAS. Il a froid comme les autres, il ne le
 		// montre simplement pas.
 		if (compagnon.profilCerveau().reagitFroid()
-				&& biome.coldEnoughToSnow(ou) && !Manies.CASSE_COU.equals(compagnon.defaut())
+				&& compagnon.memoireCourte().contient(MemoireCourte.Signal.FROID)
+				&& !Manies.CASSE_COU.equals(compagnon.defaut())
 				&& attention.permet("froid", AVANT_DE_REFRISSONNER)) {
 			compagnon.jouerActionPendant("@triste", 20);
 			compagnon.serrerLeMaitre();
@@ -470,7 +492,7 @@ public final class Presence {
 		}
 
 		if (compagnon.profilCerveau().reagitPluie()
-				&& niveau.isRainingAt(ou.above())
+				&& compagnon.memoireCourte().contient(MemoireCourte.Signal.PLUIE)
 				&& attention.permet("pluie", AVANT_DE_SE_REBROUER)) {
 			compagnon.jouerActionPendant("@tourne", 18);
 		}
@@ -484,10 +506,6 @@ public final class Presence {
 	 * faire et tout ce qu'on lui demande.
 	 */
 	public static boolean maitreEnMauvaisEtat(CompagnonEntity compagnon) {
-		LivingEntity maitre = compagnon.getOwner();
-		if (!(maitre instanceof Player joueur) || joueur.isSpectator() || joueur.isCreative()) {
-			return false;
-		}
-		return joueur.getHealth() <= joueur.getMaxHealth() * VIE_INQUIETANTE;
+		return compagnon.memoireCourte().contient(MemoireCourte.Signal.MAITRE_EN_DANGER);
 	}
 }

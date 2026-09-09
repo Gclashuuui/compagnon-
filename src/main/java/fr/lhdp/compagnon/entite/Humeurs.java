@@ -12,7 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 import java.util.Random;
@@ -53,9 +52,6 @@ public final class Humeurs {
 
 	/** Au-dessus de toutes ces valeurs, tout va bien. */
 	private static final float SEUIL_CONTENT = 70.0F;
-
-	/** En dessous de cette lumiere, il n'est pas rassure. */
-	private static final int SEUIL_SOMBRE = 5;
 
 	/** Le vide sous ses pattes, en blocs, avant qu'il trouve que c'est haut. */
 	private static final int VIDE_QUI_INQUIETE = 6;
@@ -142,21 +138,19 @@ public final class Humeurs {
 		ServerLevel niveau = (ServerLevel) compagnon.level();
 		BlockPos ou = compagnon.blockPosition();
 
-		if (niveau.isThundering() && niveau.canSeeSky(ou)) {
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.ORAGE)) {
 			return "orage";
 		}
-		if (compagnon.isInWater()) {
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.EAU)) {
 			return "eau";
 		}
-		if (niveau.getBlockState(ou).is(Blocks.SNOW)
-				|| niveau.getBlockState(ou.below()).is(Blocks.SNOW_BLOCK)
-				|| niveau.getBlockState(ou.below()).is(Blocks.POWDER_SNOW)) {
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.NEIGE)) {
 			return "neige";
 		}
-		if (niveau.isRainingAt(ou)) {
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.PLUIE)) {
 			return "pluie";
 		}
-		if (niveau.getMaxLocalRawBrightness(ou) < SEUIL_SOMBRE) {
+		if (compagnon.memoireCourte().contient(MemoireCourte.Signal.OBSCURITE)) {
 			return "sombre";
 		}
 		if (leVideEnDessous(niveau, ou)) {
@@ -195,11 +189,8 @@ public final class Humeurs {
 
 	/** Un autre compagnon qu'il connait est-il a portee ? */
 	private static boolean unAmiEstLa(CompagnonEntity compagnon) {
-		List<CompagnonEntity> autour = compagnon.level().getEntitiesOfClass(
-				CompagnonEntity.class,
-				compagnon.getBoundingBox().inflate(PORTEE_AMI),
-				autre -> autre != compagnon && compagnon.connait(autre.getUUID()));
-		return !autour.isEmpty();
+		CompagnonEntity ami = compagnon.amiMemorise();
+		return ami != null && compagnon.distanceToSqr(ami) <= PORTEE_AMI * PORTEE_AMI;
 	}
 
 	/**

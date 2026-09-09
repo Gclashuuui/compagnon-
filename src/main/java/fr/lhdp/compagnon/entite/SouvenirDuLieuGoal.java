@@ -95,7 +95,7 @@ public class SouvenirDuLieuGoal extends Goal {
 	public void start() {
 		this.reste = DUREE;
 		this.compagnon.getNavigation().stop();
-		this.compagnon.jouerActionPendant(GESTE, DUREE);
+		this.compagnon.jouerActionPendant(GESTE, DUREE, PrioriteAction.AFFECTIF);
 
 		// Le compte a rebours est pose ici et non dans canUse : c'est le fait de
 		// s'etre arrete qui compte, pas celui d'etre passe a cote.

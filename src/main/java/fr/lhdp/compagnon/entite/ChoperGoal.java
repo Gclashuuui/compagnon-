@@ -94,7 +94,7 @@ public class ChoperGoal extends Goal {
 			return;
 		}
 
-		this.compagnon.jouerActionPendant(GESTE, DUREE_GESTE);
+		this.compagnon.jouerActionPendant(GESTE, DUREE_GESTE, PrioriteAction.ORDRE);
 		this.compagnon.prendreDansLaGueule(objet.getItem());
 		objet.discard();
 		this.compagnon.oublierLaMission();

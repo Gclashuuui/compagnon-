@@ -1,6 +1,7 @@
 package fr.lhdp.compagnon.fiche;
 
 import fr.lhdp.compagnon.entite.CompagnonEntity;
+import fr.lhdp.compagnon.entite.PrioriteAction;
 import fr.lhdp.compagnon.entite.Etincelles;
 import fr.lhdp.compagnon.entite.Sons;
 import net.minecraft.network.chat.Component;
@@ -108,7 +109,8 @@ public final class Retrouvailles {
 		}
 		// Il te regarde d'abord. Une fete jouee de dos ne s'adresse a personne.
 		compagnon.getLookControl().setLookAt(proprietaire, 40.0F, 40.0F);
-		compagnon.jouerActionPendant("@joie", DUREE_DE_LA_JOIE);
+		compagnon.jouerActionPendant("@joie", DUREE_DE_LA_JOIE,
+				PrioriteAction.EVENEMENT);
 		Sons.jouer(compagnon, Sons.CONTENT, 1.2F);
 		Etincelles.coeurs(compagnon, 10);
 	}
