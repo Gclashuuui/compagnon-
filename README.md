@@ -6,6 +6,7 @@ Documentation de production :
 - [Animations pilotées par le cerveau](ANIMATIONS_CERVEAU.md)
 - [Starter packs de 60 et 70 animations](PACKS_ANIMATIONS.md)
 - [Prompt réutilisable pour Nia](PROMPT_NIA_ANIMATIONS.md)
+- [Prompts de refonte du livre avec Midjourney et Astra](PROMPTS_LIVRE_MIDJOURNEY_ASTRA.md)
 
 Compagnon est un mod Minecraft Fabric 1.21.1 pour un serveur RP francophone.
 Chaque joueur peut faire grandir une creature vivante, la nourrir, la soigner,
