@@ -227,7 +227,8 @@ public class EcranLivre extends EcranCompagnon {
 		this.SALISSURES = nouveau.texture("book_details_overlay");
 		this.CADRE_PORTRAIT = nouveau.texture("portrait_frame");
 		this.SOULIGNEMENT = nouveau.texture("underline_astra");
-		this.SIGNETS_TEXTURE = nouveau.texture("bookmark_tabs");
+		this.SIGNETS_TEXTURE = nouveau.texture(nouveau.hauteDefinition()
+				? "bookmark_tabs_hd" : "bookmark_tabs");
 		this.CARTES_RITUELS = nouveau.texture("ritual_cards");
 		this.FLECHE_GAUCHE = nouveau.texture("page_turn_left_normal");
 		this.FLECHE_GAUCHE_SURVOL = nouveau.texture("page_turn_left_hover");
@@ -272,8 +273,15 @@ public class EcranLivre extends EcranCompagnon {
 	public void render(GuiGraphics g, int sourisX, int sourisY, float partiel) {
 		super.render(g, sourisX, sourisY, partiel);
 
-		g.blit(FOND, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
-		g.blit(SALISSURES, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+		if (this.theme.hauteDefinition()) {
+			HabillageLivreHD.dessiner(g, this.theme, this.gauche, this.haut,
+					this.width, this.height);
+		} else {
+			g.blit(FOND, this.gauche, this.haut, 0.0F, 0.0F,
+					LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+			g.blit(SALISSURES, this.gauche, this.haut, 0.0F, 0.0F,
+					LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+		}
 		ambiance(g);
 
 		this.missionSurvolee = -1;
@@ -388,7 +396,9 @@ public class EcranLivre extends EcranCompagnon {
 		int x = this.gauche + PAGE_GAUCHE_X;
 		int y = this.haut + PAGE_Y;
 
-		g.drawString(this.font, this.donnees.nom(), x, y, ENCRE, false);
+		g.drawString(this.font,
+				this.font.plainSubstrByWidth(this.donnees.nom(), PAGE_LARGEUR),
+				x, y, ENCRE, false);
 		g.blit(SOULIGNEMENT, x, y + 10, PAGE_LARGEUR, 4,
 				0.0F, 0.0F, SOULIGNEMENT_SOURCE_L, SOULIGNEMENT_SOURCE_H,
 				SOULIGNEMENT_SOURCE_L, SOULIGNEMENT_SOURCE_H);
@@ -1451,43 +1461,54 @@ public class EcranLivre extends EcranCompagnon {
 	// --- Navigation -------------------------------------------------------------
 
 	/** Les cinq pages sont accessibles directement par les signets dessines. */
+	private int largeurSignet() {
+		return this.theme.hauteDefinition() ? HabillageLivreHD.SIGNET_LARGEUR : SIGNET_LARGEUR;
+	}
+
+	private int hauteurSignet() {
+		return this.theme.hauteDefinition() ? HabillageLivreHD.SIGNET_HAUTEUR : SIGNET_HAUTEUR;
+	}
+
+	private int ecartSignet() {
+		return this.theme.hauteDefinition() ? HabillageLivreHD.SIGNET_ECART : SIGNET_ECART;
+	}
+
 	private void signets(GuiGraphics g, int sourisX, int sourisY, float partiel) {
-		int x = signetX();
-		int y = signetY();
+		int x = signetX(), y = signetY();
+		int largeur = largeurSignet(), hauteur = hauteurSignet();
 		for (int i = 0; i < SIGNETS.length; i++) {
 			boolean actif = i == this.page;
-			boolean survole = sourisX >= x && sourisX < x + SIGNET_LARGEUR
-					&& sourisY >= y && sourisY < y + SIGNET_HAUTEUR;
+			boolean survole = sourisX >= x && sourisX < x + largeur
+					&& sourisY >= y && sourisY < y + hauteur;
 			int etat = actif ? 2 : survole ? 1 : 0;
-			g.blit(this.SIGNETS_TEXTURE, x, y, i * SIGNET_LARGEUR,
+			if (this.theme.hauteDefinition()) {
+				g.blit(this.SIGNETS_TEXTURE, x, y, largeur, hauteur,
+					i * 112.0F, etat * 144.0F, 112, 144, 560, 432);
+			} else {
+				g.blit(this.SIGNETS_TEXTURE, x, y, i * SIGNET_LARGEUR,
 					etat * SIGNET_HAUTEUR, SIGNET_LARGEUR, SIGNET_HAUTEUR,
 					SIGNETS_SOURCE_L, SIGNETS_SOURCE_H);
-			if (survole) {
-				this.signetSurvole = i;
 			}
-			y += SIGNET_HAUTEUR + SIGNET_ECART;
+			if (survole) this.signetSurvole = i;
+			y += hauteur + ecartSignet();
 		}
 	}
 
 	private int signetX() {
-		return this.gauche + 360;
+		return this.theme.hauteDefinition()
+				? HabillageLivreHD.signetX(this.gauche, this.width) : this.gauche + 360;
 	}
 
 	private int signetY() {
-		return this.haut + 43;
+		return this.haut + (this.theme.hauteDefinition() ? 35 : 43);
 	}
 
 	private int signetSous(double sourisX, double sourisY) {
-		int x = signetX();
-		int y = signetY();
-		if (sourisX < x || sourisX >= x + SIGNET_LARGEUR) {
-			return -1;
-		}
+		int x = signetX(), y = signetY();
+		if (sourisX < x || sourisX >= x + largeurSignet()) return -1;
 		for (int i = 0; i < SIGNETS.length; i++) {
-			if (sourisY >= y && sourisY < y + SIGNET_HAUTEUR) {
-				return i;
-			}
-			y += SIGNET_HAUTEUR + SIGNET_ECART;
+			if (sourisY >= y && sourisY < y + hauteurSignet()) return i;
+			y += hauteurSignet() + ecartSignet();
 		}
 		return -1;
 	}
@@ -1582,7 +1603,9 @@ public class EcranLivre extends EcranCompagnon {
 	}
 
 	private int themeX() {
-		return Math.max(1, this.gauche + 1);
+		return this.theme.hauteDefinition()
+				? Math.max(1, this.gauche - HabillageLivreHD.margeGauche(this.gauche) + 4)
+				: Math.max(1, this.gauche + 1);
 	}
 
 	private int themeY() {

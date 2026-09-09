@@ -185,8 +185,15 @@ public class EcranCarnet extends EcranCompagnon {
 	public void render(GuiGraphics g, int sourisX, int sourisY, float partiel) {
 		super.render(g, sourisX, sourisY, partiel);
 
-		g.blit(FOND, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
-		g.blit(SALISSURES, this.gauche, this.haut, 0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+		if (this.theme.hauteDefinition()) {
+			HabillageLivreHD.dessiner(g, this.theme, this.gauche, this.haut,
+					this.width, this.height);
+		} else {
+			g.blit(FOND, this.gauche, this.haut, 0.0F, 0.0F,
+					LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+			g.blit(SALISSURES, this.gauche, this.haut, 0.0F, 0.0F,
+					LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+		}
 
 		mettreAJourAnimationPage();
 		this.themeSurvole = false;
@@ -467,7 +474,7 @@ public class EcranCarnet extends EcranCompagnon {
 	}
 
 	private void selecteurTheme(GuiGraphics g, int sourisX, int sourisY) {
-		int x = Math.max(1, this.gauche + 1);
+		int x = themeX();
 		int y = this.haut + 43;
 		this.themeSurvole = dansLaBoite(sourisX, sourisY, x, y, THEME_TAILLE, THEME_TAILLE);
 		Peinture.boutonPeint(g, x, y, THEME_TAILLE, THEME_TAILLE,
@@ -481,8 +488,15 @@ public class EcranCarnet extends EcranCompagnon {
 	}
 
 	private boolean themeSous(double sourisX, double sourisY) {
-		return dansLaBoite(sourisX, sourisY, Math.max(1, this.gauche + 1),
+		return dansLaBoite(sourisX, sourisY, themeX(),
 				this.haut + 43, THEME_TAILLE, THEME_TAILLE);
+	}
+
+	/** Le nuancier reste sur la couverture, jamais sur la zone d'ecriture. */
+	private int themeX() {
+		return this.theme.hauteDefinition()
+				? Math.max(1, this.gauche - HabillageLivreHD.margeGauche(this.gauche) + 4)
+				: Math.max(1, this.gauche + 1);
 	}
 
 	private void changerTheme(boolean precedent) {

@@ -23,6 +23,30 @@ import java.util.Properties;
  */
 enum ThemeLivre {
 
+	SYLVESTRE_HD("sylvestre_hd", "livre.compagnon.theme.sylvestre_hd",
+			0xFF3A2A18, 0xFF715238, 0xFF9B3333, 0x55715238, 0xFF436044,
+			0xFF45362B, 0xFFBEA887, 0xFFE8D5B3, 0xFFF5E7C8,
+			0xCC45362B, 0xEE436044, 0xFFD2B681, 0xFFFFF1D4),
+	OBSERVATOIRE_HD("observatoire_hd", "livre.compagnon.theme.observatoire_hd",
+			0xFF352C26, 0xFF6C533C, 0xFF9B3333, 0x556C533C, 0xFF3A566C,
+			0xFF45362B, 0xFFBEA887, 0xFFE8D5B3, 0xFFF5E7C8,
+			0xCC45362B, 0xEE3A566C, 0xFFD2B681, 0xFFFFF1D4),
+	NUAGES_HD("nuages_hd", "livre.compagnon.theme.nuages_hd",
+			0xFF364A59, 0xFF735540, 0xFF9B3333, 0x55735540, 0xFF426173,
+			0xFF45362B, 0xFFBEA887, 0xFFE8D5B3, 0xFFF5E7C8,
+			0xCC45362B, 0xEE426173, 0xFFD2B681, 0xFFFFF1D4),
+	LUCIOLES_HD("lucioles_hd", "livre.compagnon.theme.lucioles_hd",
+			0xFF422824, 0xFF77503B, 0xFF9B3333, 0x5577503B, 0xFF76522B,
+			0xFF45362B, 0xFFBEA887, 0xFFE8D5B3, 0xFFF5E7C8,
+			0xCC45362B, 0xEE76522B, 0xFFD2B681, 0xFFFFF1D4),
+	MAREES_HD("marees_hd", "livre.compagnon.theme.marees_hd",
+			0xFF2A494C, 0xFF576653, 0xFF9B3333, 0x55576653, 0xFF386D70,
+			0xFF45362B, 0xFFBEA887, 0xFFE8D5B3, 0xFFF5E7C8,
+			0xCC45362B, 0xEE386D70, 0xFFD2B681, 0xFFFFF1D4),
+	CONFISERIE_HD("confiserie_hd", "livre.compagnon.theme.confiserie_hd",
+			0xFF542F34, 0xFF785244, 0xFF9B3333, 0x55785244, 0xFF854054,
+			0xFF45362B, 0xFFBEA887, 0xFFE8D5B3, 0xFFF5E7C8,
+			0xCC45362B, 0xEE854054, 0xFFD2B681, 0xFFFFF1D4),
 	CLASSIQUE("classique", "livre.compagnon.theme.classique",
 			0xFF3A2A18, 0xFF826137, 0xFF8A2F2F, 0x55826137, 0xFF456D59,
 			0xFF39291F, 0xFFB49A70, 0xFFE3CCA3, 0xFFF2DFB8,
@@ -129,6 +153,10 @@ enum ThemeLivre {
 		this.ongletTexte = ongletTexte;
 	}
 
+	boolean hauteDefinition() {
+		return this.id.endsWith("_hd");
+	}
+
 	String traduction() {
 		return this.traduction;
 	}
@@ -149,12 +177,12 @@ enum ThemeLivre {
 
 	static ThemeLivre charger() {
 		if (!Files.isRegularFile(FICHIER)) {
-			return CLASSIQUE;
+			return SYLVESTRE_HD;
 		}
 		Properties proprietes = new Properties();
 		try (Reader lecteur = Files.newBufferedReader(FICHIER, StandardCharsets.UTF_8)) {
 			proprietes.load(lecteur);
-			String id = proprietes.getProperty(CLE, CLASSIQUE.id)
+			String id = proprietes.getProperty(CLE, SYLVESTRE_HD.id)
 					.trim().toLowerCase(Locale.ROOT);
 			for (ThemeLivre theme : values()) {
 				if (theme.id.equals(id)) {
@@ -164,7 +192,7 @@ enum ThemeLivre {
 		} catch (IOException exception) {
 			Compagnon.LOG.warn("Impossible de lire le theme du livre", exception);
 		}
-		return CLASSIQUE;
+		return SYLVESTRE_HD;
 	}
 
 	void sauvegarder() {
