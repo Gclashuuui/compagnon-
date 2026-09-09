@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -39,6 +40,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * caresse pas un chaton et un grand dragon au meme endroit.
  */
 public final class Caresses {
+	private static final ResourceLocation ICONES_DEFIS =
+			Compagnon.id("textures/gui/caresse/defis.png");
+	private static final int TAILLE_ICONE_DEFI = 24;
+	private static final int LARGEUR_ATLAS_DEFIS = 144;
+	private static final int HAUTEUR_ATLAS_DEFIS = 120;
 
 	/** Hauteur de l'epaule du joueur, en blocs. Valeur inventee. */
 	private static final float EPAULE = 1.35F;
@@ -371,6 +377,12 @@ public final class Caresses {
 		g.fill(x, y + 2, x + largeur, y + hauteur - 2, 0xE6332737);
 		g.fill(x + 3, y + 3, x + largeur - 3, y + hauteur - 3, 0xF3F1E4D2);
 		g.fill(x + 4, y + 4, x + largeur - 4, y + 5, 0x80FFF5D6);
+		int indexIcone = caresse.defi.numero - 1;
+		g.blit(ICONES_DEFIS, x + 7, y + 3,
+				(indexIcone % 6) * TAILLE_ICONE_DEFI,
+				(indexIcone / 6) * TAILLE_ICONE_DEFI,
+				TAILLE_ICONE_DEFI, TAILLE_ICONE_DEFI,
+				LARGEUR_ATLAS_DEFIS, HAUTEUR_ATLAS_DEFIS);
 		String titre = net.minecraft.network.chat.Component.translatable(
 				"caresse.compagnon.defi." + caresse.defi.numero).getString();
 		g.drawCenteredString(client.font, titre, x + largeur / 2, y + 7, COULEUR_ENCRE);
