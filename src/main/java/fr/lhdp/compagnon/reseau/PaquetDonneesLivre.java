@@ -63,6 +63,12 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 		tampon.writeUtf(d.humeurLibelle());
 		tampon.writeUtf(d.humeurBouille());
 		tampon.writeUtf(d.mode());
+		tampon.writeUtf(d.caractereNom(), 64);
+		tampon.writeFloat(d.sociabilite());
+		tampon.writeFloat(d.attachement());
+		tampon.writeFloat(d.vivacite());
+		tampon.writeFloat(d.calin());
+		tampon.writeFloat(d.curiosite());
 
 		tampon.writeUtf(d.boboNom());
 		tampon.writeUtf(d.boboDescription());
@@ -107,6 +113,15 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 			tampon.writeUtf(nom);
 		}
 
+		tampon.writeVarInt(d.lieux().size());
+		for (fr.lhdp.compagnon.fiche.FicheCompagnon.Lieu lieu : d.lieux()) {
+			tampon.writeUtf(lieu.cle(), 32);
+			tampon.writeInt(lieu.x());
+			tampon.writeInt(lieu.y());
+			tampon.writeInt(lieu.z());
+			tampon.writeLong(lieu.quand());
+		}
+
 		tampon.writeVarInt(d.missions().size());
 		for (EntreeMission mission : d.missions()) {
 			tampon.writeUtf(mission.texte(), 128);
@@ -148,6 +163,12 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 		String humeurLibelle = tampon.readUtf();
 		String humeurBouille = tampon.readUtf();
 		String mode = tampon.readUtf();
+		String caractereNom = tampon.readUtf(64);
+		float sociabilite = tampon.readFloat();
+		float attachement = tampon.readFloat();
+		float vivacite = tampon.readFloat();
+		float calin = tampon.readFloat();
+		float curiosite = tampon.readFloat();
 
 		String boboNom = tampon.readUtf();
 		String boboDescription = tampon.readUtf();
@@ -189,6 +210,15 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 			connait.add(tampon.readUtf());
 		}
 
+		int combienLieux = Math.min(8, Math.max(0, tampon.readVarInt()));
+		List<fr.lhdp.compagnon.fiche.FicheCompagnon.Lieu> lieux =
+				new ArrayList<>(combienLieux);
+		for (int i = 0; i < combienLieux; i++) {
+			lieux.add(new fr.lhdp.compagnon.fiche.FicheCompagnon.Lieu(
+					tampon.readUtf(32), tampon.readInt(), tampon.readInt(),
+					tampon.readInt(), tampon.readLong()));
+		}
+
 		// Huit au plus : trois courtes, une longue, et de la marge. Le plafond
 		// est fixe ici et jamais pris du reseau — un client ne dimensionne pas une
 		// liste avec un nombre venu d'ailleurs.
@@ -206,11 +236,13 @@ public record PaquetDonneesLivre(int combien, int index, DonneesLivre donnees,
 				niveau, niveauMax, xp, xpDuNiveau, xpDuSuivant, rituelsDuJour,
 				Map.copyOf(barres),
 				humeurLibelle, humeurBouille, mode,
+				caractereNom, sociabilite, attachement, vivacite, calin, curiosite,
 				boboNom, boboDescription, boboRemede,
 				dateObtention, ticksEnsemble,
 				List.copyOf(moments), Map.copyOf(compteurs), Map.copyOf(motsAppris),
 				List.copyOf(competences), points,
 				List.copyOf(connait),
+				List.copyOf(lieux),
 				List.copyOf(missions), peutEcarter, monterAuNiveau),
 				List.copyOf(compagnons));
 	}

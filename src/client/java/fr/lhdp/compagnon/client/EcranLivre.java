@@ -116,8 +116,9 @@ public class EcranLivre extends EcranCompagnon {
 	 */
 	private static final int PAGE_IDENTITE = 0;
 	private static final int PAGE_HISTOIRE = 1;
-	private static final int PAGE_COMPETENCES = 2;
-	private static final int PAGE_MISSIONS = 3;
+	private static final int PAGE_LIENS = 2;
+	private static final int PAGE_COMPETENCES = 3;
+	private static final int PAGE_MISSIONS = 4;
 	private static final int DERNIERE_PAGE = PAGE_MISSIONS;
 
 	/** Hauteur d'une ligne de competence, description comprise. */
@@ -139,9 +140,10 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int SIGNET_HAUTEUR = 18;
 	private static final int SIGNET_ECART = 3;
 	private static final String[] SIGNETS = {
-			"livre.compagnon.onglet.aujourdhui",
-			"livre.compagnon.onglet.histoire",
-			"livre.compagnon.onglet.competences",
+		"livre.compagnon.onglet.aujourdhui",
+		"livre.compagnon.onglet.histoire",
+		"livre.compagnon.onglet.liens",
+		"livre.compagnon.onglet.competences",
 			"livre.compagnon.onglet.missions"};
 
 	private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -176,6 +178,8 @@ public class EcranLivre extends EcranCompagnon {
 	private SourceXp rituelSurvole;
 	/** La phrase complete du souvenir sous la souris. */
 	private Component momentSurvole;
+	/** Le détail du lieu familier sous la souris. */
+	private Component lieuSurvole;
 
 	/** L'introduction ne se joue qu'a la premiere ouverture sur ce client. */
 	private boolean decouverte;
@@ -217,6 +221,7 @@ public class EcranLivre extends EcranCompagnon {
 
 		this.missionSurvolee = -1;
 		this.momentSurvole = null;
+		this.lieuSurvole = null;
 		onglets(g, sourisX, sourisY, partiel);
 		this.apparitionPage = Peinture.vers(this.apparitionPage, 1.0F, 0.24F, partiel);
 		float arrivee = Peinture.adoucir(this.apparitionPage);
@@ -232,6 +237,8 @@ public class EcranLivre extends EcranCompagnon {
 		} else if (this.page == PAGE_HISTOIRE) {
 			pageHistoire(g);
 			pageMoments(g, sourisX, sourisY);
+		} else if (this.page == PAGE_LIENS) {
+			pageLiens(g, sourisX, sourisY);
 		} else if (this.page == PAGE_COMPETENCES) {
 			pageCompetences(g, sourisX, sourisY);
 		} else {
@@ -257,6 +264,9 @@ public class EcranLivre extends EcranCompagnon {
 		}
 		if (this.momentSurvole != null) {
 			g.renderTooltip(this.font, this.momentSurvole, sourisX, sourisY);
+		}
+		if (this.lieuSurvole != null) {
+			g.renderTooltip(this.font, this.lieuSurvole, sourisX, sourisY);
 		}
 		dessinerDecouverte(g, sourisX, sourisY);
 	}
@@ -836,12 +846,148 @@ public class EcranLivre extends EcranCompagnon {
 
 		y += objetPrefere(g, x, y);
 		y += goutsAlimentaires(g, x, y);
-		y += personnaliteDecouverte(g, x, y);
 
 		if (y <= this.haut + HAUTEUR - 70) {
 			filet(g, x, y);
 			y += 7;
-			quiIlConnait(g, x, y);
+			g.drawString(this.font, Component.translatable(
+					"livre.compagnon.ce_quon_a_fait"), x, y, ENCRE, false);
+			compteurs(g, x, y + LIGNE + 1);
+		}
+	}
+
+	// --- Page 3 : caractère, liens et lieux ------------------------------------
+
+	private void pageLiens(GuiGraphics g, int sourisX, int sourisY) {
+		int x = this.gauche + PAGE_GAUCHE_X;
+		int y = this.haut + PAGE_Y;
+		g.drawString(this.font, Component.translatable("livre.compagnon.caractere"),
+				x, y, ENCRE, false);
+		y += LIGNE + 2;
+
+		// Le nom devient un sceau : c'est son identité, pas une statistique.
+		int largeurNom = Math.min(PAGE_LARGEUR, this.font.width(this.donnees.caractereNom()) + 20);
+		g.fill(x + 1, y, x + largeurNom - 1, y + 18, 0x229A4964);
+		g.fill(x, y + 1, x + largeurNom, y + 17, 0x229A4964);
+		g.drawString(this.font, Icones.de(Icones.COEUR), x + 5, y + 5,
+				0xFF9A4964, false);
+		g.drawString(this.font, this.donnees.caractereNom(), x + 17, y + 5,
+				ENCRE, false);
+		y += 24;
+
+		Component phrase = Component.translatable(phraseDominante());
+		dessinerDeuxLignes(g, phrase, x + 3, y, PAGE_LARGEUR - 6, ENCRE_PALE);
+		y += 23;
+		filet(g, x, y);
+		y += 7;
+
+		g.drawString(this.font, Component.translatable("livre.compagnon.penchant"),
+				x, y, ENCRE, false);
+		y += LIGNE + 1;
+		y = trait(g, x, y, "livre.compagnon.trait.sociabilite",
+				this.donnees.sociabilite(), 0xFF4F7448);
+		y = trait(g, x, y, "livre.compagnon.trait.attachement",
+				this.donnees.attachement(), 0xFF9A4964);
+		y = trait(g, x, y, "livre.compagnon.trait.vivacite",
+				this.donnees.vivacite(), 0xFFD09A2E);
+		y = trait(g, x, y, "livre.compagnon.trait.calin",
+				this.donnees.calin(), 0xFFB75A73);
+		y = trait(g, x, y, "livre.compagnon.trait.curiosite",
+				this.donnees.curiosite(), 0xFF527A91);
+
+		int droite = this.gauche + PAGE_DROITE_X;
+		liensEtLieux(g, droite, this.haut + PAGE_Y, sourisX, sourisY);
+	}
+
+	private int trait(GuiGraphics g, int x, int y, String cle, float valeur,
+			int couleur) {
+		String nom = Component.translatable(cle).getString();
+		g.drawString(this.font, nom, x, y, ENCRE_PALE, false);
+		String intensite = Component.translatable(valeur < 0.34F
+				? "livre.compagnon.trait.discret" : valeur < 0.67F
+						? "livre.compagnon.trait.present"
+						: "livre.compagnon.trait.fort").getString();
+		g.drawString(this.font, intensite, x + PAGE_LARGEUR - this.font.width(intensite),
+				y, ENCRE_PALE, false);
+		g.fill(x, y + 10, x + PAGE_LARGEUR, y + 14, CREUX_HAUT);
+		int rempli = Math.round(PAGE_LARGEUR * Math.max(0.0F, Math.min(1.0F, valeur)));
+		if (rempli > 0) {
+			g.fill(x, y + 10, x + rempli, y + 14, couleur);
+			g.fill(x, y + 10, x + rempli, y + 11, eclaircir(couleur, 0.42F));
+		}
+		return y + 18;
+	}
+
+	private String phraseDominante() {
+		float[] valeurs = {this.donnees.sociabilite(), this.donnees.attachement(),
+				this.donnees.vivacite(), this.donnees.calin(), this.donnees.curiosite()};
+		String[] cles = {"sociable", "attache", "vif", "calin", "curieux"};
+		int meilleur = 0;
+		for (int i = 1; i < valeurs.length; i++) {
+			if (valeurs[i] > valeurs[meilleur]) {
+				meilleur = i;
+			}
+		}
+		return "livre.compagnon.caractere." + cles[meilleur];
+	}
+
+	private void liensEtLieux(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
+		g.drawString(this.font, Component.translatable("livre.compagnon.relations"),
+				x, y, ENCRE, false);
+		y += LIGNE + 2;
+		if (this.donnees.connait().isEmpty()) {
+			g.drawString(this.font, Component.translatable("livre.compagnon.personne"),
+					x, y, ENCRE_PALE, false);
+			y += 18;
+		} else {
+			int montres = 0;
+			for (String nom : this.donnees.connait()) {
+				if (montres++ >= 4) {
+					break;
+				}
+				g.fill(x, y, x + PAGE_LARGEUR, y + 15, 0x167A6A55);
+				g.drawString(this.font, Icones.de(Icones.COEUR), x + 4, y + 4,
+						0xFF9A4964, false);
+				g.drawString(this.font, this.font.plainSubstrByWidth(nom, PAGE_LARGEUR - 20),
+						x + 17, y + 4, ENCRE, false);
+				y += 17;
+			}
+		}
+
+		y += 3;
+		filet(g, x, y);
+		y += 7;
+		g.drawString(this.font, Component.translatable("livre.compagnon.lieux"),
+				x, y, ENCRE, false);
+		y += LIGNE + 2;
+		if (this.donnees.lieux().isEmpty()) {
+			g.drawString(this.font, Component.translatable("livre.compagnon.aucun_lieu"),
+					x, y, ENCRE_PALE, false);
+			return;
+		}
+		for (var lieu : this.donnees.lieux()) {
+			if (y > this.haut + HAUTEUR - 62) {
+				break;
+			}
+			int couleur = switch (lieu.cle()) {
+				case "repas", "boisson" -> 0xFFD09A2E;
+				case "sommeil" -> 0xFF796A9A;
+				case "soigne" -> 0xFF9A4964;
+				case "perchoir" -> 0xFF527A91;
+				default -> ENCRE_PALE;
+			};
+			g.fill(x, y, x + 3, y + 17, couleur);
+			g.fill(x + 4, y, x + PAGE_LARGEUR, y + 17, 0x127A6A55);
+			String cle = "livre.compagnon.lieu." + lieu.cle();
+			String nom = Language.getInstance().has(cle)
+					? Component.translatable(cle).getString() : lieu.cle();
+			g.drawString(this.font, nom, x + 8, y + 4, ENCRE, false);
+			if (sourisX >= x && sourisX < x + PAGE_LARGEUR
+					&& sourisY >= y && sourisY < y + 17) {
+				this.lieuSurvole = Component.translatable("livre.compagnon.lieu.position",
+						lieu.x(), lieu.y(), lieu.z());
+			}
+			y += 19;
 		}
 	}
 

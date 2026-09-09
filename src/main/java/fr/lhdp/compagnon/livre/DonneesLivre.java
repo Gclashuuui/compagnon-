@@ -51,6 +51,12 @@ public record DonneesLivre(
 		String humeurLibelle,
 		String humeurBouille,
 		String mode,
+		String caractereNom,
+		float sociabilite,
+		float attachement,
+		float vivacite,
+		float calin,
+		float curiosite,
 
 		/** Vide s'il va bien. */
 		String boboNom,
@@ -83,6 +89,7 @@ public record DonneesLivre(
 		 * transformer un identifiant en nom, surtout pour un joueur deconnecte.
 		 */
 		List<String> connait,
+		List<FicheCompagnon.Lieu> lieux,
 
 		/**
 		 * Ses missions du moment, la longue en dernier.
@@ -267,6 +274,10 @@ public record DonneesLivre(
 		}
 
 		Humeur humeur = fiche.humeur();
+		fr.lhdp.compagnon.contenu.Caractere caractere = Contenu.caractere(fiche.caractere());
+		if (caractere == null) {
+			caractere = fr.lhdp.compagnon.contenu.Caractere.ORDINAIRE;
+		}
 
 		String boboNom = "";
 		String boboDescription = "";
@@ -293,12 +304,15 @@ public record DonneesLivre(
 				Map.copyOf(barres),
 				humeur.libelle(), humeur.bouille(),
 				fiche.mode().cleDeTraduction(),
+				caractere.nom(), caractere.sociabilite(), caractere.attachement(),
+				caractere.vivacite(), caractere.calin(), caractere.curiosite(),
 				boboNom, boboDescription, boboRemede,
 				fiche.dateObtention(), fiche.ticksEnsemble(),
 				fiche.moments(), compteursMontrables(fiche), fiche.motsAppris(),
 				lesCompetences(fiche), fiche.pointsRestants(table,
 						fr.lhdp.compagnon.reglage.Reglages.pointsTousLesNiveaux()),
 				quiIlConnait(fiche, serveur),
+				List.copyOf(fiche.lieux()),
 				sesMissions(fiche),
 				fr.lhdp.compagnon.mission.Carnet.peutEcarter(fiche),
 				niveauDeMonte(fiche));
