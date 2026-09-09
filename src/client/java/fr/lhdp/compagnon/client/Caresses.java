@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Qui est en train de caresser, et comment on le montre.
@@ -73,25 +74,103 @@ public final class Caresses {
 
 	/** Numero d'entite du joueur, puis ce qu'il caresse et pour combien de temps. */
 	private static final Map<Integer, Caresse> enCours = new HashMap<>();
-	private static final float[] TEMPS_RYTHME = {0.34F, 0.55F, 0.76F};
-	private static final float FENETRE_RYTHME = 0.075F;
+	/** Une fenetre genereuse : le jeu accompagne la caresse, il ne la sanctionne pas. */
+	private static final float FENETRE_RYTHME = 0.10F;
+	private static final float FENETRE_RUBAN = 0.105F;
+	private static final float FENETRE_ECHO = 0.11F;
+	private static final int COULEUR_ENCRE = 0xFF3A2A38;
+	private static final int COULEUR_OR = 0xFFE2B85E;
+	private static final int COULEUR_REUSSITE = 0xFF6FA36C;
+	private static final int COULEUR_RATE = 0xFF9C7F86;
 	private static int scoreAffiche = -1;
 	private static int ticksScoreAffiche;
 	private static boolean gaucheAvant;
 	private static boolean droiteAvant;
+	private static int dernierDefi = -1;
+
+	private enum Famille {
+		RYTHME,
+		RUBAN,
+		ECHO
+	}
+
+	/**
+	 * Trois gestes suffisent pour apprendre la regle ; le masque donne leur sens
+	 * (bit a zero : gauche, bit a un : droite). Les trente variantes changent le
+	 * rythme, la suite et le nom sans creer trente moteurs couteux.
+	 */
+	private record Defi(int numero, Famille famille, int directions,
+			float premier, float deuxieme, float troisieme) {
+
+		float temps(int etape) {
+			return switch (etape) {
+				case 0 -> this.premier;
+				case 1 -> this.deuxieme;
+				default -> this.troisieme;
+			};
+		}
+
+		boolean droite(int etape) {
+			return (this.directions & 1 << etape) != 0;
+		}
+	}
+
+	private static final Defi[] DEFIS = {
+			d(1, Famille.RYTHME, 0b010, 0.28F, 0.50F, 0.73F),
+			d(2, Famille.RYTHME, 0b101, 0.30F, 0.53F, 0.76F),
+			d(3, Famille.RYTHME, 0b100, 0.27F, 0.48F, 0.72F),
+			d(4, Famille.RYTHME, 0b011, 0.31F, 0.52F, 0.75F),
+			d(5, Famille.RYTHME, 0b001, 0.29F, 0.54F, 0.77F),
+			d(6, Famille.RYTHME, 0b110, 0.26F, 0.49F, 0.74F),
+			d(7, Famille.RYTHME, 0b000, 0.32F, 0.55F, 0.78F),
+			d(8, Famille.RYTHME, 0b111, 0.28F, 0.51F, 0.71F),
+			d(9, Famille.RYTHME, 0b101, 0.33F, 0.54F, 0.74F),
+			d(10, Famille.RYTHME, 0b010, 0.25F, 0.47F, 0.70F),
+			d(11, Famille.RUBAN, 0b010, 0.28F, 0.51F, 0.74F),
+			d(12, Famille.RUBAN, 0b101, 0.30F, 0.53F, 0.76F),
+			d(13, Famille.RUBAN, 0b001, 0.27F, 0.50F, 0.73F),
+			d(14, Famille.RUBAN, 0b110, 0.31F, 0.54F, 0.77F),
+			d(15, Famille.RUBAN, 0b100, 0.29F, 0.52F, 0.75F),
+			d(16, Famille.RUBAN, 0b011, 0.26F, 0.49F, 0.72F),
+			d(17, Famille.RUBAN, 0b000, 0.32F, 0.55F, 0.78F),
+			d(18, Famille.RUBAN, 0b111, 0.28F, 0.52F, 0.76F),
+			d(19, Famille.RUBAN, 0b101, 0.30F, 0.50F, 0.71F),
+			d(20, Famille.RUBAN, 0b010, 0.27F, 0.54F, 0.77F),
+			d(21, Famille.ECHO, 0b010, 0.43F, 0.62F, 0.81F),
+			d(22, Famille.ECHO, 0b101, 0.42F, 0.61F, 0.80F),
+			d(23, Famille.ECHO, 0b001, 0.44F, 0.63F, 0.82F),
+			d(24, Famille.ECHO, 0b110, 0.41F, 0.60F, 0.79F),
+			d(25, Famille.ECHO, 0b100, 0.45F, 0.64F, 0.83F),
+			d(26, Famille.ECHO, 0b011, 0.42F, 0.62F, 0.82F),
+			d(27, Famille.ECHO, 0b000, 0.43F, 0.63F, 0.83F),
+			d(28, Famille.ECHO, 0b111, 0.41F, 0.61F, 0.81F),
+			d(29, Famille.ECHO, 0b101, 0.44F, 0.62F, 0.80F),
+			d(30, Famille.ECHO, 0b010, 0.42F, 0.64F, 0.84F)
+	};
+
+	private static Defi d(int numero, Famille famille, int directions,
+			float premier, float deuxieme, float troisieme) {
+		return new Defi(numero, famille, directions, premier, deuxieme, troisieme);
+	}
 
 	private static final class Caresse {
 		private final int compagnon;
 		private final int ticksTotal;
+		private final Defi defi;
 		private int ticksRestants;
 		private int etape;
 		private int score;
 		private int reussites;
+		private int retourTicks;
+		private boolean dernierReussi;
+		private int ticksDansRuban;
+		private int ticksBienTenus;
 
-		private Caresse(int compagnon, int ticksRestants, int ticksTotal) {
+		private Caresse(int compagnon, int ticksRestants, int ticksTotal, Defi defi) {
 			this.compagnon = compagnon;
 			this.ticksRestants = ticksRestants;
 			this.ticksTotal = ticksTotal;
+			this.defi = defi;
 		}
 
 		/** De zero au debut du geste a un a la fin. */
@@ -113,7 +192,20 @@ public final class Caresses {
 		if (!active) {
 			return;
 		}
-		enCours.put(joueur, new Caresse(compagnon, ticks, ticks));
+		int index;
+		if (dernierDefi < 0) {
+			index = ThreadLocalRandom.current().nextInt(DEFIS.length);
+		} else {
+			index = ThreadLocalRandom.current().nextInt(DEFIS.length - 1);
+			if (index >= dernierDefi) {
+				index++;
+			}
+		}
+		dernierDefi = index;
+		enCours.put(joueur, new Caresse(compagnon, ticks, ticks, DEFIS[index]));
+		Minecraft client = Minecraft.getInstance();
+		gaucheAvant = client.options.keyLeft.isDown();
+		droiteAvant = client.options.keyRight.isDown();
 
 		// ON NE TOUCHE PAS A LA CAMERA.
 		//
@@ -136,6 +228,9 @@ public final class Caresses {
 
 		enCours.entrySet().removeIf(entree -> {
 			Caresse caresse = entree.getValue();
+			if (caresse.retourTicks > 0) {
+				caresse.retourTicks--;
+			}
 			if (caresse.ticksRestants > 1) {
 				caresse.ticksRestants--;
 				return false;
@@ -151,31 +246,71 @@ public final class Caresses {
 		});
 	}
 
-	/** Trois appuis alternés, pris avant d'annuler le déplacement du joueur. */
+	/** Lit le geste avant d'annuler le déplacement du joueur. */
 	private static void jouerLeRythmeLocal() {
 		Minecraft client = Minecraft.getInstance();
 		if (client.player == null) {
 			return;
 		}
 		Caresse caresse = enCours.get(client.player.getId());
-		if (caresse == null || caresse.etape >= TEMPS_RYTHME.length) {
+		if (caresse == null || caresse.etape >= 3) {
 			return;
 		}
 		boolean gauche = client.options.keyLeft.isDown();
 		boolean droite = client.options.keyRight.isDown();
-		boolean nouvelAppui = caresse.etape % 2 == 0
-				? gauche && !gaucheAvant : droite && !droiteAvant;
+		boolean nouvelAppuiGauche = gauche && !gaucheAvant;
+		boolean nouvelAppuiDroite = droite && !droiteAvant;
+		boolean attendDroite = caresse.defi.droite(caresse.etape);
 		float t = caresse.progression(0.0F);
-		float cible = TEMPS_RYTHME[caresse.etape];
-		if (nouvelAppui && Math.abs(t - cible) <= FENETRE_RYTHME) {
-			caresse.reussites |= 1 << caresse.etape;
-			caresse.score++;
-			caresse.etape++;
-		} else if (t > cible + FENETRE_RYTHME) {
-			caresse.etape++;
+		float cible = caresse.defi.temps(caresse.etape);
+		switch (caresse.defi.famille) {
+			case RYTHME -> {
+				boolean bonAppui = attendDroite ? nouvelAppuiDroite : nouvelAppuiGauche;
+				if (bonAppui && Math.abs(t - cible) <= FENETRE_RYTHME) {
+					terminerEtape(caresse, true);
+				} else if (t > cible + FENETRE_RYTHME) {
+					terminerEtape(caresse, false);
+				}
+			}
+			case RUBAN -> {
+				if (Math.abs(t - cible) <= FENETRE_RUBAN) {
+					caresse.ticksDansRuban++;
+					if (attendDroite ? droite : gauche) {
+						caresse.ticksBienTenus++;
+					}
+				}
+				if (t > cible + FENETRE_RUBAN) {
+					boolean reussi = caresse.ticksDansRuban > 0
+							&& caresse.ticksBienTenus * 2 >= caresse.ticksDansRuban;
+					terminerEtape(caresse, reussi);
+				}
+			}
+			case ECHO -> {
+				boolean appui = nouvelAppuiGauche || nouvelAppuiDroite;
+				if (appui && Math.abs(t - cible) <= FENETRE_ECHO) {
+					boolean reussi = attendDroite
+							? nouvelAppuiDroite && !nouvelAppuiGauche
+							: nouvelAppuiGauche && !nouvelAppuiDroite;
+					terminerEtape(caresse, reussi);
+				} else if (t > cible + FENETRE_ECHO) {
+					terminerEtape(caresse, false);
+				}
+			}
 		}
 		gaucheAvant = gauche;
 		droiteAvant = droite;
+	}
+
+	private static void terminerEtape(Caresse caresse, boolean reussi) {
+		if (reussi) {
+			caresse.reussites |= 1 << caresse.etape;
+			caresse.score++;
+		}
+		caresse.dernierReussi = reussi;
+		caresse.retourTicks = 8;
+		caresse.ticksDansRuban = 0;
+		caresse.ticksBienTenus = 0;
+		caresse.etape++;
 	}
 
 	/** Pendant le geste, les touches et l'elan ne peuvent pas lancer une seconde action. */
@@ -204,7 +339,13 @@ public final class Caresses {
 		droiteAvant = false;
 	}
 
-	/** Petit bandeau au-dessus de la barre d'objets : jamais au milieu de l'écran. */
+	/**
+	 * Un ruban de caresse lisible d'un coup d'oeil.
+	 *
+	 * <p>L'ancien panneau montrait Q-D-Q dans trois cases sans expliquer quand
+	 * appuyer. Ici, une lueur parcourt une ligne et rejoint trois coeurs : une
+	 * seule consigne, une seule touche affichee a la fois, et un retour immediat.
+	 */
 	public static void dessiner(GuiGraphics g, float partiel) {
 		Minecraft client = Minecraft.getInstance();
 		if (client.player == null || client.options.hideGui || client.screen != null) {
@@ -221,26 +362,114 @@ public final class Caresses {
 			return;
 		}
 
-		int largeur = 142;
+		int largeur = Math.min(230, g.guiWidth() - 12);
 		int x = (g.guiWidth() - largeur) / 2;
-		int y = g.guiHeight() - 76;
-		g.fill(x, y, x + largeur, y + 26, 0xCC2B2118);
-		g.fill(x + 1, y + 1, x + largeur - 1, y + 25, 0xE6EBD2A5);
+		int y = g.guiHeight() - 102;
+		int hauteur = 58;
+		g.fill(x + 2, y + 2, x + largeur + 2, y + hauteur + 2, 0x70000000);
+		g.fill(x + 2, y, x + largeur - 2, y + hauteur, 0xE6332737);
+		g.fill(x, y + 2, x + largeur, y + hauteur - 2, 0xE6332737);
+		g.fill(x + 3, y + 3, x + largeur - 3, y + hauteur - 3, 0xF3F1E4D2);
+		g.fill(x + 4, y + 4, x + largeur - 4, y + 5, 0x80FFF5D6);
 		String titre = net.minecraft.network.chat.Component.translatable(
-				"caresse.compagnon.rythme").getString();
-		g.drawCenteredString(client.font, titre, x + largeur / 2, y + 4, 0xFF3A2A18);
+				"caresse.compagnon.defi." + caresse.defi.numero).getString();
+		g.drawCenteredString(client.font, titre, x + largeur / 2, y + 7, COULEUR_ENCRE);
 
-		for (int i = 0; i < TEMPS_RYTHME.length; i++) {
-			int centre = x + 36 + i * 35;
+		int debut = x + 16;
+		int fin = x + largeur - 16;
+		int pisteY = y + 29;
+		g.fill(debut, pisteY, fin, pisteY + 2, 0x555B4555);
+		int progression = debut + Math.round((fin - debut) * caresse.progression(partiel));
+		g.fill(debut, pisteY, progression, pisteY + 2, COULEUR_OR);
+
+		for (int i = 0; i < 3; i++) {
+			float temps = caresse.defi.temps(i);
+			int centre = debut + Math.round((fin - debut) * temps);
 			boolean fait = i < caresse.etape;
 			boolean reussi = (caresse.reussites & (1 << i)) != 0;
-			int couleur = reussi ? 0xFF4C9A55 : fait ? 0xFF8B7660 : 0xFFD39B32;
-			g.fill(centre - 9, y + 15, centre + 9, y + 23, couleur);
-			String touche = i % 2 == 0
-					? client.options.keyLeft.getTranslatedKeyMessage().getString()
-					: client.options.keyRight.getTranslatedKeyMessage().getString();
-			g.drawCenteredString(client.font, touche, centre, y + 15, 0xFFFFFFFF);
+			boolean courant = i == caresse.etape;
+			int couleur = reussi ? COULEUR_REUSSITE : fait ? COULEUR_RATE : 0xFFB69A8C;
+			if (caresse.defi.famille == Famille.RUBAN && !fait) {
+				int demi = Math.max(7, Math.round((fin - debut) * FENETRE_RUBAN));
+				g.fill(centre - demi, pisteY - 2, centre + demi, pisteY + 4,
+						courant ? 0x65E2B85E : 0x306D5968);
+			}
+			if (courant) {
+				float pulsation = (float) (Math.sin(System.currentTimeMillis() / 110.0D) * 0.5D + 0.5D);
+				couleur = Peinture.melanger(0xFFD39A55, 0xFFFFDF78, pulsation);
+				g.fill(centre - 6, pisteY - 6, centre + 7, pisteY + 8, 0x303A2A38);
+			}
+			if (caresse.defi.famille == Famille.ECHO) {
+				dessinerEtapeEcho(g, client, caresse, i, centre, pisteY, couleur);
+			} else {
+				dessinerCoeur(g, centre, pisteY, couleur);
+			}
 		}
+
+		// La petite lueur suit la progression et rend le moment d'appui evident.
+		g.fill(progression - 1, pisteY - 3, progression + 2, pisteY + 5, 0x80FFF1B0);
+		g.fill(progression, pisteY - 2, progression + 1, pisteY + 4, 0xFFFFFFFF);
+
+		String indication;
+		if (caresse.etape < 3) {
+			String touche = touche(client, caresse, caresse.etape);
+			indication = switch (caresse.defi.famille) {
+				case RYTHME -> net.minecraft.network.chat.Component.translatable(
+						"caresse.compagnon.indication", touche).getString();
+				case RUBAN -> net.minecraft.network.chat.Component.translatable(
+						"caresse.compagnon.maintenir", touche).getString();
+				case ECHO -> caresse.progression(partiel) < 0.28F
+						? net.minecraft.network.chat.Component.translatable(
+								"caresse.compagnon.memorise",
+								touche(client, caresse, 0), touche(client, caresse, 1),
+								touche(client, caresse, 2)).getString()
+						: net.minecraft.network.chat.Component.translatable(
+								"caresse.compagnon.reproduis", caresse.etape + 1).getString();
+			};
+		} else {
+			indication = net.minecraft.network.chat.Component.translatable(
+					"caresse.compagnon.profite").getString();
+		}
+		int couleurIndication = caresse.retourTicks > 0
+				? caresse.dernierReussi ? COULEUR_REUSSITE : 0xFFB65D6A
+				: COULEUR_ENCRE;
+		dessinerTexteAjuste(g, client, indication, x + largeur / 2, y + 44,
+				largeur - 16, couleurIndication);
+	}
+
+	private static String touche(Minecraft client, Caresse caresse, int etape) {
+		return caresse.defi.droite(etape)
+				? client.options.keyRight.getTranslatedKeyMessage().getString()
+				: client.options.keyLeft.getTranslatedKeyMessage().getString();
+	}
+
+	private static void dessinerEtapeEcho(GuiGraphics g, Minecraft client,
+			Caresse caresse, int etape, int x, int y, int couleur) {
+		boolean visible = caresse.progression(0.0F) < 0.28F || etape < caresse.etape;
+		g.fill(x - 6, y - 6, x + 7, y + 8, 0xD9F7EBD4);
+		g.fill(x - 5, y - 5, x + 6, y + 7, couleur);
+		String texte = visible ? touche(client, caresse, etape) : "?";
+		g.drawCenteredString(client.font, texte, x, y - 3, 0xFFFFFFFF);
+	}
+
+	private static void dessinerTexteAjuste(GuiGraphics g, Minecraft client,
+			String texte, int centreX, int y, int largeurMax, int couleur) {
+		int largeur = client.font.width(texte);
+		float echelle = Math.min(1.0F, largeurMax / (float) Math.max(1, largeur));
+		g.pose().pushPose();
+		g.pose().translate(centreX, y, 0.0F);
+		g.pose().scale(echelle, echelle, 1.0F);
+		g.drawString(client.font, texte, -largeur / 2, 0, couleur, false);
+		g.pose().popPose();
+	}
+
+	/** Un coeur de cinq pixels, net meme avec une petite interface. */
+	private static void dessinerCoeur(GuiGraphics g, int x, int y, int couleur) {
+		g.fill(x - 4, y - 3, x - 1, y, couleur);
+		g.fill(x + 1, y - 3, x + 4, y, couleur);
+		g.fill(x - 5, y - 2, x + 5, y + 2, couleur);
+		g.fill(x - 3, y + 2, x + 3, y + 4, couleur);
+		g.fill(x - 1, y + 4, x + 1, y + 5, couleur);
 	}
 
 	// --- Le geste ---------------------------------------------------------------
