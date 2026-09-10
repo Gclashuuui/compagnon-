@@ -5,7 +5,24 @@ service, n'utilise aucun modèle génératif et ne coûte rien par requête.
 
 Son trajet est toujours le même :
 
-`capteurs → mémoire courte → motivation → but → engagement → animation`
+`capteurs → mémoire courte → état intérieur → motivation → but → engagement → animation`
+
+## Un état intérieur, sans IA coûteuse
+
+Le cerveau entretient maintenant quatre tensions lentes entre 0 et 1 : le
+stress, l'ennui, le besoin de contact et l'envie d'explorer. Elles ne sont pas
+tirées au hasard à chaque décision : elles montent et redescendent
+progressivement selon ce qui vient d'être perçu, l'énergie, la complicité et le
+caractère.
+
+Une menace coupe ainsi l'élan d'exploration ; l'inactivité nourrit l'ennui ; un
+compagnon très attaché cherche davantage son maître après une absence ; la
+présence d'un ami l'occupe. Ces valeurs pèsent actuellement la curiosité et les
+initiatives affectives. Elles sont recalculées une fois par seconde près d'un
+joueur, et jusqu'à une fois toutes les quatre secondes hors de vue.
+
+Cette couche contient exactement quatre nombres. Elle ne lance aucune recherche
+d'entité, ne contacte aucun service et ne grossit jamais en mémoire.
 
 ## Niveau de détail permanent
 
@@ -35,6 +52,11 @@ Elle est composée de tableaux fixes indexés par le type du signal. Un nouveau
 souvenir remplace l'ancien du même type et expire par comparaison d'horloge :
 aucune liste à nettoyer, aucune entité conservée en référence, aucune croissance
 possible de la sauvegarde.
+
+Les événements du monde possèdent aussi une habituation fixe : les deux premiers
+gestes d'un chantier attirent l'attention, puis seulement un rappel sur cinq.
+Changer d'endroit ou attendre dix secondes rend l'événement immédiatement neuf.
+Un compagnon reste donc curieux sans courir vers chacun des cent blocs d'un mur.
 
 ## Perception optimisée
 
@@ -91,3 +113,9 @@ Les rôles spécialisés `surpris` et `peur` sont facultatifs et retombent sur
 `ecoute`, `joyeux` ou `triste`. Pendant le sommeil, une unique particule
 Minecraft est envoyée toutes les trois secondes : aucun contrôleur supplémentaire
 et aucune animation réseau ne tournent en permanence.
+
+Quand le compagnon arrive sur un événement qu'il a choisi d'examiner, il ne se
+contente plus de rester planté devant. Il regarde brièvement puis joue le premier
+rôle disponible parmi `surpris`, `ecoute`, `joie` et `joyeux`. Une future espèce
+profite donc de cette scène dès qu'elle fournit l'un de ces rôles, sans nouveau
+code et sans animation obligatoire.

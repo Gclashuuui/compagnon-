@@ -36,6 +36,7 @@ public class AllerVoirGoal extends Goal {
 	private Vec3 point;
 	private int reste;
 	private int attente;
+	private boolean aReagi;
 
 	public AllerVoirGoal(CompagnonEntity compagnon) {
 		this.compagnon = compagnon;
@@ -60,8 +61,11 @@ public class AllerVoirGoal extends Goal {
 
 		// Curieux et en forme : il y va. Sinon il laisse passer, et le point est
 		// oublie pour qu'il ne se demande pas cent fois la meme chose.
+		float elanInterieur = 0.55F
+				+ this.compagnon.etatInterieur().envieDExplorer() * 0.75F;
 		float envie = Math.min(1.0F, this.compagnon.caractere().curiosite()
-				* this.compagnon.entrain() * this.compagnon.profilCerveau().curiosite());
+				* this.compagnon.entrain() * this.compagnon.profilCerveau().curiosite()
+				* elanInterieur);
 		if (this.compagnon.getRandom().nextFloat() > envie) {
 			this.compagnon.oublierLePoint();
 			return false;
@@ -70,6 +74,7 @@ public class AllerVoirGoal extends Goal {
 		this.point = candidat;
 		this.compagnon.oublierLePoint();
 		this.reste = DUREE;
+		this.aReagi = false;
 		return true;
 	}
 
@@ -98,8 +103,20 @@ public class AllerVoirGoal extends Goal {
 		this.compagnon.getLookControl().setLookAt(this.point.x, this.point.y, this.point.z);
 
 		if (this.compagnon.position().distanceToSqr(this.point) <= ARRET * ARRET) {
-			// Arrive : il regarde, et c'est tout. Il repartira quand il se lassera.
 			this.compagnon.getNavigation().stop();
+			if (!this.aReagi) {
+				this.aReagi = true;
+				this.reste = Math.min(this.reste, 36);
+				String role = SceneAffectiveGoal.premierRoleDisponible(this.compagnon,
+						fr.lhdp.compagnon.espece.Espece.SURPRIS,
+						fr.lhdp.compagnon.espece.Espece.ECOUTE,
+						fr.lhdp.compagnon.espece.Espece.JOIE,
+						fr.lhdp.compagnon.espece.Espece.JOYEUX);
+				if (role != null) {
+					this.compagnon.jouerActionPendant("@" + role, 30,
+							PrioriteAction.EVENEMENT);
+				}
+			}
 			return;
 		}
 

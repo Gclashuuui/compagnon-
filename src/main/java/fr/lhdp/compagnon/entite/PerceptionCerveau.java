@@ -69,6 +69,11 @@ public final class PerceptionCerveau {
 				&& leTourDe(compagnon, COMPAGNONS * multiplicateur, 43)) {
 			chercherAmi(compagnon, memoire);
 		}
+		// Une seconde près des joueurs, jusqu'à quatre secondes hors de vue.
+		// La couche intérieure réutilise exclusivement cette mémoire déjà remplie.
+		if (leTourDe(compagnon, 20 * multiplicateur, 67)) {
+			compagnon.actualiserEtatInterieur();
+		}
 	}
 
 	private static void actualiserNiveauActivite(CompagnonEntity compagnon) {

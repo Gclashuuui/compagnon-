@@ -58,7 +58,10 @@ public final class SceneAffectiveGoal extends Goal {
 		float lien = this.compagnon.complicite() / 100.0F;
 		float envie = 0.15F + this.compagnon.caractere().calin() * 0.35F
 				+ this.compagnon.caractere().attachement() * 0.25F + lien * 0.25F;
-		return this.compagnon.getRandom().nextFloat() < envie * this.compagnon.entrain();
+		float elanInterieur = 0.55F
+				+ this.compagnon.etatInterieur().besoinDeContact() * 0.75F;
+		return this.compagnon.getRandom().nextFloat()
+				< Math.min(1.0F, envie * this.compagnon.entrain() * elanInterieur);
 	}
 
 	@Override

@@ -239,6 +239,12 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	/** Mémoire de travail fixe ; la mémoire durable reste dans la fiche. */
 	private final MemoireCourte memoireCourte = new MemoireCourte();
 
+	/** Tensions lentes : stress, ennui, besoin de contact et envie d'explorer. */
+	private final EtatInterieur etatInterieur = new EtatInterieur();
+
+	/** Il s'habitue aux gestes répétés sans mémoriser une liste d'événements. */
+	private final Habituation habituation = new Habituation();
+
 	/** Niveau de detail du cerveau, recalcule lentement par la perception. */
 	private NiveauActiviteCerveau niveauActiviteCerveau = NiveauActiviteCerveau.PROCHE;
 
@@ -558,6 +564,33 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		return this.memoireCourte;
 	}
 
+	public EtatInterieur etatInterieur() {
+		return this.etatInterieur;
+	}
+
+	/**
+	 * Nourrit l'état intérieur avec les capteurs déjà calculés. Aucun balayage du
+	 * monde n'est fait ici : même à mille compagnons, cette étape reste une poignée
+	 * d'opérations sur des nombres.
+	 */
+	void actualiserEtatInterieur() {
+		this.etatInterieur.actualiser(new EtatInterieur.Observation(
+				this.memoireCourte.contient(MemoireCourte.Signal.MAITRE_PROCHE),
+				this.memoireCourte.contient(MemoireCourte.Signal.MAITRE_EN_DANGER),
+				this.memoireCourte.contient(MemoireCourte.Signal.MENACE),
+				this.memoireCourte.contient(MemoireCourte.Signal.EVENEMENT_DU_MONDE),
+				this.memoireCourte.contient(MemoireCourte.Signal.AMI_PROCHE),
+				this.memoireCourte.contient(MemoireCourte.Signal.ORAGE),
+				this.memoireCourte.contient(MemoireCourte.Signal.OBSCURITE),
+				this.memoireCourte.contient(MemoireCourte.Signal.EAU),
+				getNavigation().isDone()
+						&& getDeltaMovement().horizontalDistanceSqr() < 0.0025D,
+				dort(), energie() / Barre.MAXIMUM, complicite() / Barre.MAXIMUM,
+				this.caractere.courage(), this.caractere.curiosite(),
+				this.caractere.attachement(), this.caractere.vivacite(),
+				this.caractere.calin()));
+	}
+
 	public NiveauActiviteCerveau niveauActiviteCerveau() {
 		return this.niveauActiviteCerveau;
 	}
@@ -652,8 +685,11 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	/** Quelque chose vient de se passer la. */
 	public void remarquer(Vec3 endroit) {
-		this.memoireCourte.retenir(MemoireCourte.Signal.EVENEMENT_DU_MONDE,
-				BlockPos.containing(endroit), 20 * 8);
+		BlockPos position = BlockPos.containing(endroit);
+		if (this.habituation.accepte(position, this.level().getGameTime())) {
+			this.memoireCourte.retenir(MemoireCourte.Signal.EVENEMENT_DU_MONDE,
+					position, 20 * 8);
+		}
 	}
 
 	public Vec3 pointDInteret() {

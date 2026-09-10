@@ -6,6 +6,10 @@
 - Un cerveau commun, configurable par fichiers, pilote toutes les espèces.
 - La mémoire, la perception, les personnalités et les intentions sont communes
   aux compagnons, avec des capacités propres à chaque espèce.
+- Un état intérieur borné fait évoluer lentement stress, ennui, besoin de contact
+  et envie d'explorer à partir des perceptions déjà calculées.
+- La curiosité s'habitue aux événements répétés d'un même chantier et déclenche
+  une vraie petite réaction d'inspection à l'arrivée.
 - Les animations sont choisies par rôle afin qu'une espèce puisse remplacer ses
   gestes sans modifier le code Java.
 - La voix fonctionne hors ligne avec Plasmo Voice, Vosk et un mode de diagnostic.
@@ -70,7 +74,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 154 tests automatisés réussis.
+- 162 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.
