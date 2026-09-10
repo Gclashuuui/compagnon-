@@ -41,10 +41,6 @@ public class EcranCarnet extends EcranCompagnon {
 	private ResourceLocation SALISSURES;
 	private ResourceLocation CADRE_PORTRAIT;
 	private ResourceLocation SOULIGNEMENT;
-	private ResourceLocation FLECHE_GAUCHE;
-	private ResourceLocation FLECHE_GAUCHE_SURVOL;
-	private ResourceLocation FLECHE_DROITE;
-	private ResourceLocation FLECHE_DROITE_SURVOL;
 	private ResourceLocation PAGE_TOURNE_RTL;
 	private ResourceLocation PAGE_TOURNE_LTR;
 
@@ -52,8 +48,11 @@ public class EcranCarnet extends EcranCompagnon {
 	private static final int LARGEUR = 384;
 	private static final int HAUTEUR = 256;
 
-	private static final int FLECHE_LARGEUR = 29;
-	private static final int FLECHE_HAUTEUR = 28;
+	private static final int COIN_LARGEUR = 38;
+	private static final int COIN_HAUTEUR = 38;
+	private static final int COIN_Y = 202;
+	private static final int COIN_GAUCHE_X = 22;
+	private static final int COIN_DROIT_X = 324;
 
 	private static final int PORTRAIT_SOURCE_L = 142;
 	private static final int PORTRAIT_SOURCE_H = 76;
@@ -120,16 +119,12 @@ public class EcranCarnet extends EcranCompagnon {
 		appliquerTheme(ThemeLivre.charger());
 	}
 
-	private void appliquerTheme(ThemeLivre nouveau) {
+	void appliquerTheme(ThemeLivre nouveau) {
 		this.theme = nouveau;
 		this.FOND = nouveau.texture("book_astra_v2");
 		this.SALISSURES = nouveau.texture("book_details_overlay");
 		this.CADRE_PORTRAIT = nouveau.texture("portrait_frame");
 		this.SOULIGNEMENT = nouveau.texture("underline_astra");
-		this.FLECHE_GAUCHE = nouveau.texture("page_turn_left_normal");
-		this.FLECHE_GAUCHE_SURVOL = nouveau.texture("page_turn_left_hover");
-		this.FLECHE_DROITE = nouveau.texture("page_turn_right_normal");
-		this.FLECHE_DROITE_SURVOL = nouveau.texture("page_turn_right_hover");
 		this.PAGE_TOURNE_RTL = nouveau.texture("page_turn_rtl_strip");
 		this.PAGE_TOURNE_LTR = nouveau.texture("page_turn_ltr_strip");
 		this.ENCRE = nouveau.encre;
@@ -204,7 +199,7 @@ public class EcranCarnet extends EcranCompagnon {
 		selecteurTheme(g, sourisX, sourisY);
 		clochette(g, sourisX, sourisY, partiel);
 		if (this.themeSurvole) {
-			g.renderTooltip(this.font, Component.translatable("livre.compagnon.theme",
+			g.renderTooltip(this.font, Component.translatable("livre.compagnon.themes.ouvrir",
 					Component.translatable(this.theme.traduction())), sourisX, sourisY);
 		}
 	}
@@ -277,22 +272,6 @@ public class EcranCarnet extends EcranCompagnon {
 
 		if (pagesMaximum() > 1) {
 			int flecheY = this.haut + 207;
-			if (this.page > 0) {
-				int flecheX = this.gauche + 22;
-				ResourceLocation texture = dansLaBoite(sourisX, sourisY, flecheX, flecheY,
-						FLECHE_LARGEUR, FLECHE_HAUTEUR)
-						? this.FLECHE_GAUCHE_SURVOL : this.FLECHE_GAUCHE;
-				g.blit(texture, flecheX, flecheY, 0.0F, 0.0F,
-						FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
-			}
-			if (this.page < pagesMaximum() - 1) {
-				int flecheX = this.gauche + 333;
-				ResourceLocation texture = dansLaBoite(sourisX, sourisY, flecheX, flecheY,
-						FLECHE_LARGEUR, FLECHE_HAUTEUR)
-						? this.FLECHE_DROITE_SURVOL : this.FLECHE_DROITE;
-				g.blit(texture, flecheX, flecheY, 0.0F, 0.0F,
-						FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
-			}
 			String compte = (this.page + 1) + " / " + pagesMaximum();
 			g.drawString(this.font, compte,
 					x + (PAGE_LARGEUR - this.font.width(compte)) / 2, flecheY + 10,
@@ -505,13 +484,23 @@ public class EcranCarnet extends EcranCompagnon {
 		Bruits.clic();
 	}
 
+	private void ouvrirBibliotheque() {
+		Bruits.clic();
+		this.minecraft.setScreen(new EcranThemesLivre(this, this.theme, this::appliquerTheme));
+	}
+
 	// --- Ce qu'on peut faire ------------------------------------------------------------
 
 	@Override
 	public boolean mouseClicked(double sourisX, double sourisY, int bouton) {
 		if ((bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT || bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT)
 				&& themeSous(sourisX, sourisY)) {
-			changerTheme(bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+			if (bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+				ouvrirBibliotheque();
+			} else {
+				this.theme.basculerFavori();
+				Bruits.clic();
+			}
 			return true;
 		}
 		if (clochetteCliquee(sourisX, sourisY, bouton)) {
@@ -546,15 +535,15 @@ public class EcranCarnet extends EcranCompagnon {
 		}
 
 		if (pagesMaximum() > 1) {
-			int flecheY = this.haut + 207;
+			int flecheY = this.haut + COIN_Y;
 			if (this.page > 0 && dansLaBoite(sourisX, sourisY,
-					this.gauche + 22, flecheY, FLECHE_LARGEUR, FLECHE_HAUTEUR)) {
+					this.gauche + COIN_GAUCHE_X, flecheY, COIN_LARGEUR, COIN_HAUTEUR)) {
 				allerPageListe(this.page - 1);
 				return true;
 			}
 			if (this.page < pagesMaximum() - 1 && dansLaBoite(sourisX, sourisY,
-					this.gauche + 333, flecheY,
-					FLECHE_LARGEUR, FLECHE_HAUTEUR)) {
+					this.gauche + COIN_DROIT_X, flecheY,
+					COIN_LARGEUR, COIN_HAUTEUR)) {
 				allerPageListe(this.page + 1);
 				return true;
 			}

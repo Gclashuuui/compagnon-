@@ -1,0 +1,80 @@
+{
+  "id": "porcelaine",
+  "name": "Porcelaine des songes",
+  "bookNative": [
+    384,
+    256
+  ],
+  "bookHD": [
+    1920,
+    1152
+  ],
+  "drawRectGui": [
+    -48,
+    -16,
+    480,
+    288
+  ],
+  "contentRectsGui": [
+    [
+      34,
+      28,
+      142,
+      184
+    ],
+    [
+      208,
+      28,
+      142,
+      184
+    ]
+  ],
+  "contentRectsHD": [
+    [
+      328,
+      176,
+      568,
+      736
+    ],
+    [
+      1024,
+      176,
+      568,
+      736
+    ]
+  ],
+  "pagePNG": [
+    568,
+    736
+  ],
+  "buttons": [
+    29,
+    28
+  ],
+  "buttonPositions": [
+    [
+      22,
+      207
+    ],
+    [
+      333,
+      207
+    ]
+  ],
+  "buttonFirstOpaqueRow": 6,
+  "buttonsAspectPreserved": true,
+  "sourceCleanRects": {
+    "x": [
+      350,
+      740,
+      885,
+      1280
+    ],
+    "y": [
+      200,
+      680
+    ]
+  },
+  "frameOpeningsTransparent": true,
+  "pagesOpaque": true
+}

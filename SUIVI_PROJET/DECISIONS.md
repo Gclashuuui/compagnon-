@@ -11,6 +11,10 @@
   sont pas des textures UV prêtes à coller sur le modèle 3D.
 - Les boutons de changement de page visibles doivent disparaître. Les coins des pages
   deviennent les zones cliquables.
+- Les favoris de livres et le thème sélectionné sont des préférences locales au
+  joueur : ils ne sont jamais envoyés au serveur.
+- Avec beaucoup de variantes, le clic sur le nuancier ouvre une bibliothèque avec
+  aperçus ; le clic droit sert de raccourci pour ajouter le thème courant aux favoris.
 - Le panneau de santé doit toujours montrer quatre besoins distincts : faim, énergie,
   santé et complicité. Un cœur ne représente pas à la fois la santé et le lien.
 - Les thèmes du carnet de santé changent le cadre et la palette, jamais la position

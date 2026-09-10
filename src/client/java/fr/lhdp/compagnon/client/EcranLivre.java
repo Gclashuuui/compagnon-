@@ -46,12 +46,6 @@ public class EcranLivre extends EcranCompagnon {
 	private ResourceLocation SOULIGNEMENT;
 	private ResourceLocation SIGNETS_TEXTURE;
 	private ResourceLocation CARTES_RITUELS;
-	private ResourceLocation FLECHE_GAUCHE;
-	private ResourceLocation FLECHE_GAUCHE_SURVOL;
-	private ResourceLocation FLECHE_GAUCHE_PRESSEE;
-	private ResourceLocation FLECHE_DROITE;
-	private ResourceLocation FLECHE_DROITE_SURVOL;
-	private ResourceLocation FLECHE_DROITE_PRESSEE;
 	private ResourceLocation PAGE_TOURNE_RTL;
 	private ResourceLocation PAGE_TOURNE_LTR;
 
@@ -62,8 +56,12 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int LARGEUR = 384;
 	private static final int HAUTEUR = 256;
 
-	private static final int FLECHE_LARGEUR = 29;
-	private static final int FLECHE_HAUTEUR = 28;
+	/** Zones invisibles et genereuses dans les coins inferieurs des pages. */
+	private static final int COIN_LARGEUR = 38;
+	private static final int COIN_HAUTEUR = 38;
+	private static final int COIN_Y = 202;
+	private static final int COIN_GAUCHE_X = 22;
+	private static final int COIN_DROIT_X = 324;
 
 	private static final int PORTRAIT = 76;
 	private static final int PORTRAIT_SOURCE_L = 142;
@@ -187,10 +185,6 @@ public class EcranLivre extends EcranCompagnon {
 	/** Page demandee pendant que la feuille la rejoint, ou -1 au repos. */
 	private int pageCible = -1;
 	private long debutTournePage;
-	/** Garde l'etat presse assez longtemps pour etre perceptible. */
-	private int boutonPresseSens;
-	private long boutonPresseJusqua;
-
 	private ThemeLivre theme;
 	private int signetSurvole = -1;
 	private boolean themeSurvole;
@@ -221,7 +215,7 @@ public class EcranLivre extends EcranCompagnon {
 	}
 
 	/** Change ensemble le cuir, les controles et les encres. */
-	private void appliquerTheme(ThemeLivre nouveau) {
+	void appliquerTheme(ThemeLivre nouveau) {
 		this.theme = nouveau;
 		this.FOND = nouveau.texture("book_astra_v2");
 		this.SALISSURES = nouveau.texture("book_details_overlay");
@@ -230,12 +224,6 @@ public class EcranLivre extends EcranCompagnon {
 		this.SIGNETS_TEXTURE = nouveau.texture(nouveau.hauteDefinition()
 				? "bookmark_tabs_hd" : "bookmark_tabs");
 		this.CARTES_RITUELS = nouveau.texture("ritual_cards");
-		this.FLECHE_GAUCHE = nouveau.texture("page_turn_left_normal");
-		this.FLECHE_GAUCHE_SURVOL = nouveau.texture("page_turn_left_hover");
-		this.FLECHE_GAUCHE_PRESSEE = nouveau.texture("page_turn_left_pressed");
-		this.FLECHE_DROITE = nouveau.texture("page_turn_right_normal");
-		this.FLECHE_DROITE_SURVOL = nouveau.texture("page_turn_right_hover");
-		this.FLECHE_DROITE_PRESSEE = nouveau.texture("page_turn_right_pressed");
 		this.PAGE_TOURNE_RTL = nouveau.texture("page_turn_rtl_strip");
 		this.PAGE_TOURNE_LTR = nouveau.texture("page_turn_ltr_strip");
 		this.ENCRE = nouveau.encre;
@@ -327,7 +315,7 @@ public class EcranLivre extends EcranCompagnon {
 					sourisX, sourisY);
 		}
 		if (this.themeSurvole) {
-			g.renderTooltip(this.font, Component.translatable("livre.compagnon.theme",
+			g.renderTooltip(this.font, Component.translatable("livre.compagnon.themes.ouvrir",
 					Component.translatable(this.theme.traduction())), sourisX, sourisY);
 		}
 		dessinerDecouverte(g, sourisX, sourisY);
@@ -1522,8 +1510,6 @@ public class EcranLivre extends EcranCompagnon {
 		this.sensPage = bornee > this.page ? 1 : -1;
 		this.pageCible = bornee;
 		this.debutTournePage = System.currentTimeMillis();
-		this.boutonPresseSens = this.sensPage;
-		this.boutonPresseJusqua = this.debutTournePage + 120L;
 		Bruits.page();
 	}
 
@@ -1557,26 +1543,8 @@ public class EcranLivre extends EcranCompagnon {
 	}
 
 	private void bordDePage(GuiGraphics g, int sourisX, int sourisY) {
-		int y = this.haut + 207;
-		long maintenant = System.currentTimeMillis();
-
-		if (this.page > 0) {
-			boolean survole = dansBoutonPage(sourisX, sourisY, this.gauche + 22, y);
-			ResourceLocation texture = maintenant < this.boutonPresseJusqua
-					&& this.boutonPresseSens < 0 ? this.FLECHE_GAUCHE_PRESSEE
-					: survole ? this.FLECHE_GAUCHE_SURVOL : this.FLECHE_GAUCHE;
-			g.blit(texture, this.gauche + 22, y, 0.0F, 0.0F,
-					FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
-		}
-		if (this.page < DERNIERE_PAGE) {
-			boolean survole = dansBoutonPage(sourisX, sourisY, this.gauche + 333, y);
-			ResourceLocation texture = maintenant < this.boutonPresseJusqua
-					&& this.boutonPresseSens > 0 ? this.FLECHE_DROITE_PRESSEE
-					: survole ? this.FLECHE_DROITE_SURVOL : this.FLECHE_DROITE;
-			g.blit(texture, this.gauche + 333, y, 0.0F, 0.0F,
-					FLECHE_LARGEUR, FLECHE_HAUTEUR, FLECHE_LARGEUR, FLECHE_HAUTEUR);
-		}
-
+		// Les coins sont volontairement invisibles. La couverture dessinee reste
+		// intacte ; seul le clic revele qu'ils tournent la page.
 		if (this.combien > 1) {
 			Component compte = Component.translatable("livre.compagnon.compte",
 					this.index + 1, this.combien);
@@ -1623,6 +1591,11 @@ public class EcranLivre extends EcranCompagnon {
 		Bruits.clic();
 	}
 
+	private void ouvrirBibliotheque() {
+		Bruits.clic();
+		this.minecraft.setScreen(new EcranThemesLivre(this, this.theme, this::appliquerTheme));
+	}
+
 	@Override
 	public boolean mouseClicked(double sourisX, double sourisY, int bouton) {
 		if (this.decouverte) {
@@ -1632,7 +1605,12 @@ public class EcranLivre extends EcranCompagnon {
 		}
 		if ((bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT || bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT)
 				&& themeSous(sourisX, sourisY)) {
-			changerTheme(bouton == GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+			if (bouton == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+				ouvrirBibliotheque();
+			} else {
+				this.theme.basculerFavori();
+				Bruits.clic();
+			}
 			return true;
 		}
 		if (clochetteCliquee(sourisX, sourisY, bouton)) {
@@ -1673,14 +1651,16 @@ public class EcranLivre extends EcranCompagnon {
 			return true;
 		}
 
-		int y = this.haut + 207;
-		if (sourisY >= y && sourisY <= y + FLECHE_HAUTEUR) {
-			if (this.page > 0 && dansBoutonPage(sourisX, sourisY, this.gauche + 22, y)) {
+		int y = this.haut + COIN_Y;
+		if (sourisY >= y && sourisY <= y + COIN_HAUTEUR) {
+			if (this.page > 0 && dansBoutonPage(sourisX, sourisY,
+					this.gauche + COIN_GAUCHE_X, y)) {
 				allerPage(this.page - 1);
 				return true;
 			}
 			if (this.page < DERNIERE_PAGE
-					&& dansBoutonPage(sourisX, sourisY, this.gauche + 333, y)) {
+					&& dansBoutonPage(sourisX, sourisY,
+							this.gauche + COIN_DROIT_X, y)) {
 				allerPage(this.page + 1);
 				return true;
 			}
@@ -1788,8 +1768,8 @@ public class EcranLivre extends EcranCompagnon {
 	}
 
 	private boolean dansBoutonPage(double sourisX, double sourisY, int x, int y) {
-		return sourisX >= x && sourisX < x + FLECHE_LARGEUR
-				&& sourisY >= y && sourisY < y + FLECHE_HAUTEUR;
+		return sourisX >= x && sourisX < x + COIN_LARGEUR
+				&& sourisY >= y && sourisY < y + COIN_HAUTEUR;
 	}
 
 	@Override

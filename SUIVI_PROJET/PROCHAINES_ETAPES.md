@@ -9,10 +9,11 @@
 
 ## Interface du livre
 
-1. Retirer les boutons visibles en forme de coin de page.
-2. Rendre directement cliquables les coins inférieurs extérieurs des pages.
-3. Conserver l'animation de page après le clic, sans ajouter de bouton flottant.
-4. Tester les six thèmes HD en jeu et corriger les derniers débordements de texte.
+1. Recevoir les compléments graphiques listés dans
+   `PROMPTS/PROMPT_COMPLEMENTS_LIVRES_MERVEILLES.md`.
+2. Remplacer les ressources neutres de secours des cinq nouveaux thèmes.
+3. Tester les onze thèmes HD en jeu et corriger les derniers débordements de texte.
+4. Vérifier la bibliothèque de thèmes aux petites et grandes échelles d'interface.
 5. Ajouter les nouvelles couvertures que l'auteur va produire.
 
 ## Objet 3D « Journal des Liens »

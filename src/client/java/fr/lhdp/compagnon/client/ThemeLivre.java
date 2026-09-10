@@ -10,8 +10,13 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Une apparence complete du journal, avec sa palette lisible.
@@ -47,6 +52,26 @@ enum ThemeLivre {
 			0xFF542F34, 0xFF785244, 0xFF9B3333, 0x55785244, 0xFF854054,
 			0xFF45362B, 0xFFBEA887, 0xFFE8D5B3, 0xFFF5E7C8,
 			0xCC45362B, 0xEE854054, 0xFFD2B681, 0xFFFFF1D4),
+	MEDIEVAL_HD("medieval_hd", "livre.compagnon.theme.medieval_hd",
+			0xFF503122, 0xFF79583C, 0xFF993E35, 0x5579583C, 0xFF687445,
+			0xFF482B1E, 0xFFB28D59, 0xFFE1C394, 0xFFF2D9AF,
+			0xCC482B1E, 0xEE7B3D31, 0xFFD1A75C, 0xFFFFE8BE),
+	BESTIAIRE_HD("bestiaire_hd", "livre.compagnon.theme.bestiaire_hd",
+			0xFF173C3F, 0xFF5D665A, 0xFF9B3E3E, 0x555D665A, 0xFF1E676B,
+			0xFF123D42, 0xFF9E8B68, 0xFFE5D5B5, 0xFFF8EACD,
+			0xCC123D42, 0xEE1E676B, 0xFFCDAA60, 0xFFFFF1D0),
+	VITRAIL_HD("vitrail_hd", "livre.compagnon.theme.vitrail_hd",
+			0xFF4A2D47, 0xFF79536F, 0xFFA04152, 0x5579536F, 0xFF2E7778,
+			0xFF4B284B, 0xFFC09A6A, 0xFFF0D2DD, 0xFFFFEEF3,
+			0xCC4B284B, 0xEE317D7E, 0xFFD5A15F, 0xFFFFF0DA),
+	HORLOGERIE_HD("horlogerie_hd", "livre.compagnon.theme.horlogerie_hd",
+			0xFF24463E, 0xFF66735E, 0xFF963D35, 0x5566735E, 0xFF466C55,
+			0xFF263D36, 0xFFB38C50, 0xFFE7CC96, 0xFFF8E3B7,
+			0xCC263D36, 0xEE496A50, 0xFFD2AA61, 0xFFFFEDC4),
+	PORCELAINE_HD("porcelaine_hd", "livre.compagnon.theme.porcelaine_hd",
+			0xFF264E82, 0xFF6B7180, 0xFFA04855, 0x556B7180, 0xFF50765D,
+			0xFF8D774E, 0xFFC6B37F, 0xFFF0E5CC, 0xFFFFF8E8,
+			0xCC8D774E, 0xEEE7D8BA, 0xFFD0AE61, 0xFF284F82),
 	CLASSIQUE("classique", "livre.compagnon.theme.classique",
 			0xFF3A2A18, 0xFF826137, 0xFF8A2F2F, 0x55826137, 0xFF456D59,
 			0xFF39291F, 0xFFB49A70, 0xFFE3CCA3, 0xFFF2DFB8,
@@ -113,8 +138,10 @@ enum ThemeLivre {
 			0xCC100D12, 0xEE783C1B, 0xFFE5863F, 0xFFFFF0CE);
 
 	private static final String CLE = "theme_livre";
+	private static final String CLE_FAVORIS = "themes_livre_favoris";
 	private static final Path FICHIER = FabricLoader.getInstance().getConfigDir()
 			.resolve("compagnon-client.properties");
+	private static final Set<String> FAVORIS = chargerFavoris();
 
 	private final String id;
 	private final String traduction;
@@ -162,7 +189,24 @@ enum ThemeLivre {
 	}
 
 	ResourceLocation texture(String nom) {
-		return Compagnon.id("textures/gui/livre/themes/" + this.id + "/" + nom + ".png");
+		String dossier = estMerveille() && !ressourcePropre(nom) ? "sylvestre_hd" : this.id;
+		return Compagnon.id("textures/gui/livre/themes/" + dossier + "/" + nom + ".png");
+	}
+
+	/**
+	 * Les nouveaux livres apportent leur couverture, leurs pages et leurs boutons.
+	 * Les petites ressources fonctionnelles qui ne sont pas dans le ZIP utilisent
+	 * la version neutre existante, sans dupliquer plusieurs megaoctets dans le JAR.
+	 */
+	private boolean estMerveille() {
+		return this == MEDIEVAL_HD || this == BESTIAIRE_HD || this == VITRAIL_HD
+				|| this == HORLOGERIE_HD || this == PORCELAINE_HD;
+	}
+
+	private static boolean ressourcePropre(String nom) {
+		return nom.equals("book_astra_v2") || nom.equals("cover_frame_hd")
+				|| nom.equals("page_left_hd") || nom.equals("page_right_hd")
+				|| nom.startsWith("page_turn_left") || nom.startsWith("page_turn_right");
 	}
 
 	ThemeLivre suivant() {
@@ -173,6 +217,30 @@ enum ThemeLivre {
 	ThemeLivre precedent() {
 		ThemeLivre[] tous = values();
 		return tous[(this.ordinal() - 1 + tous.length) % tous.length];
+	}
+
+	boolean favori() {
+		return FAVORIS.contains(this.id);
+	}
+
+	void basculerFavori() {
+		if (!FAVORIS.remove(this.id)) {
+			FAVORIS.add(this.id);
+		}
+		sauvegarderFavoris();
+	}
+
+	/** Favoris d'abord, puis l'ordre stable du catalogue. */
+	static List<ThemeLivre> catalogue(boolean seulementFavoris) {
+		List<ThemeLivre> resultat = new ArrayList<>();
+		for (ThemeLivre theme : values()) {
+			if (!seulementFavoris || theme.favori()) {
+				resultat.add(theme);
+			}
+		}
+		resultat.sort(Comparator.comparing(ThemeLivre::favori).reversed()
+				.thenComparingInt(Enum::ordinal));
+		return List.copyOf(resultat);
 	}
 
 	static ThemeLivre charger() {
@@ -196,6 +264,30 @@ enum ThemeLivre {
 	}
 
 	void sauvegarder() {
+		Properties proprietes = lireProprietes();
+		proprietes.setProperty(CLE, this.id);
+		ecrireProprietes(proprietes);
+	}
+
+	private static Set<String> chargerFavoris() {
+		Set<String> resultat = new LinkedHashSet<>();
+		String valeurs = lireProprietes().getProperty(CLE_FAVORIS, "");
+		for (String valeur : valeurs.split(",")) {
+			String id = valeur.trim().toLowerCase(Locale.ROOT);
+			if (!id.isEmpty()) {
+				resultat.add(id);
+			}
+		}
+		return resultat;
+	}
+
+	private static void sauvegarderFavoris() {
+		Properties proprietes = lireProprietes();
+		proprietes.setProperty(CLE_FAVORIS, String.join(",", FAVORIS));
+		ecrireProprietes(proprietes);
+	}
+
+	private static Properties lireProprietes() {
 		Properties proprietes = new Properties();
 		if (Files.isRegularFile(FICHIER)) {
 			try (Reader lecteur = Files.newBufferedReader(FICHIER, StandardCharsets.UTF_8)) {
@@ -204,14 +296,17 @@ enum ThemeLivre {
 				Compagnon.LOG.warn("Impossible de relire les reglages client", exception);
 			}
 		}
-		proprietes.setProperty(CLE, this.id);
+		return proprietes;
+	}
+
+	private static void ecrireProprietes(Properties proprietes) {
 		try {
 			Files.createDirectories(FICHIER.getParent());
 			try (Writer ecrivain = Files.newBufferedWriter(FICHIER, StandardCharsets.UTF_8)) {
 				proprietes.store(ecrivain, "Reglages client du mod Compagnon");
 			}
 		} catch (IOException exception) {
-			Compagnon.LOG.warn("Impossible de sauvegarder le theme du livre", exception);
+			Compagnon.LOG.warn("Impossible de sauvegarder les themes du livre", exception);
 		}
 	}
 }

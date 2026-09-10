@@ -22,12 +22,18 @@
 
 - Journal complet : Aujourd'hui, Histoire, Liens, Talents et Missions.
 - Carnet de sélection des compagnons.
-- 22 thèmes visuels disponibles.
+- 27 thèmes visuels disponibles.
 - Six thèmes HD intégrés : Sylvestre, Observatoire, Nuages, Lucioles, Marées et
   Confiserie.
 - Les nouveaux thèmes utilisent deux zones de texte fixes de 142 x 184 pixels,
   des couvertures adaptatives et leurs propres signets.
 - Le carnet de sélection et le journal utilisent maintenant le même habillage HD.
+- Cinq livres continus supplémentaires sont intégrés : Médiéval, Bestiaire,
+  Vitrail, Horlogerie et Porcelaine.
+- Le sélecteur ouvre une bibliothèque adaptative avec aperçu, choix direct,
+  pagination, favoris persistants et filtre « Mes favoris ».
+- Les morceaux de page superposés ont disparu du journal et du carnet : les coins
+  inférieurs sont désormais des zones cliquables invisibles de 38 × 38 pixels.
 - Le panneau de santé compact montre désormais faim, énergie, santé et complicité,
   avec un diagnostic prioritaire en toutes lettres.
 - La touche H ouvre une fiche de santé interactive sans mettre le jeu en pause :
