@@ -1,5 +1,18 @@
 # Livraisons
 
+## Compléments v6 des livres merveilleux
+
+- Commit : `16fe1d0` — Signets, rituels, cadres, détails et animations propres aux
+  cinq livres merveilleux.
+- Le fallback vers Sylvestre est supprimé ; chaque thème contient 12 ressources.
+- Les pages tournent en huit images à 70 ms par image.
+- Le libellé du filtre des favoris n'est plus rendu avec la police d'icônes : les
+  carrés blancs observés à l'écran disparaissent.
+- Prompt de refonte : `PROMPTS/PROMPT_BIBLIOTHEQUE_APPARENCES_HD.md`.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- SHA-256 : `7B388A6DC5638A30AFB37798B114E4EB52096E795C51E42CA97F529CE4F0CB01`.
+- Vérification : compilation réussie, 149 tests réussis.
+
 ## Bibliothèque des livres merveilleux
 
 - Commit : `4236254` — Bibliothèque, favoris et cinq thèmes continus.
