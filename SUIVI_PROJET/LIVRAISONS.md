@@ -1,5 +1,16 @@
 # Livraisons
 
+## Bibliothèque illustrée des apparences
+
+- Commit : `41a7730` — Nouvelle bibliothèque bois et laiton avec favoris.
+- Douze thèmes par page, aperçus réels, noms dynamiques et infobulles complètes.
+- États graphiques pour les cartes, les étoiles, les filtres et la pagination.
+- Filtres directs « Tous » / « Favoris », état vide illustré et pagination
+  compatible avec une collection amenée à grandir.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- SHA-256 : `99CCC24D50A23C1C3644F8AEAFE151C29A51ADEC7EB7BFC7FEF86C811C2402F1`.
+- Vérification : compilation réussie, 151 tests réussis.
+
 ## Collection détaillée des carnets de santé
 
 - Commit : `7d2ba8d` — Dix carnets enchantés pour la fiche et le HUD.
