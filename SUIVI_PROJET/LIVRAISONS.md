@@ -1,5 +1,19 @@
 # Livraisons
 
+## Collection détaillée des carnets de santé
+
+- Commit : `7d2ba8d` — Dix carnets enchantés pour la fiche et le HUD.
+- Nouveaux habillages : cinq dragons, Phénix, Renard lunaire, Glycine,
+  Œuf cosmique et Champignons.
+- Total disponible dans la galerie : 13 habillages persistants.
+- Le bouton d'habillage ouvre une galerie directe ; le clic droit conserve le
+  raccourci vers le thème précédent.
+- Les textes, diagnostics et jauges restent dynamiques et suivent le gabarit
+  commun du pack.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- SHA-256 : `64163D0551813DFD5AD3CBABA657D1D19245149B9D36ECD8D2EC6F52E90A81AD`.
+- Vérification : compilation réussie, 150 tests réussis.
+
 ## Compléments v6 des livres merveilleux
 
 - Commit : `16fe1d0` — Signets, rituels, cadres, détails et animations propres aux
