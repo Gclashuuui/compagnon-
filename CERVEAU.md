@@ -146,3 +146,20 @@ joue `inspection_debut`, une boucle d'observation, puis `inspection_fin` ; une
 approche affectueuse joue son raccord avant l'affection ; deux amis se remarquent
 avant de se saluer. Un rôle absent est sauté automatiquement, donc ce mécanisme
 reste compatible avec toutes les espèces anciennes et futures.
+
+## Une arrivée mise en scène, jamais une roulette
+
+Une invocation volontaire ouvre cinq secondes d'acclimatation. Les besoins et
+initiatives ordinaires attendent ; seules une urgence réelle ou une nouvelle
+commande du joueur peuvent interrompre la scène. Le caractère choisit une suite
+stable : le curieux observe autour de lui, l'affectueux reconnaît puis se penche,
+le timide hésite avant de reconnaître son maître et le tempérament équilibré
+cligne simplement des yeux. Les retrouvailles après une longue absence restent
+plus importantes et remplacent proprement cette arrivée.
+
+Les gestes de fond ne reposent plus sur un tirage uniforme. Chaque compagnon a
+une horloge dérivée de son UUID, accélérée par l'ennui et la vivacité. Son trait
+dominant choisit ensuite une famille cohérente : regards et oreilles pour un
+curieux, appuis et queue pour un vif, clignements et réajustements pour un calme.
+Le résultat reste varié, mais il possède toujours une raison et deux compagnons
+ne se synchronisent pas.

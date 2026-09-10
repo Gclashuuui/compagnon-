@@ -215,6 +215,7 @@ public final class Invocation {
 		fr.lhdp.compagnon.entite.Etincelles.bouffee(compagnon);
 		fr.lhdp.compagnon.entite.Sons.jouer(compagnon,
 			fr.lhdp.compagnon.entite.Sons.CONTENT);
+		compagnon.preparerArrivee();
 	}
 
 	private static CompagnonEntity entiteDe(ServerLevel niveau, FicheCompagnon fiche) {

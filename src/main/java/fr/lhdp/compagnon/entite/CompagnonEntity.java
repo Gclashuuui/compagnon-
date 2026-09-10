@@ -259,6 +259,12 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	/** Deux rendez-vous légers avec la journée, bornés à deux dates. */
 	private final RythmeQuotidien rythmeQuotidien = new RythmeQuotidien();
 
+	/** Horloge personnelle des micro-gestes, réinitialisée depuis l'UUID de la fiche. */
+	private RythmeGestesNaturels rythmeGestesNaturels = new RythmeGestesNaturels(0);
+
+	/** Silence comportemental après une invocation visible par le joueur. */
+	private int ticksAcclimatation;
+
 	/** Niveau de detail du cerveau, recalcule lentement par la perception. */
 	private NiveauActiviteCerveau niveauActiviteCerveau = NiveauActiviteCerveau.PROCHE;
 
@@ -554,7 +560,8 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * un cavalier sur le dos, un objet dans la gueule, et le sommeil.
 	 */
 	public boolean peutFaireUnPetitGeste() {
-		return this.ticksAction == 0 && !estMonte() && !mode().pose()
+		return this.ticksAcclimatation == 0 && this.ticksAction == 0
+			&& !estMonte() && !mode().pose()
 			&& !dort() && lesMainsVides()
 			// Une reaction jouee pendant un trajet gagnait visuellement contre la
 			// marche : l'animal glissait. Les gestes attendent maintenant une vraie
@@ -584,6 +591,10 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	RythmeQuotidien rythmeQuotidien() {
 		return this.rythmeQuotidien;
+	}
+
+	RythmeGestesNaturels rythmeGestesNaturels() {
+		return this.rythmeGestesNaturels;
 	}
 
 	/**
@@ -619,16 +630,35 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	}
 
 	/**
-	 * Les envies invisibles sont espacees quand aucun joueur n'est proche. Un but
-	 * deja lance continue normalement : cette methode ne sert qu'a son examen.
+	 * Les envies invisibles sont espacees quand aucun joueur n'est proche. Cette
+	 * methode ne sert qu'a décider quand examiner un nouveau comportement.
 	 */
 	public boolean peutEvaluer(CerveauComportement.Noeud noeud) {
+		if (!peutAgirPendantAcclimatation(noeud)) {
+			return false;
+		}
 		int cadence = this.niveauActiviteCerveau.cadence(noeud);
 		if (cadence <= 1) {
 			return true;
 		}
 		return Math.floorMod(this.tickCount + getUUID().hashCode()
 				+ noeud.ordinal() * 17, cadence) == 0;
+	}
+
+	/**
+	 * Pendant l'arrivée, seules la sécurité et les demandes explicites peuvent
+	 * couper la courte scène de reconnaissance. Ce filtre s'applique aussi aux
+	 * comportements qui étaient déjà actifs avant une réinvocation.
+	 */
+	boolean peutAgirPendantAcclimatation(CerveauComportement.Noeud noeud) {
+		if (this.ticksAcclimatation == 0) {
+			return true;
+		}
+		return switch (noeud) {
+			case SURVIE, RAPPEL, DESTINATION_DEMANDEE, VOL_DEMANDE,
+					OBJET_DEMANDE, JEU_DEMANDE -> true;
+			default -> false;
+		};
 	}
 
 	/** Retrouve une entité sans la garder en référence dans la mémoire. */
@@ -1449,6 +1479,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// vie) : on ne les veut pas, nos barres sont a nous.
 		setTame(true, false);
 		setCaractere(Contenu.caractere(fiche.caractere()));
+		this.rythmeGestesNaturels = new RythmeGestesNaturels(fiche.id().hashCode());
 		this.familiers.clear();
 		fiche.connaissances().forEach((qui, fois) -> {
 			if (fois >= FOIS_POUR_ETRE_FAMILIER) {
@@ -1456,6 +1487,35 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			}
 		});
 		appliquerMode(fiche.mode());
+	}
+
+	/**
+	 * Une invocation n'est pas un lancer de dés. Il observe puis reconnaît son
+	 * maître selon son caractère, et toutes les envies ordinaires attendent cinq
+	 * secondes. Une urgence ou un nouvel ordre peut toujours interrompre la scène.
+	 */
+	public void preparerArrivee() {
+		this.ticksAcclimatation = 20 * 5;
+		getNavigation().stop();
+		setDeltaMovement(Vec3.ZERO);
+		LivingEntity maitre = getOwner();
+		if (maitre != null) {
+			getLookControl().setLookAt(maitre, 40.0F, 40.0F);
+		}
+		if (this.caractere.curiosite() >= 0.72F) {
+			jouerSuite(PrioriteAction.AFFECTIF, "@micro_regard_gauche",
+					"@micro_regard_droite", "@reconnait_personne");
+		} else if (this.caractere.attachement() >= 0.70F
+				|| this.caractere.calin() >= 0.70F) {
+			jouerSuite(PrioriteAction.AFFECTIF, "@reconnait_personne",
+					"@fin_approche_affective");
+		} else if (this.caractere.courage() < 0.35F) {
+			jouerSuite(PrioriteAction.AFFECTIF, "@micro_hesite",
+					"@reconnait_personne");
+		} else {
+			jouerSuite(PrioriteAction.AFFECTIF, "@micro_cligne",
+					"@reconnait_personne");
+		}
 	}
 
 	/** Le mode tel que l'entite l'affiche. La fiche reste la verite. */
@@ -1606,6 +1666,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 		if (this.level().isClientSide()) {
 			return;
+		}
+		if (this.ticksAcclimatation > 0) {
+			this.ticksAcclimatation--;
 		}
 
 		// Les capteurs sont cadencés et décalés entre entités. Le chronomètre est

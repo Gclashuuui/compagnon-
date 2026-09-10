@@ -64,16 +64,20 @@ public final class Presence {
 
 	/** En moyenne une proposition par minute, examinee deux fois par seconde. */
 	/** Les roles disponibles, dont chaque espece peut remplir tout ou partie. */
-	private static final List<String> GESTES_NATURELS =
-			List.of("ambiance", "ambiance_2", "ambiance_3", "ambiance_4",
-					"micro_cligne", "micro_cligne_double",
-					"micro_oreille_gauche", "micro_oreille_droite",
-					"micro_regard_gauche", "micro_regard_droite",
-					"micro_tete_gauche", "micro_tete_droite",
-					"micro_appui_gauche", "micro_appui_droite",
-					"micro_queue_gauche", "micro_queue_droite",
-					"micro_queue_repose", "micro_aile_replace",
-					"micro_regarde_derriere", "micro_hesite");
+	private static final List<String> GESTES_CALMES = List.of(
+			"micro_cligne", "micro_cligne", "micro_cligne_double",
+			"micro_queue_repose", "micro_aile_replace", "micro_appui_gauche",
+			"micro_appui_droite", "ambiance");
+	private static final List<String> GESTES_CURIEUX = List.of(
+			"micro_oreille_gauche", "micro_oreille_droite",
+			"micro_regard_gauche", "micro_regard_droite",
+			"micro_tete_gauche", "micro_tete_droite",
+			"micro_regarde_derriere", "micro_hesite", "ambiance_2");
+	private static final List<String> GESTES_VIFS = List.of(
+			"micro_appui_gauche", "micro_appui_droite",
+			"micro_queue_gauche", "micro_queue_droite",
+			"micro_aile_replace", "micro_regard_gauche", "micro_regard_droite",
+			"ambiance_3", "ambiance_4");
 
 	/** Un gourmand remendie au bout d'une minute. */
 	private static final int AVANT_DE_REMENDIER = 20 * 60;
@@ -206,31 +210,48 @@ public final class Presence {
 	 *
 	 * <p>La liste ne contient que des roles. Une espece qui ne les remplit pas ne
 	 * change absolument pas ; celle qui en possede plusieurs varie sans que le
-	 * code connaisse le nom d'une seule animation. Le tirage est rare et ne fait
-	 * aucune recherche dans le monde.
+	 * code connaisse le nom d'une seule animation. Une horloge propre à la bête
+	 * choisit une famille liée à son caractère, sans recherche dans le monde.
 	 */
 	private static boolean unGesteNaturel(CompagnonEntity compagnon, Attention attention) {
-		if (compagnon.getRandom().nextInt(
-				compagnon.profilCerveau().chanceGesteNaturel()) != 0) {
+		int intervalle = compagnon.profilCerveau().chanceGesteNaturel() * TOUS_LES;
+		if (!compagnon.rythmeGestesNaturels().avancer(TOUS_LES, intervalle,
+				compagnon.etatInterieur().ennui(), compagnon.caractere().vivacite())) {
 			return false;
 		}
 		Espece espece = Especes.get(compagnon.espece());
 		if (espece == null) {
 			return false;
 		}
-		java.util.ArrayList<String> possibles = new java.util.ArrayList<>(GESTES_NATURELS.size());
-		for (String role : GESTES_NATURELS) {
-			if (espece.reaction(role) != null) {
-				possibles.add(role);
+		List<String> famille = familleDeGestes(compagnon);
+		int depart = compagnon.rythmeGestesNaturels().index(famille.size());
+		String role = null;
+		for (int i = 0; i < famille.size(); i++) {
+			String candidat = famille.get((depart + i) % famille.size());
+			if (espece.reaction(candidat) != null) {
+				role = candidat;
+				break;
 			}
 		}
-		if (possibles.isEmpty() || !attention.permet("naturel", 20 * 35)) {
+		if (role == null || !attention.permet("naturel", 20 * 35)) {
 			return false;
 		}
-		String role = possibles.get(compagnon.getRandom().nextInt(possibles.size()));
 		String animation = espece.reaction(role);
 		compagnon.jouerActionPendant("@" + role, Longueurs.de(animation));
 		return true;
+	}
+
+	/** La personnalité choisit une famille cohérente, jamais une animation uniforme. */
+	private static List<String> familleDeGestes(CompagnonEntity compagnon) {
+		float curiosite = compagnon.caractere().curiosite();
+		float vivacite = compagnon.caractere().vivacite();
+		if (curiosite >= vivacite && curiosite >= 0.55F) {
+			return GESTES_CURIEUX;
+		}
+		if (vivacite >= 0.58F) {
+			return GESTES_VIFS;
+		}
+		return GESTES_CALMES;
 	}
 
 	/**

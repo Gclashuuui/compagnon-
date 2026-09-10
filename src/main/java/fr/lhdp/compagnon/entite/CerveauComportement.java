@@ -86,7 +86,9 @@ public final class CerveauComportement {
 			}
 
 			@Override public boolean canContinueToUse() {
-				return autorise() && comportement.canContinueToUse();
+				return autorise()
+						&& compagnon.peutAgirPendantAcclimatation(noeud)
+						&& comportement.canContinueToUse();
 			}
 
 			@Override public void start() { comportement.start(); }

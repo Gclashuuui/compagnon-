@@ -16,6 +16,9 @@
 - Les 30 micro-animations du dragonnet sont intégrées sans modifier les 72
   anciennes. Une file bornée enchaîne inspection, fin d'approche affectueuse et
   salut social ; ennui et détente après alerte disposent de gestes contextuels.
+- Une invocation impose cinq secondes d'acclimatation déterministe selon le
+  caractère. Les gestes naturels suivent une horloge personnelle influencée par
+  l'ennui et la vivacité, puis une famille cohérente calme, curieuse ou vive.
 - Les animations sont choisies par rôle afin qu'une espèce puisse remplacer ses
   gestes sans modifier le code Java.
 - La voix fonctionne hors ligne avec Plasmo Voice, Vosk et un mode de diagnostic.
@@ -80,7 +83,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 167 tests automatisés réussis.
+- 171 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.
