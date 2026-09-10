@@ -1,0 +1,17 @@
+# Décisions conservées
+
+- Le nom de l'objet physique est **Journal des Liens**.
+- Un seul modèle 3D de livre sert à tous les thèmes.
+- Les variantes changent la texture, pas la géométrie.
+- Le livre doit convenir à toutes les espèces : aucun symbole exclusivement chien,
+  chat ou dragon.
+- Le titre est ajouté avec une vraie police pixel si l'outil artistique ne sait pas
+  produire des lettres impeccables.
+- Les textures d'interface servent de références de direction artistique ; elles ne
+  sont pas des textures UV prêtes à coller sur le modèle 3D.
+- Les boutons de changement de page visibles doivent disparaître. Les coins des pages
+  deviennent les zones cliquables.
+- Le code, les documents de suivi et les livraisons restent versionnés sur GitHub.
+- Le dossier local `output/` n'est pas ajouté automatiquement au dépôt.
+- Toute nouvelle espèce réutilise le cerveau commun, la mémoire, la perception et les
+  règles d'optimisation, avec des animations et capacités adaptées à son corps.

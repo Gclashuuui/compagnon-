@@ -2,6 +2,7 @@
 
 Documentation de production :
 
+- [Suivi permanent et prochaines étapes](SUIVI_PROJET/README.md)
 - [Architecture du cerveau](CERVEAU.md)
 - [Animations pilotées par le cerveau](ANIMATIONS_CERVEAU.md)
 - [Starter packs de 60 et 70 animations](PACKS_ANIMATIONS.md)
@@ -23,11 +24,11 @@ Le compagnon possede notamment :
 - un cerveau commun visible par un petit bandeau discret, avec diagnostic F8
   pour relier intention, locomotion et animation pendant la creation d'une espece.
 
-Le livre et le carnet proposent quatre apparences pixel art : Classique, Ocean,
-Obsidienne et Aurore boreale. Le petit nuancier sur la tranche gauche, ou la
-touche `C`, change le theme. Le choix est conserve uniquement sur le client. Les
-signets illustres ouvrent directement une section et les coins de feuille jouent
-une animation complete dans les deux sens.
+Le livre et le carnet proposent 22 apparences pixel art, dont six couvertures
+haute definition. Le petit nuancier sur la tranche gauche, ou la touche `C`,
+change le theme. Le choix est conserve uniquement sur le client. Les signets
+illustres ouvrent directement une section et les pages jouent une animation
+complete dans les deux sens.
 
 Les profils de cerveau sont dans `data/compagnon/cerveaux/`. Une espèce utilise
 automatiquement `aerien` ou `terrestre`, ou choisit un autre profil avec la clé
@@ -59,7 +60,8 @@ Le mod compile se trouve ensuite dans `build/libs/`.
 
 ## Documentation
 
-- `REPRENDRE.md` decrit l'architecture et l'etat actuel du projet.
+- `SUIVI_PROJET/` donne le résumé actuel, les décisions et l'ordre de travail.
+- `REPRENDRE.md` conserve l'historique technique détaillé du projet.
 - `ANIMATIONS.md` rassemble les roles et intentions des animations.
 - `CONCEPTION.html` presente les principes et les idees de conception.
 

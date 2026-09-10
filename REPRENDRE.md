@@ -1,7 +1,8 @@
 # REPRENDRE — le mod Compagnon
 
-Ce document remplace la lecture du code pour reprendre le projet. Il est tenu à
-jour à la main : **si tu changes quelque chose d'important, change-le ici aussi.**
+Le résumé court et actuel vit désormais dans `SUIVI_PROJET/`. Ce document reste
+la référence technique détaillée et l'historique des problèmes déjà résolus.
+Après une grosse mise à jour, commencer par actualiser le dossier de suivi.
 
 ---
 
