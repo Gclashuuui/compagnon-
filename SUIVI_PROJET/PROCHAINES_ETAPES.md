@@ -3,11 +3,10 @@
 ## Priorité immédiate — carnet de santé
 
 1. Tester en jeu les dix carnets enchantés à plusieurs échelles d'interface.
-2. Vérifier le décor complet du HUD avec un compagnon et le mode compact avec
-   plusieurs compagnons.
-3. Ajuster seulement les marges ou contrastes révélés par le test en jeu ; les
-   zones de texte et de jauges suivent déjà le `layout.json` livré.
-4. Vérifier la galerie des treize habillages sur une petite résolution.
+2. Vérifier le nouveau HUD RP 112 × 38 avec un puis plusieurs compagnons.
+3. Contrôler la lisibilité des quatre pictogrammes à chaque échelle Minecraft.
+4. Vérifier la galerie compacte des treize habillages sur une petite résolution.
+5. Ajuster seulement les contrastes révélés par le test en jeu.
 
 ## Interface du livre
 

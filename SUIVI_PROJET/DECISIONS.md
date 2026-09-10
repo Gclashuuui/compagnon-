@@ -23,6 +23,10 @@
   santé et complicité. Un cœur ne représente pas à la fois la santé et le lien.
 - Les thèmes du carnet de santé changent le cadre et la palette, jamais la position
   des textes et des jauges. Le choix reste purement client.
+- Le HUD permanent privilégie le RP : 112 × 38 pixels, aucun décor extraverti et
+  aucune miniature redimensionnée. Les thèmes détaillés restent dans la fiche ouverte.
+- Les quatre icônes du HUD sont des formes pixel nettes rendues par le code afin
+  qu'elles restent lisibles quelle que soit la texture sélectionnée.
 - La collection détaillée des carnets de santé conserve les décors qui dépassent
   lorsqu'il y a assez de place. Plusieurs compagnons repassent au format compact
   pour empêcher les ornements de se chevaucher.

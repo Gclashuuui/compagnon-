@@ -9,12 +9,12 @@ import org.lwjgl.glfw.GLFW;
 /** Sélection directe des habillages du carnet de santé. */
 final class EcranThemesSante extends EcranCompagnon {
 
-	private static final int CARTE_L = 78;
-	private static final int CARTE_H = 68;
-	private static final int ECART = 6;
-	private static final int MARGE = 8;
-	private static final int ENTETE = 34;
-	private static final int PIED = 23;
+	private static final int CARTE_L = 64;
+	private static final int CARTE_H = 50;
+	private static final int ECART = 4;
+	private static final int MARGE = 6;
+	private static final int ENTETE = 28;
+	private static final int PIED = 18;
 
 	private final Screen retour;
 	private ThemeSante selection;
@@ -32,7 +32,7 @@ final class EcranThemesSante extends EcranCompagnon {
 
 	@Override
 	protected void init() {
-		this.colonnes = Math.max(1, Math.min(5,
+		this.colonnes = Math.max(1, Math.min(4,
 				(this.width - 2 * MARGE + ECART) / (CARTE_L + ECART)));
 		this.lignes = Math.max(1, Math.min(2,
 				(this.height - ENTETE - PIED - 2 * MARGE + ECART) / (CARTE_H + ECART)));
@@ -51,10 +51,10 @@ final class EcranThemesSante extends EcranCompagnon {
 		g.fill(0, 0, this.width, this.height, 0x78000000);
 		super.render(g, sourisX, sourisY, partiel);
 		Peinture.panneau(g, this.gauche, this.haut, largeurPanneau(), hauteurPanneau());
-		g.drawString(this.font, this.title, this.gauche + MARGE, this.haut + 10,
+		g.drawString(this.font, this.title, this.gauche + MARGE, this.haut + 7,
 				Peinture.TEXTE, false);
-		g.fill(this.gauche + MARGE, this.haut + 27,
-				this.gauche + largeurPanneau() - MARGE, this.haut + 28, Peinture.OR_SOMBRE);
+		g.fill(this.gauche + MARGE, this.haut + 21,
+				this.gauche + largeurPanneau() - MARGE, this.haut + 22, Peinture.OR_SOMBRE);
 
 		ThemeSante[] themes = ThemeSante.values();
 		int debut = this.page * parPage();
@@ -73,18 +73,20 @@ final class EcranThemesSante extends EcranCompagnon {
 		Peinture.carte(g, x, y, CARTE_L, CARTE_H, choisi || survole);
 
 		if (theme.illustre()) {
-			g.blit(theme.texture("book_closed"), x + 23, y + 3,
-					32, 40, 0.0F, 0.0F, 40, 50, 40, 50);
+			// Réduction exacte à 50 % : deux pixels source deviennent toujours
+			// un pixel d'interface, sans alternance de colonnes ni flou.
+			g.blit(theme.texture("book_closed"), x + 22, y + 3,
+					20, 25, 0.0F, 0.0F, 40, 50, 40, 50);
 		} else {
-			dessinerLivreSimple(g, x + 23, y + 3, theme);
+			dessinerLivreSimple(g, x + 22, y + 3, theme);
 		}
 		if (choisi) {
-			g.renderOutline(x + 2, y + 2, CARTE_L - 4, 44, theme.accent);
+			g.renderOutline(x + 2, y + 2, CARTE_L - 4, 28, theme.accent);
 		}
 
 		String nom = Component.translatable(theme.traduction()).getString();
 		nom = this.font.plainSubstrByWidth(nom, CARTE_L - 8);
-		g.drawCenteredString(this.font, nom, x + CARTE_L / 2, y + 53,
+		g.drawCenteredString(this.font, nom, x + CARTE_L / 2, y + 36,
 				choisi ? Peinture.OR : Peinture.TEXTE);
 		if (survole) {
 			g.renderTooltip(this.font,
@@ -95,15 +97,15 @@ final class EcranThemesSante extends EcranCompagnon {
 
 	private static void dessinerLivreSimple(GuiGraphics g, int x, int y,
 			ThemeSante theme) {
-		g.fill(x + 2, y, x + 30, y + 40, theme.cadre);
-		g.fillGradient(x + 4, y + 2, x + 28, y + 38, theme.fondHaut, theme.fondBas);
-		g.fill(x + 5, y + 4, x + 7, y + 36, theme.accent);
-		g.fill(x + 10, y + 8, x + 25, y + 10, theme.encrePale);
-		g.fill(x + 10, y + 13, x + 22, y + 15, theme.encrePale);
+		g.fill(x + 1, y, x + 19, y + 25, theme.cadre);
+		g.fillGradient(x + 3, y + 2, x + 17, y + 23, theme.fondHaut, theme.fondBas);
+		g.fill(x + 3, y + 3, x + 5, y + 22, theme.accent);
+		g.fill(x + 7, y + 6, x + 15, y + 8, theme.encrePale);
+		g.fill(x + 7, y + 11, x + 13, y + 13, theme.encrePale);
 	}
 
 	private void dessinerPagination(GuiGraphics g, int sourisX, int sourisY) {
-		int y = this.haut + hauteurPanneau() - 17;
+		int y = this.haut + hauteurPanneau() - 13;
 		if (this.page > 0) {
 			int x = this.gauche + MARGE;
 			g.drawCenteredString(this.font, "<", x + 10, y,
@@ -138,7 +140,7 @@ final class EcranThemesSante extends EcranCompagnon {
 			}
 		}
 
-		int y = this.haut + hauteurPanneau() - 20;
+		int y = this.haut + hauteurPanneau() - 16;
 		if (this.page > 0 && dans(sourisX, sourisY, this.gauche + MARGE, y, 20, 18)) {
 			this.page--;
 			Bruits.page();

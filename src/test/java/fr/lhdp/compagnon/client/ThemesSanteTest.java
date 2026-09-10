@@ -6,10 +6,13 @@ import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -49,6 +52,18 @@ class ThemesSanteTest {
 						theme + " : icône de besoin vide à l'index " + cellule);
 			}
 		}
+	}
+
+	@Test
+	@DisplayName("le HUD permanent reste minimal quel que soit le carnet choisi")
+	void hudPermanentMinimal() throws IOException {
+		String code = Files.readString(Path.of(
+				"src/client/java/fr/lhdp/compagnon/client/Panneau.java"),
+				StandardCharsets.UTF_8);
+		assertFalse(code.contains("theme.texture(\"hud_compact"),
+				"un grand décor illustré est encore chargé dans le HUD permanent");
+		assertTrue(code.contains("LARGEUR = 112"), "largeur RP modifiée");
+		assertTrue(code.contains("HAUTEUR = 38"), "hauteur RP modifiée");
 	}
 
 	private static BufferedImage verifier(Path fichier, int largeur, int hauteur)

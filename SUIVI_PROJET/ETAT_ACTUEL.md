@@ -37,16 +37,21 @@
   d'icône incompatible n'est utilisé.
 - Les morceaux de page superposés ont disparu du journal et du carnet : les coins
   inférieurs sont désormais des zones cliquables invisibles de 38 × 38 pixels.
-- Le panneau de santé compact montre désormais faim, énergie, santé et complicité,
-  avec un diagnostic prioritaire en toutes lettres.
+- Le HUD de santé permanent est désormais un panneau RP minimal de 112 × 38 pixels,
+  placé à huit pixels du coin supérieur gauche. Il n'affiche aucun grand décor.
+- Ses quatre besoins utilisent des pictogrammes géométriques dessinés pixel par
+  pixel — nourriture, éclair, croix et cœur — et des barres nettes sans mise à
+  l'échelle de PNG.
 - La touche H ouvre une fiche de santé interactive sans mettre le jeu en pause :
   choix du compagnon, valeurs exactes, conseil, accès au journal, affichage du HUD
   et sélecteur d'habillage.
 - Treize habillages sont intégrés au carnet de santé : les trois palettes de
   départ et dix carnets enchantés illustrés. Le choix reste local, persiste dans
   la configuration et se fait dans une galerie directe.
-- Les carnets enchantés habillent à la fois la fiche détaillée et le HUD compact,
-  avec des icônes séparées pour faim, énergie, santé et complicité.
+- Les carnets enchantés habillent la fiche détaillée lorsqu'elle est ouverte ;
+  ils ne perturbent plus l'écran de jeu pendant le RP.
+- La galerie des carnets est réduite à quatre cartes par ligne. Les couvertures
+  HD y sont affichées à exactement 50 %, ce qui évite le flou d'échantillonnage.
 
 ## Caresse
 
@@ -57,7 +62,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 151 tests automatisés réussis.
+- 152 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

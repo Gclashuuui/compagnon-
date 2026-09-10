@@ -12,64 +12,26 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Le petit panneau du coin de l'ecran.
+ * Le HUD RP minimal du compagnon, posé dans le coin supérieur gauche.
  *
- * <h2>Ce qu'il resout</h2>
- *
- * <p>Savoir si son compagnon a faim demandait d'ouvrir le livre. On ne l'ouvre
- * pas toutes les trente secondes : en pratique, on ne le savait donc jamais, et
- * on s'apercevait de sa faim quand il commencait a reclamer.
- *
- * <h2>Pourquoi il ressemble au livre</h2>
- *
- * <p>La premiere version etait un rectangle sombre a coins droits, avec deux
- * traits pleins dedans. Sur un ciel bleu, ca virait au gris-bleu et ca avait
- * l'air de ce que c'etait : un affichage de mise au point, colle par-dessus le
- * jeu.
- *
- * <p>Celle-ci est un <b>bout de parchemin</b>. Memes couleurs que le livre,
- * meme encre, memes jauges creusees dans le papier, memes teintes pour la faim
- * et l'energie — orange et jaune, exactement comme dans le livre. Le joueur n'a
- * donc rien de neuf a apprendre : il reconnait ses barres au premier coup d'oeil
- * parce qu'il les a deja vues ailleurs.
- *
- * <p>C'est ce qui fait la difference entre un panneau pose sur le jeu et un coin
- * de carnet qui depasse.
- *
- * <h2>Discret, et pour de bon</h2>
- *
- * <ul>
- *   <li>rien du tout quand aucun compagnon n'est dehors ;</li>
- *   <li>rien dans les menus, ni sur une capture sans interface ;</li>
- *   <li><b>il s'efface quand tout va bien</b> et redevient franc des qu'une
- *       barre descend — voir {@link #opacite} ;</li>
- *   <li>une touche le replie, et il reste replie.</li>
- * </ul>
- *
- * <h2>Il ne calcule rien</h2>
- *
- * <p>Le serveur envoie quatre barres et une humeur deja arrondies, et seulement
- * quand elles ont change. Cette classe ne fait que les dessiner.
+ * <p>Il montre les quatre besoins sans masquer la scène : 112 × 38 pixels,
+ * fond sombre translucide et pictogrammes dessinés à taille native. Les grands
+ * décors des carnets restent réservés à la fiche volontairement ouverte avec H.
+ * Le panneau s'efface lorsque tout va bien et redevient opaque en cas d'alerte.
  */
 public final class Panneau {
 
 	/** Le coin ou il se pose, en pixels depuis le bord. */
 	private static final int MARGE = 8;
 
-	static final int LARGEUR = 136;
-	static final int HAUTEUR = 54;
+	static final int LARGEUR = 112;
+	static final int HAUTEUR = 38;
 
 	/** L'espace entre deux compagnons empiles. */
 	private static final int ENTRE_DEUX = 4;
 
-	private static final int PADDING = 6;
-
-	/** La place que prend une icone de la police, espace compris. */
-	private static final int ICONE = 10;
-
-	/** La jauge : creusee dans le papier, comme dans le livre. */
-	private static final int JAUGE_HAUTEUR = 5;
-	private static final int ENTRE_JAUGES = 10;
+	/** Hauteur native des petites barres, sans redimensionnement de texture. */
+	private static final int JAUGE_HAUTEUR = 4;
 
 	// Les couleurs du livre, aux memes valeurs. Elles ne sont pas recopiees par
 	// paresse : c'est la seule facon que les deux ecrans se ressemblent vraiment,
@@ -98,12 +60,6 @@ public final class Panneau {
 	 * <p>Un tour complet : la borne ne se voit donc pas passer.
 	 */
 	private static final float TOUR = (float) (2.0 * Math.PI / BATTEMENT);
-
-	/** Le trait de lumiere pose sur le dessus d'une barre pleine. */
-	private static final int LUMIERE = 0x40FFFFFF;
-
-	/** L'ombre portee, qui pose le parchemin sur le monde au lieu de le coller. */
-	private static final int OMBRE = 0x40000000;
 
 	/** En dessous, la barre passe au rouge et le panneau redevient franc. */
 	private static final int SEUIL_ALERTE = 25;
@@ -221,13 +177,10 @@ public final class Panneau {
 		// ou une barre passe sous le seuil.
 		battement = (battement + partiel) % TOUR;
 
-		boolean decorComplet = theme.illustre() && montrer.size() == 1
-				&& g.guiWidth() >= 296 + 2 * MARGE
-				&& g.guiHeight() >= 194 + 2 * MARGE;
-		int x = decorComplet ? MARGE + 80 : MARGE;
-		int y = decorComplet ? MARGE + 70 : MARGE;
+		int x = MARGE;
+		int y = MARGE;
 		for (PaquetJauges.Jauge jauge : montrer) {
-			fiche(g, client, x, y, jauge, partiel, decorComplet);
+			fiche(g, client, x, y, jauge, partiel);
 			y += HAUTEUR + ENTRE_DEUX;
 		}
 	}
@@ -242,7 +195,7 @@ public final class Panneau {
 	 * le dessin plutot que par une phrase dans la documentation.
 	 */
 	private static void fiche(GuiGraphics g, Minecraft client, int x, int y,
-			PaquetJauges.Jauge jauge, float partiel, boolean decorComplet) {
+			PaquetJauges.Jauge jauge, float partiel) {
 
 		float[] etat = affichees.computeIfAbsent(jauge.id(),
 				id -> new float[]{jauge.faim(), jauge.energie(), jauge.sante(),
@@ -259,170 +212,76 @@ public final class Panneau {
 
 		float opacite = etat[4];
 
-		if (theme.illustre()) {
-			dessinerFondIllustre(g, x, y, opacite, decorComplet);
-			dessinerContenuIllustre(g, client, x, y, jauge, etat, opacite);
-			return;
-		}
+		dessinerFondMinimal(g, x, y, jauge, opacite);
 
-		// L'ombre d'abord, decalee d'un pixel : sans elle le parchemin a l'air
-		// peint sur l'ecran plutot que pose dessus.
-		coinsArrondis(g, x + 1, y + 1, LARGEUR, HAUTEUR, teinte(OMBRE, opacite), 0);
-		papier(g, x, y, opacite);
+		String nom = client.font.plainSubstrByWidth(jauge.nom(), LARGEUR - 18);
+		g.drawString(client.font, nom, x + 10, y + 3,
+				teinte(0xFFF4F1EA, opacite), false);
 
-		int texteY = y + PADDING - 1;
-
-		// UNE PATTE DEVANT LE NOM.
-		//
-		// Dessinee a la meme hauteur et avec la meme methode que le texte : c'est
-		// une lettre d'une police a nous, elle s'aligne donc toute seule et prend
-		// l'encre du parchemin sans qu'on ait a la teinter a la main.
-		g.drawString(client.font, fr.lhdp.compagnon.Icones.de(
-				fr.lhdp.compagnon.Icones.PATTE),
-			x + PADDING, texteY, teinte(theme.encrePale, opacite), false);
-
-		String nom = client.font.plainSubstrByWidth(jauge.nom(),
-			LARGEUR - PADDING * 2 - 22 - ICONE);
-		g.drawString(client.font, nom, x + PADDING + ICONE, texteY,
-			teinte(theme.encre, opacite), false);
-
-		Humeur humeur = humeurDe(jauge.humeur());
-		String bouille = humeur.bouille();
-		g.drawString(client.font, bouille,
-				x + LARGEUR - PADDING - client.font.width(bouille), texteY,
-				teinte(theme.encrePale, opacite), false);
-
-		String etatCourt = etat(jauge).getString();
-		etatCourt = client.font.plainSubstrByWidth(etatCourt, LARGEUR - PADDING * 2);
-		g.drawString(client.font, etatCourt, x + PADDING, y + 16,
-				teinte(couleurEtat(jauge), opacite), false);
-
-		int colonne = (LARGEUR - PADDING * 2 - 6) / 2;
-		petiteBarre(g, client, x + PADDING, y + 31, colonne,
-				fr.lhdp.compagnon.Icones.FAIM, etat[0], FAIM, opacite);
-		petiteBarre(g, client, x + PADDING + colonne + 6, y + 31, colonne,
-				fr.lhdp.compagnon.Icones.ENERGIE, etat[1], ENERGIE, opacite);
-		petiteBarre(g, client, x + PADDING, y + 31 + ENTRE_JAUGES, colonne,
-				fr.lhdp.compagnon.Icones.SOIN, etat[2], SANTE, opacite);
-		petiteBarre(g, client, x + PADDING + colonne + 6, y + 31 + ENTRE_JAUGES, colonne,
-				fr.lhdp.compagnon.Icones.COEUR, etat[3], COMPLICITE, opacite);
+		petiteBarreMinimaliste(g, x + 5, y + 16, 0, etat[0], FAIM, opacite);
+		petiteBarreMinimaliste(g, x + 58, y + 16, 1, etat[1], ENERGIE, opacite);
+		petiteBarreMinimaliste(g, x + 5, y + 27, 2, etat[2], SANTE, opacite);
+		petiteBarreMinimaliste(g, x + 58, y + 27, 3, etat[3], COMPLICITE, opacite);
 	}
 
-	private static void dessinerFondIllustre(GuiGraphics g, int x, int y,
-			float opacite, boolean decorComplet) {
-		g.setColor(1.0F, 1.0F, 1.0F, opacite);
-		if (decorComplet) {
-			g.blit(theme.texture("hud_compact_overflow"), x - 80, y - 70,
-					296, 194, 0.0F, 0.0F, 296, 194, 296, 194);
-		} else {
-			g.blit(theme.texture("hud_compact"), x, y, LARGEUR, HAUTEUR,
-					0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
-		}
-		g.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+	private static void dessinerFondMinimal(GuiGraphics g, int x, int y,
+			PaquetJauges.Jauge jauge, float opacite) {
+		int fond = teinte(0xCC111318, opacite);
+		int bord = teinte(0xAAE8E4DA, opacite * 0.55F);
+		g.fill(x + 1, y, x + LARGEUR - 1, y + HAUTEUR, fond);
+		g.fill(x, y + 1, x + LARGEUR, y + HAUTEUR - 1, fond);
+		g.renderOutline(x, y, LARGEUR, HAUTEUR, bord);
+		g.fill(x, y + 2, x + 2, y + HAUTEUR - 2,
+				teinte(couleurEtat(jauge), opacite));
 	}
 
-	/** Calque les informations sur les zones sûres du gabarit 136 x 54. */
-	private static void dessinerContenuIllustre(GuiGraphics g, Minecraft client,
-			int x, int y, PaquetJauges.Jauge jauge, float[] etat, float opacite) {
-		String nom = client.font.plainSubstrByWidth(jauge.nom(), 128);
-		g.drawString(client.font, nom, x + 4, y + 3,
-				teinte(theme.encre, opacite), false);
-
-		String diagnostic = client.font.plainSubstrByWidth(etat(jauge).getString(), 128);
-		g.drawString(client.font, diagnostic, x + 4, y + 14,
-				teinte(couleurEtat(jauge), opacite), false);
-
-		petiteBarreIllustree(g, x + 4, y + 28, 0, etat[0], FAIM, opacite);
-		petiteBarreIllustree(g, x + 72, y + 28, 1, etat[1], ENERGIE, opacite);
-		petiteBarreIllustree(g, x + 4, y + 41, 2, etat[2], SANTE, opacite);
-		petiteBarreIllustree(g, x + 72, y + 41, 3, etat[3], COMPLICITE, opacite);
-	}
-
-	private static void petiteBarreIllustree(GuiGraphics g, int x, int y,
+	private static void petiteBarreMinimaliste(GuiGraphics g, int x, int y,
 			int icone, float valeur, int couleur, float opacite) {
-		g.setColor(1.0F, 1.0F, 1.0F, opacite);
-		g.blit(theme.texture("health_icons"), x, y, 8, 8,
-				icone * 16.0F, 0.0F, 16, 16, 160, 16);
-		g.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-		barre(g, x + 11, y + 1, 47, valeur, couleur, opacite);
-	}
-
-	private static void petiteBarre(GuiGraphics g, Minecraft client, int x, int y,
-			int largeur, String icone, float valeur, int couleur, float opacite) {
-		g.drawString(client.font, fr.lhdp.compagnon.Icones.de(icone), x, y - 3,
-				teinte(theme.encrePale, opacite), false);
-		barre(g, x + ICONE, y, largeur - ICONE, valeur, couleur, opacite);
-	}
-
-	/** Le parchemin : un degrade chaud, un cadre a l'encre, des coins manquants. */
-	private static void papier(GuiGraphics g, int x, int y, float opacite) {
-		// Le fond, coins compris — les coins seront ronges juste apres.
-		g.fillGradient(x + 1, y, x + LARGEUR - 1, y + HAUTEUR,
-				teinte(theme.fondHaut, opacite), teinte(theme.fondBas, opacite));
-		g.fillGradient(x, y + 1, x + LARGEUR, y + HAUTEUR - 1,
-				teinte(theme.fondHaut, opacite), teinte(theme.fondBas, opacite));
-
-		int cadre = teinte(theme.cadre, opacite);
-		g.fill(x + 1, y, x + LARGEUR - 1, y + 1, cadre);
-		g.fill(x + 1, y + HAUTEUR - 1, x + LARGEUR - 1, y + HAUTEUR, cadre);
-		g.fill(x, y + 1, x + 1, y + HAUTEUR - 1, cadre);
-		g.fill(x + LARGEUR - 1, y + 1, x + LARGEUR, y + HAUTEUR - 1, cadre);
-
-		// Un filet clair a l'interieur du cadre, en haut seulement : le papier a
-		// l'air legerement bombe, comme une page qui ne touche pas la table.
-		g.fill(x + 1, y + 1, x + LARGEUR - 1, y + 2, teinte(0x50FFFFFF, opacite));
-	}
-
-	/**
-	 * Une jauge creusee dans le papier.
-	 *
-	 * <p>Le creux va du sombre en haut au clair en bas : c'est ce qui donne
-	 * l'illusion d'un sillon. Le remplissage fait l'inverse, avec un trait de
-	 * lumiere sur le dessus — il a l'air bombe, donc pose par-dessus.
-	 *
-	 * <p>Exactement le meme dessin que dans le livre. Deux facons de dessiner la
-	 * meme chose, ce serait deux choses.
-	 */
-	private static void barre(GuiGraphics g, int x, int y, int largeur, float valeur,
-			int couleur, float opacite) {
-
-		float borne = Math.max(0.0F, Math.min(100.0F, valeur));
-		boolean bas = borne <= SEUIL_ALERTE;
-
-		int cadre = teinte(theme.cadre, opacite);
-		g.fill(x + 1, y, x + largeur - 1, y + 1, cadre);
-		g.fill(x + 1, y + JAUGE_HAUTEUR - 1, x + largeur - 1, y + JAUGE_HAUTEUR, cadre);
-		g.fill(x, y + 1, x + 1, y + JAUGE_HAUTEUR - 1, cadre);
-		g.fill(x + largeur - 1, y + 1, x + largeur, y + JAUGE_HAUTEUR - 1, cadre);
-
-		g.fillGradient(x + 1, y + 1, x + largeur - 1, y + JAUGE_HAUTEUR - 1,
-				teinte(theme.creuxHaut, opacite), teinte(theme.creuxBas, opacite));
-
-		int rempli = Math.round((largeur - 2) * borne / 100.0F);
-		if (rempli <= 0) {
-			return;
+		dessinerIconeNette(g, x, y - 2, icone, teinte(couleur, opacite));
+		int bx = x + 10;
+		int largeur = 38;
+		int rempli = Math.round((largeur - 2) * Math.max(0.0F,
+				Math.min(100.0F, valeur)) / 100.0F);
+		g.fill(bx, y, bx + largeur, y + JAUGE_HAUTEUR,
+				teinte(0xAA000000, opacite));
+		g.renderOutline(bx, y, largeur, JAUGE_HAUTEUR,
+				teinte(0x668F949E, opacite));
+		if (rempli > 0) {
+			int teinte = couleur;
+			if (valeur <= SEUIL_ALERTE) {
+				float part = (float) (Math.sin(battement * BATTEMENT) * 0.5 + 0.5);
+				teinte = Peinture.melanger(ALERTE, ALERTE_VIF, part);
+			}
+			g.fill(bx + 1, y + 1, bx + 1 + rempli, y + JAUGE_HAUTEUR - 1,
+					teinte(teinte, opacite));
 		}
-
-		// UNE BARRE EN ALERTE RESPIRE.
-		//
-		// Tres lentement, et entre deux rouges seulement : c'est assez pour
-		// attraper l'oeil du coin de l'ecran, et trop peu pour agacer celui qui
-		// a decide d'attendre avant de le nourrir.
-		int encre = couleur;
-		if (bas) {
-			float part = (float) (Math.sin(battement * BATTEMENT) * 0.5 + 0.5);
-			encre = Peinture.melanger(ALERTE, ALERTE_VIF, part);
-		}
-		g.fill(x + 1, y + 1, x + 1 + rempli, y + JAUGE_HAUTEUR - 1,
-				teinte(encre, opacite));
-		g.fill(x + 1, y + 1, x + 1 + rempli, y + 2, teinte(LUMIERE, opacite));
 	}
 
-	/** Un rectangle sans ses quatre pixels de coin. Assez pour arrondir l'oeil. */
-	private static void coinsArrondis(GuiGraphics g, int x, int y, int largeur, int hauteur,
-			int couleur, int inutilise) {
-		g.fill(x + 1, y, x + largeur - 1, y + hauteur, couleur);
-		g.fill(x, y + 1, x + largeur, y + hauteur - 1, couleur);
+	/** Quatre pictogrammes dessinés pixel par pixel : aucun redimensionnement flou. */
+	private static void dessinerIconeNette(GuiGraphics g, int x, int y,
+			int icone, int couleur) {
+		switch (icone) {
+			case 0 -> { // nourriture : morceau + os
+				g.fill(x + 1, y + 2, x + 5, y + 7, couleur);
+				g.fill(x + 4, y + 5, x + 7, y + 7, couleur);
+				g.fill(x + 6, y + 4, x + 8, y + 8, couleur);
+			}
+			case 1 -> { // énergie : éclair
+				g.fill(x + 4, y, x + 8, y + 3, couleur);
+				g.fill(x + 2, y + 3, x + 6, y + 5, couleur);
+				g.fill(x + 4, y + 5, x + 6, y + 8, couleur);
+			}
+			case 2 -> { // santé : croix
+				g.fill(x + 3, y + 1, x + 6, y + 8, couleur);
+				g.fill(x + 1, y + 3, x + 8, y + 6, couleur);
+			}
+			default -> { // complicité : cœur
+				g.fill(x + 1, y + 2, x + 4, y + 5, couleur);
+				g.fill(x + 5, y + 2, x + 8, y + 5, couleur);
+				g.fill(x + 2, y + 4, x + 7, y + 7, couleur);
+				g.fill(x + 3, y + 7, x + 6, y + 8, couleur);
+			}
+		}
 	}
 
 	// --- Les regles d'affichage -------------------------------------------------------
@@ -445,7 +304,8 @@ public final class Panneau {
 		}
 		boolean alerte = jauge.faim() <= SEUIL_ALERTE
 				|| jauge.energie() <= SEUIL_ALERTE
-				|| jauge.sante() <= SEUIL_ALERTE || jauge.bobo();
+				|| jauge.sante() <= SEUIL_ALERTE
+				|| jauge.complicite() <= SEUIL_ALERTE || jauge.bobo();
 		return alerte ? 1.0F : OPACITE_AU_REPOS;
 	}
 
@@ -501,12 +361,6 @@ public final class Panneau {
 		int alpha = (couleur >>> 24) & 0xFF;
 		int nouveau = Math.max(0, Math.min(255, Math.round(alpha * facteur)));
 		return (nouveau << 24) | (couleur & 0x00FFFFFF);
-	}
-
-	/** L'humeur envoyee par son numero. Une valeur inconnue retombe au milieu. */
-	private static Humeur humeurDe(int numero) {
-		Humeur[] toutes = Humeur.values();
-		return numero >= 0 && numero < toutes.length ? toutes[numero] : Humeur.MOYEN;
 	}
 
 	/** Ce qu'on dit au joueur quand il replie ou deplie le panneau. */
