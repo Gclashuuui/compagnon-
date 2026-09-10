@@ -25,6 +25,10 @@ class ThemesSanteTest {
 			"dragon-rubis", "dragon-givre", "dragon-jade", "dragon-amethyste",
 			"dragon-rose", "phenix", "renard-lunaire", "glycine", "galaxie",
 			"champignons");
+	private static final List<String> THEMES_HUD = List.of(
+			"parchemin", "sylvestre", "nocturne", "dragon-rubis", "dragon-givre",
+			"dragon-jade", "dragon-amethyste", "dragon-rose", "phenix",
+			"renard-lunaire", "glycine", "galaxie", "champignons");
 
 	@Test
 	@DisplayName("les dix carnets enchantés respectent le même gabarit")
@@ -64,6 +68,20 @@ class ThemesSanteTest {
 				"un grand décor illustré est encore chargé dans le HUD permanent");
 		assertTrue(code.contains("LARGEUR = 112"), "largeur RP modifiée");
 		assertTrue(code.contains("HAUTEUR = 38"), "hauteur RP modifiée");
+		assertTrue(code.contains("theme.texture(\"hud_frame_hd\")"),
+				"le cadre discret du thème n'est pas chargé");
+	}
+
+	@Test
+	@DisplayName("les treize cadres discrets sont nets et partagent le même gabarit")
+	void cadresHud() throws IOException {
+		for (String theme : THEMES_HUD) {
+			BufferedImage cadre = verifier(
+					RACINE.resolve(theme).resolve("hud_frame_hd.png"), 448, 152);
+			assertEquals(0, alpha(cadre, 0, 0), theme + " : coin extérieur opaque");
+			assertTrue(alpha(cadre, 224, 76) > 0, theme + " : intérieur transparent");
+			verifierBlocs(cadre, theme);
+		}
 	}
 
 	private static BufferedImage verifier(Path fichier, int largeur, int hauteur)
@@ -84,6 +102,20 @@ class ThemesSanteTest {
 			}
 		}
 		return false;
+	}
+
+	private static void verifierBlocs(BufferedImage image, String theme) {
+		for (int y = 0; y < image.getHeight(); y += 4) {
+			for (int x = 0; x < image.getWidth(); x += 4) {
+				int reference = image.getRGB(x, y);
+				for (int py = y; py < y + 4; py++) {
+					for (int px = x; px < x + 4; px++) {
+						assertEquals(reference, image.getRGB(px, py),
+								theme + " : bloc HD lissé en " + x + "," + y);
+					}
+				}
+			}
+		}
 	}
 
 	private static int alpha(BufferedImage image, int x, int y) {

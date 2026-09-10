@@ -4,9 +4,11 @@
 
 1. Tester en jeu les dix carnets enchantés à plusieurs échelles d'interface.
 2. Vérifier le nouveau HUD RP 112 × 38 avec un puis plusieurs compagnons.
-3. Contrôler la lisibilité des quatre pictogrammes à chaque échelle Minecraft.
-4. Vérifier la galerie compacte des treize habillages sur une petite résolution.
-5. Ajuster seulement les contrastes révélés par le test en jeu.
+3. Parcourir les treize cadres discrets sur ciel clair, de nuit et en grotte.
+4. Contrôler la lisibilité des quatre pictogrammes et des repères de quart à
+   chaque échelle Minecraft.
+5. Vérifier la galerie compacte des treize habillages sur une petite résolution.
+6. Ajuster seulement les contrastes révélés par le test en jeu.
 
 ## Interface du livre
 

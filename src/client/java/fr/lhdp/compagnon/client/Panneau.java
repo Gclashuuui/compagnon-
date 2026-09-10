@@ -31,7 +31,7 @@ public final class Panneau {
 	private static final int ENTRE_DEUX = 4;
 
 	/** Hauteur native des petites barres, sans redimensionnement de texture. */
-	private static final int JAUGE_HAUTEUR = 4;
+	private static final int JAUGE_HAUTEUR = 5;
 
 	// Les couleurs du livre, aux memes valeurs. Elles ne sont pas recopiees par
 	// paresse : c'est la seule facon que les deux ecrans se ressemblent vraiment,
@@ -226,34 +226,63 @@ public final class Panneau {
 
 	private static void dessinerFondMinimal(GuiGraphics g, int x, int y,
 			PaquetJauges.Jauge jauge, float opacite) {
-		int fond = teinte(0xCC111318, opacite);
-		int bord = teinte(0xAAE8E4DA, opacite * 0.55F);
-		g.fill(x + 1, y, x + LARGEUR - 1, y + HAUTEUR, fond);
-		g.fill(x, y + 1, x + LARGEUR, y + HAUTEUR - 1, fond);
-		g.renderOutline(x, y, LARGEUR, HAUTEUR, bord);
-		g.fill(x, y + 2, x + 2, y + HAUTEUR - 2,
-				teinte(couleurEtat(jauge), opacite));
+		g.setColor(1.0F, 1.0F, 1.0F, opacite);
+		g.blit(theme.texture("hud_frame_hd"), x, y, LARGEUR, HAUTEUR,
+				0.0F, 0.0F, 448, 152, 448, 152);
+		g.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+		// Petit témoin d'état, dans la marge réservée à gauche du nom.
+		int etat = teinte(couleurEtat(jauge), opacite);
+		g.fill(x + 5, y + 3, x + 7, y + 4, etat);
+		g.fill(x + 4, y + 4, x + 8, y + 7, etat);
+		g.fill(x + 5, y + 7, x + 7, y + 8, etat);
 	}
 
 	private static void petiteBarreMinimaliste(GuiGraphics g, int x, int y,
 			int icone, float valeur, int couleur, float opacite) {
-		dessinerIconeNette(g, x, y - 2, icone, teinte(couleur, opacite));
+		int iconeY = y - 2;
+		dessinerIconeNette(g, x + 1, iconeY + 1, icone,
+				teinte(0xB0000000, opacite));
+		dessinerIconeNette(g, x, iconeY, icone, teinte(couleur, opacite));
 		int bx = x + 10;
 		int largeur = 38;
 		int rempli = Math.round((largeur - 2) * Math.max(0.0F,
 				Math.min(100.0F, valeur)) / 100.0F);
+
+		// Sillon sombre, liseré clair en haut et ombre en bas : cinq pixels
+		// suffisent pour donner du relief sans épaissir le HUD.
 		g.fill(bx, y, bx + largeur, y + JAUGE_HAUTEUR,
-				teinte(0xAA000000, opacite));
-		g.renderOutline(bx, y, largeur, JAUGE_HAUTEUR,
-				teinte(0x668F949E, opacite));
+				teinte(0xD008090C, opacite));
+		g.fill(bx + 1, y + 1, bx + largeur - 1, y + JAUGE_HAUTEUR - 1,
+				teinte(0xB02A2D34, opacite));
+		g.fill(bx + 1, y + 1, bx + largeur - 1, y + 2,
+				teinte(0x667A7F89, opacite));
 		if (rempli > 0) {
-			int teinte = couleur;
+			int teinteBarre = couleur;
 			if (valeur <= SEUIL_ALERTE) {
 				float part = (float) (Math.sin(battement * BATTEMENT) * 0.5 + 0.5);
-				teinte = Peinture.melanger(ALERTE, ALERTE_VIF, part);
+				teinteBarre = Peinture.melanger(ALERTE, ALERTE_VIF, part);
 			}
-			g.fill(bx + 1, y + 1, bx + 1 + rempli, y + JAUGE_HAUTEUR - 1,
-					teinte(teinte, opacite));
+			int clair = Peinture.melanger(teinteBarre, 0xFFFFFFFF, 0.28F);
+			int sombre = Peinture.melanger(teinteBarre, 0xFF000000, 0.24F);
+			g.fill(bx + 1, y + 1, bx + 1 + rempli, y + 2,
+					teinte(clair, opacite));
+			g.fill(bx + 1, y + 2, bx + 1 + rempli, y + 3,
+					teinte(teinteBarre, opacite));
+			g.fill(bx + 1, y + 3, bx + 1 + rempli, y + 4,
+					teinte(sombre, opacite));
+			if (rempli > 2) {
+				g.fill(bx + rempli, y + 1, bx + rempli + 1, y + 4,
+						teinte(clair, opacite));
+			}
+		}
+
+		// Trois repères presque transparents rendent les niveaux comparables
+		// d'un coup d'œil, sans ajouter de nombres au HUD de rôle-play.
+		for (int quart = 1; quart <= 3; quart++) {
+			int repere = bx + 1 + quart * (largeur - 2) / 4;
+			g.fill(repere, y + 1, repere + 1, y + 4,
+					teinte(0x33000000, opacite));
 		}
 	}
 

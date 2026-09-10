@@ -43,9 +43,13 @@
   inférieurs sont désormais des zones cliquables invisibles de 38 × 38 pixels.
 - Le HUD de santé permanent est désormais un panneau RP minimal de 112 × 38 pixels,
   placé à huit pixels du coin supérieur gauche. Il n'affiche aucun grand décor.
+- Treize cadres discrets lui donnent la palette du carnet choisi sans modifier sa
+  taille : Parchemin, Sylvestre, Nocturne et les dix thèmes enchantés.
 - Ses quatre besoins utilisent des pictogrammes géométriques dessinés pixel par
-  pixel — nourriture, éclair, croix et cœur — et des barres nettes sans mise à
-  l'échelle de PNG.
+  pixel — nourriture, éclair, croix et cœur. Les jauges ont un sillon sombre,
+  trois niveaux de lumière, un reflet terminal et des repères de quart discrets.
+- Sous 25 %, la jauge concernée respire lentement entre deux rouges ; le témoin
+  placé devant le nom reprend aussi la couleur de l'état prioritaire.
 - La touche H ouvre une fiche de santé interactive sans mettre le jeu en pause :
   choix du compagnon, valeurs exactes, conseil, accès au journal, affichage du HUD
   et sélecteur d'habillage.
@@ -66,7 +70,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 153 tests automatisés réussis.
+- 154 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

@@ -31,6 +31,10 @@
   aucune miniature redimensionnée. Les thèmes détaillés restent dans la fiche ouverte.
 - Les quatre icônes du HUD sont des formes pixel nettes rendues par le code afin
   qu'elles restent lisibles quelle que soit la texture sélectionnée.
+- Les treize cadres du HUD partagent un gabarit strict de 112 × 38, livré en
+  448 × 152 avec des blocs uniformes de 4 × 4. Aucun décor ne dépasse du cadre.
+- Les textures ne contiennent aucune donnée : le nom, le témoin d'état, les icônes
+  et les jauges sont toujours rendus dynamiquement au-dessus.
 - La collection détaillée des carnets de santé conserve les décors qui dépassent
   lorsqu'il y a assez de place. Plusieurs compagnons repassent au format compact
   pour empêcher les ornements de se chevaucher.
