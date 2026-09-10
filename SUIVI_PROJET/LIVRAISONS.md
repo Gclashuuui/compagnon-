@@ -1,5 +1,20 @@
 # Livraisons
 
+## HUD de santé RP minimal
+
+- Commit : `bed5c25` — HUD permanent compact et galerie mieux cadrée.
+- Le HUD passe de 136 × 54 pixels — ou 296 × 194 avec décor — à un format
+  unique de 112 × 38 pixels placé en haut à gauche.
+- Les décors illustrés ne sont plus chargés pendant le jeu normal ; ils restent
+  réservés à la fiche de santé ouverte volontairement.
+- Nourriture, énergie, santé et complicité utilisent quatre formes pixel nettes
+  rendues par le code, sans redimensionnement flou.
+- La galerie affiche quatre petites cartes par ligne et réduit les couvertures
+  exactement à 50 %.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- SHA-256 : `1DD2D93F9FD05D6E633D14DFBA1CD5F6A725699088ED078A94E85AEC33246827`.
+- Vérification : compilation réussie, 152 tests réussis.
+
 ## Bibliothèque illustrée des apparences
 
 - Commit : `41a7730` — Nouvelle bibliothèque bois et laiton avec favoris.
