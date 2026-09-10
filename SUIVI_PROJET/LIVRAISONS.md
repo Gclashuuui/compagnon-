@@ -1,5 +1,14 @@
 # Livraisons
 
+## Carnet de santé
+
+- Commit : `8200a23` — Refonte du carnet de santé du compagnon.
+- Le panneau compact affiche quatre besoins et un diagnostic prioritaire.
+- La fiche interactive s'ouvre avec H et donne les valeurs, un conseil, l'accès
+  au journal, la visibilité du HUD et le choix de l'habillage.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- Vérification : compilation réussie, 146 tests réussis.
+
 ## Dernière version du livre
 
 - Commit : `31b0b45` — Intégrer les six journaux haute définition.
