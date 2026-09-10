@@ -67,6 +67,10 @@ de croire un changement de terrain, mais un vrai décollage reste immédiat.
 | `scene_ami` | unique | échange spontané entre deux compagnons |
 | `surpris` | unique court | neige, orage ou événement inattendu |
 | `peur` | unique ou boucle courte | menace ou orage chez une personnalité craintive |
+| `rituel_matin` | unique | étirement ou réveil quotidien, une fois par jour |
+| `rituel_soir` | unique | retour au calme quotidien, une fois par jour |
+| `reconnait_personne` | unique court | retrouve une personne devenue familière |
+| `observe_inconnu` | unique court | étudie prudemment une personne inconnue |
 
 Les quatre derniers rôles sont facultatifs mais déjà compris par le cerveau.
 S'ils sont absents, il réutilise `joie`, `joyeux`, `salut`, `écoute` ou `triste`.

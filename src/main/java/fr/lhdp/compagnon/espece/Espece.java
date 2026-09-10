@@ -147,6 +147,11 @@ public record Espece(
 	public static final String SCENE_AMI = "scene_ami";
 	public static final String SURPRIS = "surpris";
 	public static final String PEUR = "peur";
+	/** Gestes quotidiens facultatifs, jamais exigés d'une nouvelle espèce. */
+	public static final String RITUEL_MATIN = "rituel_matin";
+	public static final String RITUEL_SOIR = "rituel_soir";
+	public static final String RECONNAIT_PERSONNE = "reconnait_personne";
+	public static final String OBSERVE_INCONNU = "observe_inconnu";
 
 	/**
 	 * Les deux poses dattente qui montrent son humeur.

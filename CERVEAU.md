@@ -124,3 +124,18 @@ contente plus de rester planté devant. Il regarde brièvement puis joue le prem
 rôle disponible parmi `surpris`, `ecoute`, `joie` et `joyeux`. Une future espèce
 profite donc de cette scène dès qu'elle fournit l'un de ces rôles, sans nouveau
 code et sans animation obligatoire.
+
+## Habitudes et relations visibles
+
+Chaque compagnon possède désormais un petit rituel du matin et du soir, joué au
+plus une fois par journée Minecraft. L'UUID décale l'heure exacte : une salle
+pleine de compagnons ne s'étire jamais comme un ballet synchronisé. Les rôles
+facultatifs `rituel_matin` et `rituel_soir` retombent sur un geste d'ambiance
+déjà disponible tant que leurs micro-animations spécialisées n'ont pas été
+livrées.
+
+Lorsqu'il approche une personne, le cerveau distingue maintenant un familier
+d'un inconnu. Un familier reçoit `reconnait_personne`, puis un ancien geste de
+reconnaissance ou de salut en repli. Un inconnu reçoit `observe_inconnu`, puis
+`ecoute` ou `surpris`. La connaissance existait déjà dans la fiche ; cette scène
+la rend visible sans nouvelle recherche de joueur et sans agrandir la sauvegarde.

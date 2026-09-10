@@ -53,6 +53,7 @@ public class AllerVersLesGensGoal extends Goal {
 	private Player cible;
 	private int reste;
 	private int attente;
+	private boolean aReagi;
 
 	public AllerVersLesGensGoal(CompagnonEntity compagnon) {
 		this.compagnon = compagnon;
@@ -85,6 +86,7 @@ public class AllerVersLesGensGoal extends Goal {
 
 		this.cible = candidat;
 		this.reste = DUREE;
+		this.aReagi = false;
 		return true;
 	}
 
@@ -118,8 +120,25 @@ public class AllerVersLesGensGoal extends Goal {
 
 		double arret = arret();
 		if (this.compagnon.distanceToSqr(this.cible) <= arret * arret) {
-			// Arrive. Il reste la et le regarde, plutot que de tourner autour.
 			this.compagnon.getNavigation().stop();
+			if (!this.aReagi) {
+				this.aReagi = true;
+				this.reste = Math.min(this.reste, 60);
+				boolean connue = this.compagnon.connait(this.cible.getUUID());
+				String role = connue
+						? SceneAffectiveGoal.premierRoleDisponible(this.compagnon,
+								fr.lhdp.compagnon.espece.Espece.RECONNAIT_PERSONNE,
+								"reconnait", fr.lhdp.compagnon.espece.Espece.SALUT,
+								fr.lhdp.compagnon.espece.Espece.JOYEUX)
+						: SceneAffectiveGoal.premierRoleDisponible(this.compagnon,
+								fr.lhdp.compagnon.espece.Espece.OBSERVE_INCONNU,
+								fr.lhdp.compagnon.espece.Espece.ECOUTE,
+								fr.lhdp.compagnon.espece.Espece.SURPRIS);
+				if (role != null) {
+					this.compagnon.jouerActionPendant("@" + role, 30,
+							connue ? PrioriteAction.AFFECTIF : PrioriteAction.AMBIANCE);
+				}
+			}
 			return;
 		}
 

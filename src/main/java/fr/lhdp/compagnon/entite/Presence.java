@@ -142,10 +142,32 @@ public final class Presence {
 		if (uneManie(compagnon, maitre, attention)) {
 			return;
 		}
+		if (unRituelQuotidien(compagnon)) {
+			return;
+		}
 		if (unGesteNaturel(compagnon, attention)) {
 			return;
 		}
 		leMonde(compagnon, attention);
+	}
+
+	/**
+	 * Le matin et le soir deviennent des moments reconnaissables, sans horloge
+	 * supplémentaire et sans recherche dans le monde. Les rôles spécialisés sont
+	 * facultatifs ; les anciens gestes servent de repli jusqu'à leur livraison.
+	 */
+	private static boolean unRituelQuotidien(CompagnonEntity compagnon) {
+		RythmeQuotidien.Moment moment = compagnon.rythmeQuotidien().prochain(
+				compagnon.level().getDayTime(), compagnon.getUUID().hashCode());
+		String role = switch (moment) {
+			case MATIN -> SceneAffectiveGoal.premierRoleDisponible(compagnon,
+					Espece.RITUEL_MATIN, "ambiance_3", Espece.JOYEUX);
+			case SOIR -> SceneAffectiveGoal.premierRoleDisponible(compagnon,
+					Espece.RITUEL_SOIR, "ambiance_2", Espece.ECOUTE);
+			case AUCUN -> null;
+		};
+		return role != null && compagnon.jouerActionPendant("@" + role, 30,
+				PrioriteAction.AMBIANCE);
 	}
 
 	/**

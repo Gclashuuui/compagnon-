@@ -245,6 +245,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	/** Il s'habitue aux gestes répétés sans mémoriser une liste d'événements. */
 	private final Habituation habituation = new Habituation();
 
+	/** Deux rendez-vous légers avec la journée, bornés à deux dates. */
+	private final RythmeQuotidien rythmeQuotidien = new RythmeQuotidien();
+
 	/** Niveau de detail du cerveau, recalcule lentement par la perception. */
 	private NiveauActiviteCerveau niveauActiviteCerveau = NiveauActiviteCerveau.PROCHE;
 
@@ -566,6 +569,10 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 
 	public EtatInterieur etatInterieur() {
 		return this.etatInterieur;
+	}
+
+	RythmeQuotidien rythmeQuotidien() {
+		return this.rythmeQuotidien;
 	}
 
 	/**

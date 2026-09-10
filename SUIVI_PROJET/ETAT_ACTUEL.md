@@ -10,6 +10,9 @@
   et envie d'explorer à partir des perceptions déjà calculées.
 - La curiosité s'habitue aux événements répétés d'un même chantier et déclenche
   une vraie petite réaction d'inspection à l'arrivée.
+- Deux habitudes quotidiennes décalées par UUID donnent un réveil et un retour au
+  calme non synchronisés. L'approche sociale distingue désormais personne connue
+  et inconnue et choisit des rôles d'animation différents.
 - Les animations sont choisies par rôle afin qu'une espèce puisse remplacer ses
   gestes sans modifier le code Java.
 - La voix fonctionne hors ligne avec Plasmo Voice, Vosk et un mode de diagnostic.
@@ -74,7 +77,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 162 tests automatisés réussis.
+- 166 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

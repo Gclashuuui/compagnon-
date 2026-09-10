@@ -34,9 +34,13 @@ Univers et rôle : **[origine, magie, habitat, façon de vivre]**
 
 ## Travail demandé
 
-Réalise le starter pack **[terrestre 60 / volant 70]** décrit dans le document
-joint. Commence par un premier lot de 10 animations pour validation avant de
-continuer afin qu'une erreur de pivot ne se répète pas sur tout le pack.
+Commence obligatoirement par dresser l'inventaire des animations déjà présentes.
+Ne refais, ne corrige et ne remplace jamais une animation existante : elle est
+considérée comme validée. Si le compagnon est nouveau, réalise le starter pack
+**[terrestre 60 / volant 70]** décrit dans le document joint. S'il possède déjà
+ses animations principales, produis uniquement les rôles manquants et les
+micro-animations demandées. Commence par un premier lot de 10 ajouts pour
+validation afin qu'une erreur de pivot ne se répète pas sur tout le pack.
 
 Ajoute ensuite **8 à 12 animations signatures** que ce compagnon est le seul à
 pouvoir avoir. Avant de les créer, propose-les sous forme de tableau avec :
@@ -70,6 +74,10 @@ réutiliser très souvent sans interrompre la locomotion :
 - mouvement calme, joyeux et inquiet de la queue ou de son équivalent ;
 - ouverture/repli discret des ailes si l'espèce en possède ;
 - petit mouvement de sommeil.
+- rituel calme du matin et retour au calme du soir ;
+- reconnaissance d'une personne familière et observation d'un inconnu ;
+- début, maintien et fin d'une inspection au sol ;
+- hésitation puis relâchement après une alerte.
 
 Si l'anatomie ne permet pas une animation demandée, remplace-la par un geste qui
 transmet la même émotion avec les os réellement présents. Explique le remplacement.
@@ -97,4 +105,3 @@ transmet la même émotion avec les os réellement présents. Explique le rempla
 
 Cette organisation permet de tester le cerveau dès le premier lot au lieu
 d'attendre les soixante ou soixante-dix animations.
-
