@@ -23,13 +23,13 @@
 - Journal complet : Aujourd'hui, Histoire, Liens, Talents et Missions.
 - Carnet de sélection des compagnons.
 - 27 thèmes visuels disponibles.
-- Six thèmes HD intégrés : Sylvestre, Observatoire, Nuages, Lucioles, Marées et
-  Confiserie.
+- Onze thèmes HD intégrés : Sylvestre, Observatoire, Nuages, Lucioles, Marées,
+  Confiserie, Médiéval, Bestiaire, Vitrail, Horlogerie et Porcelaine.
 - Les nouveaux thèmes utilisent deux zones de texte fixes de 142 x 184 pixels,
   des couvertures adaptatives et leurs propres signets.
 - Le carnet de sélection et le journal utilisent maintenant le même habillage HD.
-- Cinq livres continus supplémentaires sont intégrés : Médiéval, Bestiaire,
-  Vitrail, Horlogerie et Porcelaine.
+- Les cinq livres merveilleux possèdent leurs propres signets, cartes de rituel,
+  cadre de portrait, séparateur, détails et animations de changement de page.
 - Le sélecteur ouvre une bibliothèque adaptative avec aperçu, choix direct,
   pagination, favoris persistants et filtre « Mes favoris ».
 - Les morceaux de page superposés ont disparu du journal et du carnet : les coins
@@ -51,6 +51,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 146 tests automatisés réussis.
-- Les six thèmes HD sont présents dans le JAR avec 24 ressources chacun.
+- 149 tests automatisés réussis.
+- Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
+  propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

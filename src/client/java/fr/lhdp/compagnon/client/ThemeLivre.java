@@ -189,24 +189,7 @@ enum ThemeLivre {
 	}
 
 	ResourceLocation texture(String nom) {
-		String dossier = estMerveille() && !ressourcePropre(nom) ? "sylvestre_hd" : this.id;
-		return Compagnon.id("textures/gui/livre/themes/" + dossier + "/" + nom + ".png");
-	}
-
-	/**
-	 * Les nouveaux livres apportent leur couverture, leurs pages et leurs boutons.
-	 * Les petites ressources fonctionnelles qui ne sont pas dans le ZIP utilisent
-	 * la version neutre existante, sans dupliquer plusieurs megaoctets dans le JAR.
-	 */
-	private boolean estMerveille() {
-		return this == MEDIEVAL_HD || this == BESTIAIRE_HD || this == VITRAIL_HD
-				|| this == HORLOGERIE_HD || this == PORCELAINE_HD;
-	}
-
-	private static boolean ressourcePropre(String nom) {
-		return nom.equals("book_astra_v2") || nom.equals("cover_frame_hd")
-				|| nom.equals("page_left_hd") || nom.equals("page_right_hd")
-				|| nom.startsWith("page_turn_left") || nom.startsWith("page_turn_right");
+		return Compagnon.id("textures/gui/livre/themes/" + this.id + "/" + nom + ".png");
 	}
 
 	ThemeLivre suivant() {

@@ -9,11 +9,12 @@
 
 ## Interface du livre
 
-1. Recevoir les compléments graphiques listés dans
-   `PROMPTS/PROMPT_COMPLEMENTS_LIVRES_MERVEILLES.md`.
-2. Remplacer les ressources neutres de secours des cinq nouveaux thèmes.
-3. Tester les onze thèmes HD en jeu et corriger les derniers débordements de texte.
-4. Vérifier la bibliothèque de thèmes aux petites et grandes échelles d'interface.
+1. Tester les onze thèmes HD en jeu et corriger les derniers débordements de texte.
+2. Faire produire la nouvelle bibliothèque avec
+   `PROMPTS/PROMPT_BIBLIOTHEQUE_APPARENCES_HD.md`.
+3. Remplacer le panneau provisoire, les cartes, les favoris et la pagination par
+   les nouveaux éléments graphiques, sans texte incorporé dans les PNG.
+4. Vérifier la bibliothèque aux petites et grandes échelles d'interface.
 5. Ajouter les nouvelles couvertures que l'auteur va produire.
 
 ## Objet 3D « Journal des Liens »

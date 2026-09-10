@@ -41,6 +41,28 @@ class ThemesMerveillesTest {
 	}
 
 	@Test
+	@DisplayName("chaque livre merveilleux possede tous ses elements d'interface")
+	void complements() throws IOException {
+		for (String id : IDS) {
+			Path dossier = THEMES.resolve(id);
+			BufferedImage superposition = verifier(
+					dossier.resolve("book_details_overlay.png"), 384, 256);
+			verifier(dossier.resolve("bookmark_tabs_hd.png"), 560, 432);
+			BufferedImage portrait = verifier(
+					dossier.resolve("portrait_frame.png"), 142, 76);
+			verifier(dossier.resolve("underline_astra.png"), 159, 11);
+			verifier(dossier.resolve("ritual_cards.png"), 135, 90);
+			verifier(dossier.resolve("page_turn_ltr_strip.png"), 3072, 256);
+			verifier(dossier.resolve("page_turn_rtl_strip.png"), 3072, 256);
+
+			assertEquals(0, alpha(portrait, 71, 38),
+					id + " : le portrait ne peut pas traverser son cadre");
+			assertEquals(0, alpha(superposition, 192, 128),
+					id + " : la superposition masque le contenu du livre");
+		}
+	}
+
+	@Test
 	@DisplayName("aucun ecran du livre ne redessine les anciennes fleches")
 	void coinsInvisibles() throws IOException {
 		for (String fichier : List.of("EcranLivre.java", "EcranCarnet.java")) {

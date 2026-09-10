@@ -2,6 +2,7 @@ package fr.lhdp.compagnon;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -81,6 +82,12 @@ public final class Icones {
 	 * dix, et l'oublier une fois donne une icone collee au premier mot.
 	 */
 	public static MutableComponent devant(String glyphe, Component phrase) {
-		return de(glyphe).append(Component.literal(" ")).append(phrase);
+		// Le style d'un composant parent est herite par ses enfants. Sans remettre
+		// explicitement la police vanilla, toute la phrase est cherchee dans notre
+		// minuscule planche d'icones et apparait sous forme de carres.
+		MutableComponent texte = phrase.copy()
+				.withStyle(style -> style.withFont(Style.DEFAULT_FONT));
+		return de(glyphe).append(Component.literal(" ")
+				.withStyle(style -> style.withFont(Style.DEFAULT_FONT))).append(texte);
 	}
 }

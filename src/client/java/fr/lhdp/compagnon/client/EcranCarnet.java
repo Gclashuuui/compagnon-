@@ -76,7 +76,8 @@ public class EcranCarnet extends EcranCompagnon {
 	/** Le cadre du modele, en pixels. Assez grand pour voir la bete. */
 	private static final int PORTRAIT = 76;
 	private static final int THEME_TAILLE = 20;
-	private static final long PAGE_IMAGE_MS = 110L;
+	/** Cadence conseillee par les planches v6 : 8 images en 560 ms. */
+	private static final long PAGE_IMAGE_MS = 70L;
 	private static final long PAGE_ANIMATION_MS = PAGE_IMAGE_MS * 8L;
 
 	/** Hauteur d'une carte de la collection. */

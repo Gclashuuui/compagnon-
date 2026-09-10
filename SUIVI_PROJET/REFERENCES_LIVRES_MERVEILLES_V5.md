@@ -22,9 +22,13 @@ Pour chacun, le mod utilise les fichiers fournis suivants :
 Les pages logiques restent exactement à 142 × 184 dans Minecraft. Aucun texte
 n'a été déplacé.
 
-## Compléments encore attendus
+## Compléments v6 intégrés
 
-Le ZIP ne contient pas de déclinaison propre à chaque thème pour :
+Source reçue le 10 septembre 2026 :
+
+`output/livres_merveilles_complements_v6.zip`
+
+Chaque thème possède maintenant sa propre déclinaison pour :
 
 - `bookmark_tabs_hd.png` ;
 - `portrait_frame.png` ;
@@ -32,10 +36,12 @@ Le ZIP ne contient pas de déclinaison propre à chaque thème pour :
 - `ritual_cards.png` ;
 - `page_turn_ltr_strip.png` ;
 - `page_turn_rtl_strip.png` ;
-- éventuellement `book_details_overlay.png`.
+- `book_details_overlay.png`.
 
-En attendant, le code utilise les éléments neutres du thème Sylvestre. Ce repli
-est volontaire, partagé et ne duplique pas les textures dans le JAR.
+Le repli visuel vers Sylvestre a été supprimé. Les cinq livres sont désormais
+autonomes, y compris pendant le changement de page. Les deux bandes d'animation
+contiennent huit images de 384 × 256 et sont jouées à 70 ms par image, soit
+560 ms au total.
 
 Les petites textures de flèches contenues dans le ZIP ne sont pas intégrées :
 les coins du livre sont maintenant cliquables et totalement invisibles.

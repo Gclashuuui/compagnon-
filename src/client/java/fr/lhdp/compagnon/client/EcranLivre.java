@@ -152,7 +152,8 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int SIGNETS_SOURCE_L = 120;
 	private static final int SIGNETS_SOURCE_H = 72;
 	private static final int THEME_TAILLE = 20;
-	private static final long PAGE_IMAGE_MS = 110L;
+	/** Cadence conseillee par les planches v6 : 8 images en 560 ms. */
+	private static final long PAGE_IMAGE_MS = 70L;
 	private static final long PAGE_ANIMATION_MS = PAGE_IMAGE_MS * 8L;
 	private static final String[] SIGNETS = {
 		"livre.compagnon.onglet.aujourdhui",
