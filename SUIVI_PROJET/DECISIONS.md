@@ -21,6 +21,11 @@
   santé et complicité. Un cœur ne représente pas à la fois la santé et le lien.
 - Les thèmes du carnet de santé changent le cadre et la palette, jamais la position
   des textes et des jauges. Le choix reste purement client.
+- La collection détaillée des carnets de santé conserve les décors qui dépassent
+  lorsqu'il y a assez de place. Plusieurs compagnons repassent au format compact
+  pour empêcher les ornements de se chevaucher.
+- La santé utilise une feuille et la complicité un cœur ; ces deux informations ne
+  partagent jamais la même icône.
 - Le code, les documents de suivi et les livraisons restent versionnés sur GitHub.
 - Le dossier local `output/` n'est pas ajouté automatiquement au dépôt.
 - Toute nouvelle espèce réutilise le cerveau commun, la mémoire, la perception et les

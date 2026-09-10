@@ -1,0 +1,14 @@
+{
+  "ink": "#21392A",
+  "secondaryInk": "#4A6249",
+  "outline": "#102D22",
+  "emptyGauge": "#163A2C",
+  "accent": "#42B37B",
+  "gauges": {
+    "hunger": "#EBA337",
+    "energy": "#37C4EB",
+    "health": "#8BC458",
+    "bond": "#E16EAC",
+    "alert": "#D94F50"
+  }
+}

@@ -39,8 +39,11 @@
 - La touche H ouvre une fiche de santé interactive sans mettre le jeu en pause :
   choix du compagnon, valeurs exactes, conseil, accès au journal, affichage du HUD
   et sélecteur d'habillage.
-- Trois palettes de départ sont intégrées au carnet de santé : Parchemin,
-  Sylvestre et Nocturne. Le choix reste local et persiste dans la configuration.
+- Treize habillages sont intégrés au carnet de santé : les trois palettes de
+  départ et dix carnets enchantés illustrés. Le choix reste local, persiste dans
+  la configuration et se fait dans une galerie directe.
+- Les carnets enchantés habillent à la fois la fiche détaillée et le HUD compact,
+  avec des icônes séparées pour faim, énergie, santé et complicité.
 
 ## Caresse
 
@@ -51,7 +54,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 149 tests automatisés réussis.
+- 150 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

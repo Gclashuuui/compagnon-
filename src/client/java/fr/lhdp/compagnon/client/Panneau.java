@@ -74,11 +74,11 @@ public final class Panneau {
 	// Les couleurs du livre, aux memes valeurs. Elles ne sont pas recopiees par
 	// paresse : c'est la seule facon que les deux ecrans se ressemblent vraiment,
 	// et qu'une barre orange veuille dire la meme chose des deux cotes.
-	private static final int FAIM = 0xFFD07A2E;
-	private static final int ENERGIE = 0xFFD4B02A;
-	private static final int SANTE = 0xFFB94A52;
-	private static final int COMPLICITE = 0xFFB95285;
-	private static final int ALERTE = 0xFFB03A34;
+	private static final int FAIM = 0xFFEBA337;
+	private static final int ENERGIE = 0xFF37C4EB;
+	private static final int SANTE = 0xFF8BC458;
+	private static final int COMPLICITE = 0xFFE16EAC;
+	private static final int ALERTE = 0xFFD94F50;
 
 	/** L'autre bout du battement d'une barre en alerte. */
 	private static final int ALERTE_VIF = 0xFFE0574E;
@@ -193,6 +193,11 @@ public final class Panneau {
 		theme.sauvegarder();
 	}
 
+	static void choisirTheme(ThemeSante nouveau) {
+		theme = nouveau;
+		theme.sauvegarder();
+	}
+
 	// --- Le dessin ----------------------------------------------------------------
 
 	/**
@@ -216,9 +221,13 @@ public final class Panneau {
 		// ou une barre passe sous le seuil.
 		battement = (battement + partiel) % TOUR;
 
-		int y = MARGE;
+		boolean decorComplet = theme.illustre() && montrer.size() == 1
+				&& g.guiWidth() >= 296 + 2 * MARGE
+				&& g.guiHeight() >= 194 + 2 * MARGE;
+		int x = decorComplet ? MARGE + 80 : MARGE;
+		int y = decorComplet ? MARGE + 70 : MARGE;
 		for (PaquetJauges.Jauge jauge : montrer) {
-			fiche(g, client, MARGE, y, jauge, partiel);
+			fiche(g, client, x, y, jauge, partiel, decorComplet);
 			y += HAUTEUR + ENTRE_DEUX;
 		}
 	}
@@ -233,7 +242,7 @@ public final class Panneau {
 	 * le dessin plutot que par une phrase dans la documentation.
 	 */
 	private static void fiche(GuiGraphics g, Minecraft client, int x, int y,
-			PaquetJauges.Jauge jauge, float partiel) {
+			PaquetJauges.Jauge jauge, float partiel, boolean decorComplet) {
 
 		float[] etat = affichees.computeIfAbsent(jauge.id(),
 				id -> new float[]{jauge.faim(), jauge.energie(), jauge.sante(),
@@ -250,10 +259,15 @@ public final class Panneau {
 
 		float opacite = etat[4];
 
+		if (theme.illustre()) {
+			dessinerFondIllustre(g, x, y, opacite, decorComplet);
+			dessinerContenuIllustre(g, client, x, y, jauge, etat, opacite);
+			return;
+		}
+
 		// L'ombre d'abord, decalee d'un pixel : sans elle le parchemin a l'air
 		// peint sur l'ecran plutot que pose dessus.
 		coinsArrondis(g, x + 1, y + 1, LARGEUR, HAUTEUR, teinte(OMBRE, opacite), 0);
-
 		papier(g, x, y, opacite);
 
 		int texteY = y + PADDING - 1;
@@ -292,6 +306,45 @@ public final class Panneau {
 				fr.lhdp.compagnon.Icones.SOIN, etat[2], SANTE, opacite);
 		petiteBarre(g, client, x + PADDING + colonne + 6, y + 31 + ENTRE_JAUGES, colonne,
 				fr.lhdp.compagnon.Icones.COEUR, etat[3], COMPLICITE, opacite);
+	}
+
+	private static void dessinerFondIllustre(GuiGraphics g, int x, int y,
+			float opacite, boolean decorComplet) {
+		g.setColor(1.0F, 1.0F, 1.0F, opacite);
+		if (decorComplet) {
+			g.blit(theme.texture("hud_compact_overflow"), x - 80, y - 70,
+					296, 194, 0.0F, 0.0F, 296, 194, 296, 194);
+		} else {
+			g.blit(theme.texture("hud_compact"), x, y, LARGEUR, HAUTEUR,
+					0.0F, 0.0F, LARGEUR, HAUTEUR, LARGEUR, HAUTEUR);
+		}
+		g.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
+	/** Calque les informations sur les zones sûres du gabarit 136 x 54. */
+	private static void dessinerContenuIllustre(GuiGraphics g, Minecraft client,
+			int x, int y, PaquetJauges.Jauge jauge, float[] etat, float opacite) {
+		String nom = client.font.plainSubstrByWidth(jauge.nom(), 128);
+		g.drawString(client.font, nom, x + 4, y + 3,
+				teinte(theme.encre, opacite), false);
+
+		String diagnostic = client.font.plainSubstrByWidth(etat(jauge).getString(), 128);
+		g.drawString(client.font, diagnostic, x + 4, y + 14,
+				teinte(couleurEtat(jauge), opacite), false);
+
+		petiteBarreIllustree(g, x + 4, y + 28, 0, etat[0], FAIM, opacite);
+		petiteBarreIllustree(g, x + 72, y + 28, 1, etat[1], ENERGIE, opacite);
+		petiteBarreIllustree(g, x + 4, y + 41, 2, etat[2], SANTE, opacite);
+		petiteBarreIllustree(g, x + 72, y + 41, 3, etat[3], COMPLICITE, opacite);
+	}
+
+	private static void petiteBarreIllustree(GuiGraphics g, int x, int y,
+			int icone, float valeur, int couleur, float opacite) {
+		g.setColor(1.0F, 1.0F, 1.0F, opacite);
+		g.blit(theme.texture("health_icons"), x, y, 8, 8,
+				icone * 16.0F, 0.0F, 16, 16, 160, 16);
+		g.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		barre(g, x + 11, y + 1, 47, valeur, couleur, opacite);
 	}
 
 	private static void petiteBarre(GuiGraphics g, Minecraft client, int x, int y,

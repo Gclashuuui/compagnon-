@@ -2,10 +2,12 @@
 
 ## Priorité immédiate — carnet de santé
 
-1. Tester en jeu le nouveau panneau compact et sa fiche interactive.
-2. Produire une planche comparative à partir de `PROMPTS/PROMPT_THEMES_CARNET_SANTE.md`.
-3. Valider les icônes séparées de faim, énergie, santé et complicité.
-4. Intégrer les PNG retenus sans modifier la grille ni les zones de texte.
+1. Tester en jeu les dix carnets enchantés à plusieurs échelles d'interface.
+2. Vérifier le décor complet du HUD avec un compagnon et le mode compact avec
+   plusieurs compagnons.
+3. Ajuster seulement les marges ou contrastes révélés par le test en jeu ; les
+   zones de texte et de jauges suivent déjà le `layout.json` livré.
+4. Vérifier la galerie des treize habillages sur une petite résolution.
 
 ## Interface du livre
 
