@@ -1,5 +1,15 @@
 # Livraisons
 
+## Bibliothèque des livres merveilleux
+
+- Commit : `4236254` — Bibliothèque, favoris et cinq thèmes continus.
+- Nouveaux thèmes : Médiéval, Bestiaire, Vitrail, Horlogerie et Porcelaine.
+- Total : 27 thèmes, dont 11 thèmes haute définition.
+- Les anciennes flèches superposées ne sont plus dessinées ; les coins de page
+  restent cliquables de manière invisible.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- Vérification : compilation réussie, 148 tests réussis.
+
 ## Carnet de santé
 
 - Commit : `8200a23` — Refonte du carnet de santé du compagnon.
