@@ -12,12 +12,10 @@
 ## Interface du livre
 
 1. Tester les onze thèmes HD en jeu et corriger les derniers débordements de texte.
-2. Faire produire la nouvelle bibliothèque avec
-   `PROMPTS/PROMPT_BIBLIOTHEQUE_APPARENCES_HD.md`.
-3. Remplacer le panneau provisoire, les cartes, les favoris et la pagination par
-   les nouveaux éléments graphiques, sans texte incorporé dans les PNG.
-4. Vérifier la bibliothèque aux petites et grandes échelles d'interface.
-5. Ajouter les nouvelles couvertures que l'auteur va produire.
+2. Vérifier en jeu la bibliothèque illustrée aux petites et grandes échelles
+   d'interface, notamment les zones de clic des étoiles et des filtres.
+3. Tester les noms français longs, les infobulles et l'état sans aucun favori.
+4. Ajouter les nouvelles couvertures que l'auteur va produire.
 
 ## Objet 3D « Journal des Liens »
 

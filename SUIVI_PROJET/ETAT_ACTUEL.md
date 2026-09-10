@@ -30,8 +30,11 @@
 - Le carnet de sélection et le journal utilisent maintenant le même habillage HD.
 - Les cinq livres merveilleux possèdent leurs propres signets, cartes de rituel,
   cadre de portrait, séparateur, détails et animations de changement de page.
-- Le sélecteur ouvre une bibliothèque adaptative avec aperçu, choix direct,
-  pagination, favoris persistants et filtre « Mes favoris ».
+- Le sélecteur ouvre une bibliothèque illustrée bois et laiton, redimensionnée
+  selon l'écran, avec les vrais aperçus des livres, choix direct et pagination.
+- Chaque carte possède quatre états visuels. Les favoris persistants utilisent
+  une étoile PNG et deux filtres directs « Tous » / « Favoris » ; aucun caractère
+  d'icône incompatible n'est utilisé.
 - Les morceaux de page superposés ont disparu du journal et du carnet : les coins
   inférieurs sont désormais des zones cliquables invisibles de 38 × 38 pixels.
 - Le panneau de santé compact montre désormais faim, énergie, santé et complicité,
@@ -54,7 +57,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 150 tests automatisés réussis.
+- 151 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

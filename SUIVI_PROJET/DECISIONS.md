@@ -15,8 +15,10 @@
   joueur : ils ne sont jamais envoyés au serveur.
 - Avec beaucoup de variantes, le clic sur le nuancier ouvre une bibliothèque avec
   aperçus ; le clic droit sert de raccourci pour ajouter le thème courant aux favoris.
-- La future bibliothèque utilise de vraies icônes PNG pour les favoris, les filtres
+- La bibliothèque utilise de vraies icônes PNG pour les favoris, les filtres
   et la pagination. Aucun emoji, caractère privé ou texte n'est incorporé aux images.
+- Les miniatures restent les vraies textures des livres chargées par le jeu : le
+  décor de bibliothèque ne fige jamais une couverture dans ses PNG.
 - Le panneau de santé doit toujours montrer quatre besoins distincts : faim, énergie,
   santé et complicité. Un cœur ne représente pas à la fois la santé et le lien.
 - Les thèmes du carnet de santé changent le cadre et la palette, jamais la position

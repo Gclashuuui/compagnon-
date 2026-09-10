@@ -1,0 +1,924 @@
+{
+  "version": 1,
+  "units": "logical_pixels",
+  "hd_scale": 4,
+  "logical_size": [
+    416,
+    284
+  ],
+  "rect_format": "x,y,width,height; right and bottom exclusive",
+  "texture_sampling": "nearest; mipmaps disabled",
+  "grid": {
+    "columns": 4,
+    "rows": 3,
+    "card_size": [
+      94,
+      68
+    ],
+    "gap": [
+      4,
+      2
+    ],
+    "positions": [
+      [
+        14,
+        48
+      ],
+      [
+        112,
+        48
+      ],
+      [
+        210,
+        48
+      ],
+      [
+        308,
+        48
+      ],
+      [
+        14,
+        118
+      ],
+      [
+        112,
+        118
+      ],
+      [
+        210,
+        118
+      ],
+      [
+        308,
+        118
+      ],
+      [
+        14,
+        188
+      ],
+      [
+        112,
+        188
+      ],
+      [
+        210,
+        188
+      ],
+      [
+        308,
+        188
+      ]
+    ]
+  },
+  "title_safe": [
+    38,
+    15,
+    138,
+    20
+  ],
+  "title_rendering": "Two lines recommended: Bibliothèque / des apparences. Runtime font only.",
+  "filters": {
+    "positions": [
+      [
+        192,
+        15
+      ],
+      [
+        298,
+        15
+      ]
+    ],
+    "text_safe_local": [
+      27,
+      5,
+      73,
+      12
+    ],
+    "icon_safe_local": [
+      3,
+      3,
+      20,
+      16
+    ]
+  },
+  "cards": {
+    "preview_transparent_local": [
+      8,
+      10,
+      78,
+      39
+    ],
+    "book_safe_local": [
+      9,
+      18,
+      76,
+      30
+    ],
+    "name_safe_local": [
+      9,
+      54,
+      65,
+      8
+    ],
+    "favorite_local": [
+      77,
+      2,
+      16,
+      16
+    ],
+    "selected_seal_local": [
+      78,
+      54,
+      10,
+      10
+    ],
+    "long_names": "Clip or ellipsize to 65 logical pixels; show full French name in a runtime tooltip.",
+    "selected_hover": "Use selected sprite with a mild runtime tint; preserve position and size."
+  },
+  "pagination": {
+    "previous": [
+      163,
+      262
+    ],
+    "next": [
+      235,
+      262
+    ],
+    "dots": [
+      [
+        181,
+        262
+      ],
+      [
+        199,
+        262
+      ],
+      [
+        217,
+        262
+      ]
+    ],
+    "pages_for_27_books": 3
+  },
+  "empty_favorites": {
+    "position": [
+      176,
+      117
+    ],
+    "text_safe": [
+      70,
+      188,
+      276,
+      24
+    ]
+  },
+  "draw_order": [
+    "panel",
+    "real_book_previews_clipped",
+    "cards",
+    "favorite_buttons",
+    "filter_tabs",
+    "pagination",
+    "details_overlay",
+    "runtime_text"
+  ],
+  "preview_note": "Assembled from delivered sprites; real book textures and text intentionally omitted. Reference screenshots/textures were not supplied.",
+  "states_preview": {
+    "size": [
+      2240,
+      3272
+    ],
+    "background": "#707070",
+    "rows": [
+      {
+        "asset": "library_card_states_hd.png",
+        "y": 24,
+        "logical_scale": 1,
+        "logical_x": 24,
+        "hd_scale": 4,
+        "hd_x": 548,
+        "height": 272
+      },
+      {
+        "asset": "favorite_button_states_hd.png",
+        "y": 328,
+        "logical_scale": 1,
+        "logical_x": 24,
+        "hd_scale": 4,
+        "hd_x": 548,
+        "height": 64
+      },
+      {
+        "asset": "filter_tabs_states_hd.png",
+        "y": 424,
+        "logical_scale": 1,
+        "logical_x": 24,
+        "hd_scale": 4,
+        "hd_x": 548,
+        "height": 88
+      },
+      {
+        "asset": "pagination_states_hd.png",
+        "y": 544,
+        "logical_scale": 1,
+        "logical_x": 24,
+        "hd_scale": 4,
+        "hd_x": 548,
+        "height": 72
+      },
+      {
+        "asset": "empty_favorites_hd.png",
+        "y": 648,
+        "logical_scale": 1,
+        "logical_x": 24,
+        "hd_scale": 4,
+        "hd_x": 548,
+        "height": 256
+      },
+      {
+        "asset": "library_panel_hd.png",
+        "y": 936,
+        "logical_scale": 1,
+        "logical_x": 24,
+        "hd_scale": 4,
+        "hd_x": 548,
+        "height": 1136
+      },
+      {
+        "asset": "library_details_overlay.png",
+        "y": 2104,
+        "logical_scale": 1,
+        "logical_x": 24,
+        "hd_scale": 4,
+        "hd_x": 548,
+        "height": 1136
+      }
+    ]
+  },
+  "files": {
+    "library_panel_hd.png": {
+      "dimensions_hd": [
+        1664,
+        1136
+      ],
+      "dimensions_logical": [
+        416,
+        284
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        5,
+        4,
+        406,
+        274
+      ],
+      "safe_zones": {
+        "title": [
+          38,
+          15,
+          138,
+          20
+        ],
+        "grid": [
+          14,
+          48,
+          388,
+          208
+        ],
+        "footer": [
+          158,
+          261,
+          100,
+          19
+        ]
+      },
+      "transparent_margins_logical": {
+        "right": 5,
+        "top": 4,
+        "left": 5,
+        "bottom": 6
+      }
+    },
+    "library_card_states_hd.png": {
+      "dimensions_hd": [
+        1504,
+        272
+      ],
+      "dimensions_logical": [
+        376,
+        68
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        1,
+        1,
+        373,
+        66
+      ],
+      "frame_size_logical": [
+        94,
+        68
+      ],
+      "frame_size_hd": [
+        376,
+        272
+      ],
+      "states": [
+        {
+          "name": "normal",
+          "uv_hd": [
+            0,
+            0,
+            376,
+            272
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            92,
+            66
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "hovered",
+          "uv_hd": [
+            376,
+            0,
+            376,
+            272
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            92,
+            66
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "selected",
+          "uv_hd": [
+            752,
+            0,
+            376,
+            272
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            92,
+            66
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "selected_favorite",
+          "uv_hd": [
+            1128,
+            0,
+            376,
+            272
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            91,
+            66
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 2,
+            "bottom": 1
+          }
+        }
+      ],
+      "safe_zones": {
+        "transparent_preview": [
+          8,
+          10,
+          78,
+          39
+        ],
+        "book": [
+          9,
+          18,
+          76,
+          30
+        ],
+        "name": [
+          9,
+          54,
+          65,
+          8
+        ]
+      },
+      "transparent_margins_logical": {
+        "right": 2,
+        "top": 1,
+        "left": 1,
+        "bottom": 1
+      }
+    },
+    "favorite_button_states_hd.png": {
+      "dimensions_hd": [
+        256,
+        64
+      ],
+      "dimensions_logical": [
+        64,
+        16
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        2,
+        2,
+        61,
+        13
+      ],
+      "frame_size_logical": [
+        16,
+        16
+      ],
+      "frame_size_hd": [
+        64,
+        64
+      ],
+      "states": [
+        {
+          "name": "empty",
+          "uv_hd": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "alpha_bounds_local": [
+            2,
+            2,
+            13,
+            13
+          ],
+          "transparent_margins_local": {
+            "left": 2,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "empty_hovered",
+          "uv_hd": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "alpha_bounds_local": [
+            2,
+            2,
+            13,
+            13
+          ],
+          "transparent_margins_local": {
+            "left": 2,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "active",
+          "uv_hd": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "alpha_bounds_local": [
+            2,
+            2,
+            13,
+            13
+          ],
+          "transparent_margins_local": {
+            "left": 2,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "active_hovered",
+          "uv_hd": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "alpha_bounds_local": [
+            2,
+            2,
+            13,
+            13
+          ],
+          "transparent_margins_local": {
+            "left": 2,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        }
+      ],
+      "transparent_margins_logical": {
+        "right": 1,
+        "top": 2,
+        "left": 2,
+        "bottom": 1
+      }
+    },
+    "filter_tabs_states_hd.png": {
+      "dimensions_hd": [
+        1664,
+        88
+      ],
+      "dimensions_logical": [
+        416,
+        22
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        1,
+        1,
+        414,
+        20
+      ],
+      "frame_size_logical": [
+        104,
+        22
+      ],
+      "frame_size_hd": [
+        416,
+        88
+      ],
+      "states": [
+        {
+          "name": "all_normal",
+          "uv_hd": [
+            0,
+            0,
+            416,
+            88
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            102,
+            20
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "all_hovered",
+          "uv_hd": [
+            416,
+            0,
+            416,
+            88
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            102,
+            20
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "favorites_normal",
+          "uv_hd": [
+            832,
+            0,
+            416,
+            88
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            102,
+            20
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "favorites_hovered",
+          "uv_hd": [
+            1248,
+            0,
+            416,
+            88
+          ],
+          "alpha_bounds_local": [
+            1,
+            1,
+            102,
+            20
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 1,
+            "right": 1,
+            "bottom": 1
+          }
+        }
+      ],
+      "safe_zones": {
+        "text": [
+          27,
+          5,
+          73,
+          12
+        ],
+        "icon": [
+          3,
+          3,
+          20,
+          16
+        ]
+      },
+      "transparent_margins_logical": {
+        "right": 1,
+        "top": 1,
+        "left": 1,
+        "bottom": 1
+      }
+    },
+    "pagination_states_hd.png": {
+      "dimensions_hd": [
+        432,
+        72
+      ],
+      "dimensions_logical": [
+        108,
+        18
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        2,
+        2,
+        99,
+        15
+      ],
+      "frame_size_logical": [
+        18,
+        18
+      ],
+      "frame_size_hd": [
+        72,
+        72
+      ],
+      "states": [
+        {
+          "name": "previous_normal",
+          "uv_hd": [
+            0,
+            0,
+            72,
+            72
+          ],
+          "alpha_bounds_local": [
+            2,
+            2,
+            15,
+            15
+          ],
+          "transparent_margins_local": {
+            "left": 2,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "previous_hovered",
+          "uv_hd": [
+            72,
+            0,
+            72,
+            72
+          ],
+          "alpha_bounds_local": [
+            2,
+            2,
+            15,
+            15
+          ],
+          "transparent_margins_local": {
+            "left": 2,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "next_normal",
+          "uv_hd": [
+            144,
+            0,
+            72,
+            72
+          ],
+          "alpha_bounds_local": [
+            2,
+            2,
+            15,
+            15
+          ],
+          "transparent_margins_local": {
+            "left": 2,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "next_hovered",
+          "uv_hd": [
+            216,
+            0,
+            72,
+            72
+          ],
+          "alpha_bounds_local": [
+            1,
+            2,
+            16,
+            15
+          ],
+          "transparent_margins_local": {
+            "left": 1,
+            "top": 2,
+            "right": 1,
+            "bottom": 1
+          }
+        },
+        {
+          "name": "page_normal",
+          "uv_hd": [
+            288,
+            0,
+            72,
+            72
+          ],
+          "alpha_bounds_local": [
+            6,
+            6,
+            5,
+            5
+          ],
+          "transparent_margins_local": {
+            "left": 6,
+            "top": 6,
+            "right": 7,
+            "bottom": 7
+          }
+        },
+        {
+          "name": "page_active",
+          "uv_hd": [
+            360,
+            0,
+            72,
+            72
+          ],
+          "alpha_bounds_local": [
+            6,
+            6,
+            5,
+            5
+          ],
+          "transparent_margins_local": {
+            "left": 6,
+            "top": 6,
+            "right": 7,
+            "bottom": 7
+          }
+        }
+      ],
+      "transparent_margins_logical": {
+        "right": 7,
+        "top": 2,
+        "left": 2,
+        "bottom": 1
+      }
+    },
+    "empty_favorites_hd.png": {
+      "dimensions_hd": [
+        256,
+        256
+      ],
+      "dimensions_logical": [
+        64,
+        64
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        4,
+        8,
+        56,
+        48
+      ],
+      "transparent_margins_logical": {
+        "right": 4,
+        "top": 8,
+        "left": 4,
+        "bottom": 8
+      }
+    },
+    "library_details_overlay.png": {
+      "dimensions_hd": [
+        1664,
+        1136
+      ],
+      "dimensions_logical": [
+        416,
+        284
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        6,
+        6,
+        403,
+        269
+      ],
+      "safe_zones": {
+        "transparent_center": [
+          14,
+          14,
+          388,
+          252
+        ]
+      },
+      "transparent_margins_logical": {
+        "right": 7,
+        "top": 6,
+        "left": 6,
+        "bottom": 9
+      }
+    },
+    "preview_bibliotheque.png": {
+      "dimensions_hd": [
+        1664,
+        1136
+      ],
+      "dimensions_logical": [
+        416,
+        284
+      ],
+      "rgba": true,
+      "alpha_bounds_logical": [
+        5,
+        4,
+        406,
+        275
+      ],
+      "transparent_margins_logical": {
+        "right": 5,
+        "top": 4,
+        "left": 5,
+        "bottom": 5
+      }
+    }
+  }
+}
