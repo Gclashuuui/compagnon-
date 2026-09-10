@@ -24,6 +24,11 @@ joueur, et jusqu'à une fois toutes les quatre secondes hors de vue.
 Cette couche contient exactement quatre nombres. Elle ne lance aucune recherche
 d'entité, ne contacte aucun service et ne grossit jamais en mémoire.
 
+Pour les réglages, `/compagnon info` affiche la branche active, le rythme de
+calcul, le nombre de souvenirs courts ainsi que les quatre tensions en
+pourcentage. Rien n'est envoyé aux joueurs et aucune mesure supplémentaire ne
+tourne lorsque la commande n'est pas utilisée.
+
 ## Niveau de détail permanent
 
 Le cerveau possède trois rythmes automatiques : **proche** (moins de 24 blocs),

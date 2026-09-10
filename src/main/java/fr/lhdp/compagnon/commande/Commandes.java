@@ -70,7 +70,7 @@ import java.util.UUID;
  * /compagnon supprimer                          supprime la fiche la plus proche
  * /compagnon supprimer joueur &lt;joueur&gt;        efface tous ses compagnons
  * /compagnon supprimer tout confirmer          efface TOUT, fiches et entites
- * /compagnon info                               tout ce que porte le compagnon vise
+ * /compagnon info                               fiche, cerveau et état intérieur
  * /compagnon anim &lt;nom&gt;                         joue une animation ; "stop" l'arrete
  * /compagnon renommer &lt;nom&gt;                     rebaptise le compagnon vise
  * /compagnon variante &lt;nom&gt;                     change la variante a chaud
@@ -797,6 +797,15 @@ public final class Commandes {
 						+ "  vivacite " + caractere.vivacite()
 						+ "  calin " + caractere.calin()
 						+ "  curiosite " + caractere.curiosite());
+
+		var interieur = compagnon.etatInterieur();
+		repondre(contexte, "cerveau : " + compagnon.intention().name().toLowerCase()
+				+ " | rythme " + compagnon.niveauActiviteCerveau().name().toLowerCase()
+				+ " | memoire " + compagnon.memoireCourte().combienDActifs()
+				+ " | stress " + arrondi(interieur.stress() * 100.0F)
+				+ " | ennui " + arrondi(interieur.ennui() * 100.0F)
+				+ " | contact " + arrondi(interieur.besoinDeContact() * 100.0F)
+				+ " | exploration " + arrondi(interieur.envieDExplorer() * 100.0F));
 
 		if (!fiche.aUnBobo()) {
 			return repondre(contexte, "aucun bobo");
