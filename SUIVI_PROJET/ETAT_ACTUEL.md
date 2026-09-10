@@ -28,6 +28,13 @@
 - Les nouveaux thèmes utilisent deux zones de texte fixes de 142 x 184 pixels,
   des couvertures adaptatives et leurs propres signets.
 - Le carnet de sélection et le journal utilisent maintenant le même habillage HD.
+- Le panneau de santé compact montre désormais faim, énergie, santé et complicité,
+  avec un diagnostic prioritaire en toutes lettres.
+- La touche H ouvre une fiche de santé interactive sans mettre le jeu en pause :
+  choix du compagnon, valeurs exactes, conseil, accès au journal, affichage du HUD
+  et sélecteur d'habillage.
+- Trois palettes de départ sont intégrées au carnet de santé : Parchemin,
+  Sylvestre et Nocturne. Le choix reste local et persiste dans la configuration.
 
 ## Caresse
 

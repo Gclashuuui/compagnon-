@@ -7,16 +7,18 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * L'etat des compagnons sortis, pour le petit panneau du coin de l'ecran.
  *
  * <h2>Pourquoi c'est si petit</h2>
  *
- * <p>Ce paquet peut partir vers mille joueurs. Chaque jauge tient donc en
- * <b>trois octets</b> : les barres sont ramenees de 0 a 100 dans un octet, et
- * l'humeur est un simple numero. On perd les decimales — et on s'en moque, la
- * barre fait vingt pixels de large.
+	 * <p>Ce paquet peut partir vers mille joueurs. Les quatre barres tiennent
+	 * chacune dans un octet et l'humeur dans un cinquieme. L'identifiant stable
+	 * evite de confondre deux compagnons qui portent le meme nom ; l'index permet
+	 * d'ouvrir directement son journal. On perd les decimales — et on s'en moque,
+	 * aucune jauge de l'interface ne peut montrer un centieme de point.
  *
  * <h2>Et pourquoi il part si rarement</h2>
  *
@@ -35,10 +37,15 @@ public record PaquetJauges(List<Jauge> jauges) implements CustomPacketPayload {
 	/**
 	 * Ce qu'on montre d'un compagnon.
 	 *
-	 * @param nom     son nom
-	 * @param faim    de 0 a 100
-	 * @param energie de 0 a 100
-	 * @param humeur  le numero de l'humeur, dans l'ordre de l'enumeration
+	 * @param id         l'identifiant stable de sa fiche
+	 * @param index      sa place dans le carnet du joueur
+	 * @param nom        son nom
+	 * @param faim       de 0 a 100
+	 * @param energie    de 0 a 100
+	 * @param sante      de 0 a 100
+	 * @param complicite de 0 a 100
+	 * @param humeur     le numero de l'humeur, dans l'ordre de l'enumeration
+	 * @param bobo       vrai quand un soin precis est necessaire
 	 */
 	/**
 	 * Ce qu'on montre d'un compagnon dans le panneau.
@@ -48,7 +55,8 @@ public record PaquetJauges(List<Jauge> jauges) implements CustomPacketPayload {
 	 *              seule chose qui compte, et c'est le pire moment pour la
 	 *              rendre discrete.
 	 */
-	public record Jauge(String nom, int faim, int energie, int humeur, boolean monte) {
+	public record Jauge(UUID id, int index, String nom, int faim, int energie,
+			int sante, int complicite, int humeur, boolean bobo, boolean monte) {
 	}
 
 	public static final CustomPacketPayload.Type<PaquetJauges> TYPE =
@@ -60,10 +68,15 @@ public record PaquetJauges(List<Jauge> jauges) implements CustomPacketPayload {
 	private void ecrire(FriendlyByteBuf tampon) {
 		tampon.writeVarInt(this.jauges.size());
 		for (Jauge jauge : this.jauges) {
+			tampon.writeUUID(jauge.id());
+			tampon.writeVarInt(jauge.index());
 			tampon.writeUtf(jauge.nom(), 64);
 			tampon.writeByte(jauge.faim());
 			tampon.writeByte(jauge.energie());
+			tampon.writeByte(jauge.sante());
+			tampon.writeByte(jauge.complicite());
 			tampon.writeByte(jauge.humeur());
+			tampon.writeBoolean(jauge.bobo());
 			tampon.writeBoolean(jauge.monte());
 		}
 	}
@@ -72,9 +85,10 @@ public record PaquetJauges(List<Jauge> jauges) implements CustomPacketPayload {
 		int combien = tampon.readVarInt();
 		List<Jauge> jauges = new ArrayList<>(combien);
 		for (int i = 0; i < combien; i++) {
-			jauges.add(new Jauge(tampon.readUtf(64),
-				tampon.readByte(), tampon.readByte(), tampon.readByte(),
-					tampon.readBoolean()));
+			jauges.add(new Jauge(tampon.readUUID(), tampon.readVarInt(), tampon.readUtf(64),
+					tampon.readUnsignedByte(), tampon.readUnsignedByte(),
+					tampon.readUnsignedByte(), tampon.readUnsignedByte(),
+					tampon.readUnsignedByte(), tampon.readBoolean(), tampon.readBoolean()));
 		}
 		return new PaquetJauges(List.copyOf(jauges));
 	}

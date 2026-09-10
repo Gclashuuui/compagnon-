@@ -45,10 +45,11 @@ public final class Touches {
 	 * qu'on prend la parole serait une punition.
 	 */
 	/**
-	 * Replie ou deplie le petit panneau du coin.
+	 * Ouvre la fiche de sante interactive du petit panneau.
 	 *
-	 * <p>Un panneau qu'on ne peut pas faire taire n'est pas discret : c'est un
-	 * panneau de plus. H comme « le cacher ».
+	 * <p>Dans le HUD la souris est capturee par la camera. H libere donc le
+	 * curseur sans mettre le jeu en pause ; les boutons de theme, de visibilite
+	 * et d'ouverture du journal deviennent alors de vrais boutons.
 	 */
 	public static final KeyMapping PANNEAU = new KeyMapping(
 			"key.compagnon.panneau",
@@ -267,9 +268,8 @@ public final class Touches {
 			}
 
 			while (PANNEAU.consumeClick()) {
-				if (client.player != null) {
-					Panneau.basculer();
-					client.player.displayClientMessage(Panneau.motDeLEtat(), true);
+				if (client.player != null && client.screen == null) {
+					client.setScreen(new EcranSante());
 				}
 			}
 		});

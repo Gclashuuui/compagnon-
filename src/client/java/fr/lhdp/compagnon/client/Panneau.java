@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -47,16 +48,16 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <h2>Il ne calcule rien</h2>
  *
- * <p>Le serveur envoie trois nombres deja arrondis, et seulement quand ils ont
- * change. Cette classe ne fait que les dessiner.
+ * <p>Le serveur envoie quatre barres et une humeur deja arrondies, et seulement
+ * quand elles ont change. Cette classe ne fait que les dessiner.
  */
 public final class Panneau {
 
 	/** Le coin ou il se pose, en pixels depuis le bord. */
 	private static final int MARGE = 8;
 
-	private static final int LARGEUR = 96;
-	private static final int HAUTEUR = 38;
+	static final int LARGEUR = 136;
+	static final int HAUTEUR = 54;
 
 	/** L'espace entre deux compagnons empiles. */
 	private static final int ENTRE_DEUX = 4;
@@ -68,21 +69,15 @@ public final class Panneau {
 
 	/** La jauge : creusee dans le papier, comme dans le livre. */
 	private static final int JAUGE_HAUTEUR = 5;
-	private static final int ENTRE_JAUGES = 7;
+	private static final int ENTRE_JAUGES = 10;
 
 	// Les couleurs du livre, aux memes valeurs. Elles ne sont pas recopiees par
 	// paresse : c'est la seule facon que les deux ecrans se ressemblent vraiment,
 	// et qu'une barre orange veuille dire la meme chose des deux cotes.
-	private static final int PAPIER_HAUT = 0xFFF3E4C4;
-	private static final int PAPIER_BAS = 0xFFE7D3AC;
-	private static final int CADRE = 0xFF5A4632;
-	private static final int CREUX_HAUT = 0xFFB9A886;
-	private static final int CREUX_BAS = 0xFFD9CBAE;
-	private static final int ENCRE = 0xFF3A2A18;
-	private static final int ENCRE_PALE = 0xFF7A6A55;
-
 	private static final int FAIM = 0xFFD07A2E;
 	private static final int ENERGIE = 0xFFD4B02A;
+	private static final int SANTE = 0xFFB94A52;
+	private static final int COMPLICITE = 0xFFB95285;
 	private static final int ALERTE = 0xFFB03A34;
 
 	/** L'autre bout du battement d'une barre en alerte. */
@@ -120,7 +115,8 @@ public final class Panneau {
 	private static volatile List<PaquetJauges.Jauge> jauges = List.of();
 
 	/**
-	 * Ce qui est <b>affiche</b>, par nom de compagnon : faim, energie, opacite.
+	 * Ce qui est <b>affiche</b>, par identifiant de compagnon : faim, energie,
+	 * sante, complicite, opacite.
 	 *
 	 * <h2>Pourquoi ce n'est pas ce que le serveur a envoye</h2>
 	 *
@@ -134,15 +130,18 @@ public final class Panneau {
 	 * trop long se voit descendre. Rien d'autre n'a change : le serveur envoie
 	 * toujours aussi peu, et aussi rarement.
 	 *
-	 * <p>Range par nom : les compagnons entrent et sortent, et une place dans la
-	 * liste ne designe pas toujours la meme bete.
+	 * <p>Range par UUID : les noms peuvent changer et deux compagnons peuvent
+	 * porter le meme. L'identifiant de fiche, lui, ne bouge jamais.
 	 *
 	 * <p>Une table concurrente parce que le menage se fait a l arrivee d un
 	 * paquet et le dessin a chaque image. Les deux tombent sur le fil principal
 	 * aujourd hui — mais la deconnexion, elle, ne le promet pas, et une table
 	 * ordinaire ecrite par deux fils se corrompt en silence.
 	 */
-	private static final Map<String, float[]> affichees = new ConcurrentHashMap<>();
+	private static final Map<UUID, float[]> affichees = new ConcurrentHashMap<>();
+
+	/** Le style est purement client et ne produit aucun paquet reseau. */
+	private static ThemeSante theme = ThemeSante.charger();
 
 	/** L'oscillation lente d'une barre en alerte. Avance a chaque image. */
 	private static float battement;
@@ -157,9 +156,9 @@ public final class Panneau {
 		jauges = nouvelles;
 		// Une bete rentree n'a plus de barre a faire glisser. Sans ce menage, la
 		// table grossirait d'une entree par compagnon vu depuis le lancement.
-		affichees.keySet().removeIf(nom -> {
+		affichees.keySet().removeIf(id -> {
 			for (PaquetJauges.Jauge jauge : nouvelles) {
-				if (jauge.nom().equals(nom)) {
+				if (jauge.id().equals(id)) {
 					return false;
 				}
 			}
@@ -175,6 +174,23 @@ public final class Panneau {
 
 	public static void basculer() {
 		replie = !replie;
+	}
+
+	static boolean replie() {
+		return replie;
+	}
+
+	static List<PaquetJauges.Jauge> donnees() {
+		return jauges;
+	}
+
+	static ThemeSante theme() {
+		return theme;
+	}
+
+	static void changerTheme(boolean precedent) {
+		theme = precedent ? theme.precedent() : theme.suivant();
+		theme.sauvegarder();
 	}
 
 	// --- Le dessin ----------------------------------------------------------------
@@ -208,7 +224,7 @@ public final class Panneau {
 	}
 
 	/**
-	 * Un compagnon : son nom, sa bouille, ses deux barres.
+	 * Un compagnon : son nom, sa bouille, son diagnostic et ses quatre barres.
 	 *
 	 * <p>L'opacite depend de son etat. Un compagnon qui va bien s'efface a deux
 	 * tiers ; des qu'une barre descend, le parchemin redevient franc et la barre
@@ -219,17 +235,20 @@ public final class Panneau {
 	private static void fiche(GuiGraphics g, Minecraft client, int x, int y,
 			PaquetJauges.Jauge jauge, float partiel) {
 
-		float[] etat = affichees.computeIfAbsent(jauge.nom(),
-				nom -> new float[]{jauge.faim(), jauge.energie(), opacite(jauge)});
+		float[] etat = affichees.computeIfAbsent(jauge.id(),
+				id -> new float[]{jauge.faim(), jauge.energie(), jauge.sante(),
+						jauge.complicite(), opacite(jauge)});
 
 		// Les barres glissent en une demi-seconde ; l'opacite, elle, met une
 		// seconde a changer. Un panneau qui s'allume brusquement fait sursauter,
 		// et il s'allume au pire moment : quand une barre vient de tomber bas.
 		etat[0] = Peinture.vers(etat[0], jauge.faim(), 0.12F, partiel);
 		etat[1] = Peinture.vers(etat[1], jauge.energie(), 0.12F, partiel);
-		etat[2] = Peinture.vers(etat[2], opacite(jauge), 0.06F, partiel);
+		etat[2] = Peinture.vers(etat[2], jauge.sante(), 0.12F, partiel);
+		etat[3] = Peinture.vers(etat[3], jauge.complicite(), 0.12F, partiel);
+		etat[4] = Peinture.vers(etat[4], opacite(jauge), 0.06F, partiel);
 
-		float opacite = etat[2];
+		float opacite = etat[4];
 
 		// L'ombre d'abord, decalee d'un pixel : sans elle le parchemin a l'air
 		// peint sur l'ecran plutot que pose dessus.
@@ -246,34 +265,51 @@ public final class Panneau {
 		// l'encre du parchemin sans qu'on ait a la teinter a la main.
 		g.drawString(client.font, fr.lhdp.compagnon.Icones.de(
 				fr.lhdp.compagnon.Icones.PATTE),
-			x + PADDING, texteY, teinte(ENCRE_PALE, opacite), false);
+			x + PADDING, texteY, teinte(theme.encrePale, opacite), false);
 
 		String nom = client.font.plainSubstrByWidth(jauge.nom(),
 			LARGEUR - PADDING * 2 - 22 - ICONE);
 		g.drawString(client.font, nom, x + PADDING + ICONE, texteY,
-			teinte(ENCRE, opacite), false);
+			teinte(theme.encre, opacite), false);
 
 		Humeur humeur = humeurDe(jauge.humeur());
 		String bouille = humeur.bouille();
 		g.drawString(client.font, bouille,
 				x + LARGEUR - PADDING - client.font.width(bouille), texteY,
-				teinte(ENCRE_PALE, opacite), false);
+				teinte(theme.encrePale, opacite), false);
 
-		int jaugeX = x + PADDING;
-		int jaugeL = LARGEUR - PADDING * 2;
-		barre(g, jaugeX, y + 20, jaugeL, etat[0], FAIM, opacite);
-		barre(g, jaugeX, y + 20 + ENTRE_JAUGES, jaugeL, etat[1], ENERGIE, opacite);
+		String etatCourt = etat(jauge).getString();
+		etatCourt = client.font.plainSubstrByWidth(etatCourt, LARGEUR - PADDING * 2);
+		g.drawString(client.font, etatCourt, x + PADDING, y + 16,
+				teinte(couleurEtat(jauge), opacite), false);
+
+		int colonne = (LARGEUR - PADDING * 2 - 6) / 2;
+		petiteBarre(g, client, x + PADDING, y + 31, colonne,
+				fr.lhdp.compagnon.Icones.FAIM, etat[0], FAIM, opacite);
+		petiteBarre(g, client, x + PADDING + colonne + 6, y + 31, colonne,
+				fr.lhdp.compagnon.Icones.ENERGIE, etat[1], ENERGIE, opacite);
+		petiteBarre(g, client, x + PADDING, y + 31 + ENTRE_JAUGES, colonne,
+				fr.lhdp.compagnon.Icones.SOIN, etat[2], SANTE, opacite);
+		petiteBarre(g, client, x + PADDING + colonne + 6, y + 31 + ENTRE_JAUGES, colonne,
+				fr.lhdp.compagnon.Icones.COEUR, etat[3], COMPLICITE, opacite);
+	}
+
+	private static void petiteBarre(GuiGraphics g, Minecraft client, int x, int y,
+			int largeur, String icone, float valeur, int couleur, float opacite) {
+		g.drawString(client.font, fr.lhdp.compagnon.Icones.de(icone), x, y - 3,
+				teinte(theme.encrePale, opacite), false);
+		barre(g, x + ICONE, y, largeur - ICONE, valeur, couleur, opacite);
 	}
 
 	/** Le parchemin : un degrade chaud, un cadre a l'encre, des coins manquants. */
 	private static void papier(GuiGraphics g, int x, int y, float opacite) {
 		// Le fond, coins compris — les coins seront ronges juste apres.
 		g.fillGradient(x + 1, y, x + LARGEUR - 1, y + HAUTEUR,
-				teinte(PAPIER_HAUT, opacite), teinte(PAPIER_BAS, opacite));
+				teinte(theme.fondHaut, opacite), teinte(theme.fondBas, opacite));
 		g.fillGradient(x, y + 1, x + LARGEUR, y + HAUTEUR - 1,
-				teinte(PAPIER_HAUT, opacite), teinte(PAPIER_BAS, opacite));
+				teinte(theme.fondHaut, opacite), teinte(theme.fondBas, opacite));
 
-		int cadre = teinte(CADRE, opacite);
+		int cadre = teinte(theme.cadre, opacite);
 		g.fill(x + 1, y, x + LARGEUR - 1, y + 1, cadre);
 		g.fill(x + 1, y + HAUTEUR - 1, x + LARGEUR - 1, y + HAUTEUR, cadre);
 		g.fill(x, y + 1, x + 1, y + HAUTEUR - 1, cadre);
@@ -300,14 +336,14 @@ public final class Panneau {
 		float borne = Math.max(0.0F, Math.min(100.0F, valeur));
 		boolean bas = borne <= SEUIL_ALERTE;
 
-		int cadre = teinte(CADRE, opacite);
+		int cadre = teinte(theme.cadre, opacite);
 		g.fill(x + 1, y, x + largeur - 1, y + 1, cadre);
 		g.fill(x + 1, y + JAUGE_HAUTEUR - 1, x + largeur - 1, y + JAUGE_HAUTEUR, cadre);
 		g.fill(x, y + 1, x + 1, y + JAUGE_HAUTEUR - 1, cadre);
 		g.fill(x + largeur - 1, y + 1, x + largeur, y + JAUGE_HAUTEUR - 1, cadre);
 
 		g.fillGradient(x + 1, y + 1, x + largeur - 1, y + JAUGE_HAUTEUR - 1,
-				teinte(CREUX_HAUT, opacite), teinte(CREUX_BAS, opacite));
+				teinte(theme.creuxHaut, opacite), teinte(theme.creuxBas, opacite));
 
 		int rempli = Math.round((largeur - 2) * borne / 100.0F);
 		if (rempli <= 0) {
@@ -354,8 +390,57 @@ public final class Panneau {
 		if (jauge.monte()) {
 			return 1.0F;
 		}
-		boolean alerte = jauge.faim() <= SEUIL_ALERTE || jauge.energie() <= SEUIL_ALERTE;
+		boolean alerte = jauge.faim() <= SEUIL_ALERTE
+				|| jauge.energie() <= SEUIL_ALERTE
+				|| jauge.sante() <= SEUIL_ALERTE || jauge.bobo();
 		return alerte ? 1.0F : OPACITE_AU_REPOS;
+	}
+
+	/** Un diagnostic court, partage par le HUD et sa fiche detaillee. */
+	static Component etat(PaquetJauges.Jauge jauge) {
+		if (jauge.bobo() || jauge.sante() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.etat.soin");
+		}
+		if (jauge.faim() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.etat.affame");
+		}
+		if (jauge.energie() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.etat.epuise");
+		}
+		if (jauge.complicite() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.etat.distant");
+		}
+		if (minimum(jauge) < 50) {
+			return Component.translatable("panneau.compagnon.etat.surveiller");
+		}
+		return Component.translatable(jauge.humeur() >= Humeur.CONTENT.ordinal()
+				? "panneau.compagnon.etat.heureux"
+				: "panneau.compagnon.etat.calme");
+	}
+
+	static Component conseil(PaquetJauges.Jauge jauge) {
+		if (jauge.bobo() || jauge.sante() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.conseil.soin");
+		}
+		if (jauge.faim() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.conseil.faim");
+		}
+		if (jauge.energie() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.conseil.energie");
+		}
+		if (jauge.complicite() <= SEUIL_ALERTE) {
+			return Component.translatable("panneau.compagnon.conseil.complicite");
+		}
+		return Component.translatable("panneau.compagnon.conseil.bien");
+	}
+
+	private static int minimum(PaquetJauges.Jauge jauge) {
+		return Math.min(Math.min(jauge.faim(), jauge.energie()),
+				Math.min(jauge.sante(), jauge.complicite()));
+	}
+
+	static int couleurEtat(PaquetJauges.Jauge jauge) {
+		return (jauge.bobo() || minimum(jauge) <= SEUIL_ALERTE) ? ALERTE : theme.accent;
 	}
 
 	/** La meme couleur, moins presente. Le canal alpha est multiplie, rien d'autre. */

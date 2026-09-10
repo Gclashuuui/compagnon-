@@ -118,7 +118,7 @@ public class CompagnonClient implements ClientModInitializer {
 				contexte.client().execute(() ->
 						Caresses.commencer(paquet.joueur(), paquet.compagnon(), paquet.ticks())));
 
-		// Le petit panneau : trois nombres deja arrondis, envoyes seulement quand
+		// Le petit panneau : quatre barres deja arrondies, envoyees seulement quand
 		// ils ont change. Le client ne calcule rien.
 		ClientPlayNetworking.registerGlobalReceiver(PaquetJauges.TYPE, (paquet, contexte) ->
 				contexte.client().execute(() -> Panneau.poser(paquet.jauges())));

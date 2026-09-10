@@ -51,17 +51,21 @@ public final class Jauges {
 	 */
 	public static void rafraichir(ServerPlayer joueur, List<FicheCompagnon> siennes) {
 		List<PaquetJauges.Jauge> maintenant = new ArrayList<>(MAXIMUM);
-		for (FicheCompagnon fiche : siennes) {
+		for (int index = 0; index < siennes.size(); index++) {
+			FicheCompagnon fiche = siennes.get(index);
 			if (!fiche.sorti()) {
 				continue;
 			}
 			if (maintenant.size() >= MAXIMUM) {
 				break;
 			}
-			maintenant.add(new PaquetJauges.Jauge(fiche.nom(),
+			maintenant.add(new PaquetJauges.Jauge(fiche.id(), index, fiche.nom(),
 					arrondi(fiche.barre(Barre.FAIM)),
 					arrondi(fiche.barre(Barre.ENERGIE)),
+					arrondi(fiche.barre(Barre.SANTE)),
+					arrondi(fiche.barre(Barre.COMPLICITE)),
 					fiche.humeur().ordinal(),
+					fiche.aUnBobo(),
 					leMonte(joueur, fiche)));
 		}
 

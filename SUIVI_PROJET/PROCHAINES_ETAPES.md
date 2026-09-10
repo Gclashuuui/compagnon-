@@ -1,6 +1,13 @@
 # Prochaines étapes
 
-## Priorité immédiate — livre
+## Priorité immédiate — carnet de santé
+
+1. Tester en jeu le nouveau panneau compact et sa fiche interactive.
+2. Produire une planche comparative à partir de `PROMPTS/PROMPT_THEMES_CARNET_SANTE.md`.
+3. Valider les icônes séparées de faim, énergie, santé et complicité.
+4. Intégrer les PNG retenus sans modifier la grille ni les zones de texte.
+
+## Interface du livre
 
 1. Retirer les boutons visibles en forme de coin de page.
 2. Rendre directement cliquables les coins inférieurs extérieurs des pages.

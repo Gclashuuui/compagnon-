@@ -11,6 +11,10 @@
   sont pas des textures UV prêtes à coller sur le modèle 3D.
 - Les boutons de changement de page visibles doivent disparaître. Les coins des pages
   deviennent les zones cliquables.
+- Le panneau de santé doit toujours montrer quatre besoins distincts : faim, énergie,
+  santé et complicité. Un cœur ne représente pas à la fois la santé et le lien.
+- Les thèmes du carnet de santé changent le cadre et la palette, jamais la position
+  des textes et des jauges. Le choix reste purement client.
 - Le code, les documents de suivi et les livraisons restent versionnés sur GitHub.
 - Le dossier local `output/` n'est pas ajouté automatiquement au dépôt.
 - Toute nouvelle espèce réutilise le cerveau commun, la mémoire, la perception et les
