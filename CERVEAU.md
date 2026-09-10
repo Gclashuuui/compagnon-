@@ -108,8 +108,10 @@ Un ordre peut interrompre un geste affectif ; une menace peut interrompre un
 besoin ; une simple manie ne coupe jamais une animation importante.
 
 Les transitions de marche, course, vol et plané sont également verrouillées
-jusqu'à leur fin, avec une limite de sécurité de trois secondes. Une hésitation
-du déplacement ne peut donc plus relancer la même transition à chaque image.
+jusqu'à leur fin. Une pré-animation de plus d'une seconde et demie est refusée :
+le cerveau emploie alors son fondu court plutôt que de laisser une course de six
+secondes jouer sur place. Une hésitation du déplacement ne peut donc plus
+relancer la même transition à chaque image.
 
 ## Réactions sans animations obligatoires
 
@@ -163,3 +165,16 @@ dominant choisit ensuite une famille cohérente : regards et oreilles pour un
 curieux, appuis et queue pour un vif, clignements et réajustements pour un calme.
 Le résultat reste varié, mais il possède toujours une raison et deux compagnons
 ne se synchronisent pas.
+
+## Suivre sans se coller
+
+Le mode de suivi vise désormais une couronne personnelle plutôt que les jambes
+du joueur. Même le tempérament le plus attaché conserve 1,35 bloc ; un compagnon
+indépendant peut garder jusqu'à 2,20 blocs. Lorsque le joueur s'arrête, une zone
+de repos plus large lui permet de conserver sa place au lieu de recalculer un
+chemin à chaque mouvement de caméra.
+
+Le corps, le cou, la tête et les deux morceaux de queue du dragonnet étaient
+déjà solides. Quatre morceaux légers couvrent maintenant aussi les racines et
+les parties visibles des ailes. Tous partagent un seul calcul d'orientation et
+une seule recherche d'entités par tick : aucune entité secondaire n'est créée.

@@ -113,6 +113,19 @@ enum ThemeSante {
 		return Compagnon.id("textures/gui/sante/themes/" + this.id + "/" + nom + ".png");
 	}
 
+	/**
+	 * Les trois premiers thèmes n'avaient pas encore leur planche d'icônes. Ils
+	 * empruntent une planche assortie plutôt que de revenir à des pseudo-emojis
+	 * dessinés dans le code.
+	 */
+	ResourceLocation iconesDuHud() {
+		return switch (this) {
+			case PARCHEMIN, SYLVESTRE -> CHAMPIGNONS.texture("health_icons");
+			case NOCTURNE -> GALAXIE.texture("health_icons");
+			default -> texture("health_icons");
+		};
+	}
+
 	ThemeSante suivant() {
 		ThemeSante[] tous = values();
 		return tous[(this.ordinal() + 1) % tous.length];

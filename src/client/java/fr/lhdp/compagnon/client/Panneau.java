@@ -214,8 +214,8 @@ public final class Panneau {
 
 		dessinerFondMinimal(g, x, y, jauge, opacite);
 
-		String nom = client.font.plainSubstrByWidth(jauge.nom(), LARGEUR - 18);
-		g.drawString(client.font, nom, x + 10, y + 3,
+		String nom = client.font.plainSubstrByWidth(jauge.nom(), LARGEUR - 14);
+		g.drawString(client.font, nom, x + 7, y + 3,
 				teinte(0xFFF4F1EA, opacite), false);
 
 		petiteBarreMinimaliste(g, x + 5, y + 16, 0, etat[0], FAIM, opacite);
@@ -231,19 +231,21 @@ public final class Panneau {
 				0.0F, 0.0F, 448, 152, 448, 152);
 		g.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		// Petit témoin d'état, dans la marge réservée à gauche du nom.
+		// Un filet d'état suffit. Il ne prétend pas être une cinquième icône.
 		int etat = teinte(couleurEtat(jauge), opacite);
-		g.fill(x + 5, y + 3, x + 7, y + 4, etat);
-		g.fill(x + 4, y + 4, x + 8, y + 7, etat);
-		g.fill(x + 5, y + 7, x + 7, y + 8, etat);
+		g.fill(x + 4, y + 3, x + 5, y + 11, etat);
 	}
 
 	private static void petiteBarreMinimaliste(GuiGraphics g, int x, int y,
 			int icone, float valeur, int couleur, float opacite) {
 		int iconeY = y - 2;
-		dessinerIconeNette(g, x + 1, iconeY + 1, icone,
-				teinte(0xB0000000, opacite));
-		dessinerIconeNette(g, x, iconeY, icone, teinte(couleur, opacite));
+		// Les véritables planches fournies avec les carnets remplacent les formes
+		// grossières dessinées à la main. Le facteur exact 16 -> 8 garde la grille
+		// de pixels et chaque thème conserve ses couleurs.
+		g.setColor(1.0F, 1.0F, 1.0F, opacite);
+		g.blit(theme.iconesDuHud(), x, iconeY, 8, 8,
+				icone * 16.0F, 0.0F, 16, 16, 160, 16);
+		g.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int bx = x + 10;
 		int largeur = 38;
 		int rempli = Math.round((largeur - 2) * Math.max(0.0F,
@@ -283,33 +285,6 @@ public final class Panneau {
 			int repere = bx + 1 + quart * (largeur - 2) / 4;
 			g.fill(repere, y + 1, repere + 1, y + 4,
 					teinte(0x33000000, opacite));
-		}
-	}
-
-	/** Quatre pictogrammes dessinés pixel par pixel : aucun redimensionnement flou. */
-	private static void dessinerIconeNette(GuiGraphics g, int x, int y,
-			int icone, int couleur) {
-		switch (icone) {
-			case 0 -> { // nourriture : morceau + os
-				g.fill(x + 1, y + 2, x + 5, y + 7, couleur);
-				g.fill(x + 4, y + 5, x + 7, y + 7, couleur);
-				g.fill(x + 6, y + 4, x + 8, y + 8, couleur);
-			}
-			case 1 -> { // énergie : éclair
-				g.fill(x + 4, y, x + 8, y + 3, couleur);
-				g.fill(x + 2, y + 3, x + 6, y + 5, couleur);
-				g.fill(x + 4, y + 5, x + 6, y + 8, couleur);
-			}
-			case 2 -> { // santé : croix
-				g.fill(x + 3, y + 1, x + 6, y + 8, couleur);
-				g.fill(x + 1, y + 3, x + 8, y + 6, couleur);
-			}
-			default -> { // complicité : cœur
-				g.fill(x + 1, y + 2, x + 4, y + 5, couleur);
-				g.fill(x + 5, y + 2, x + 8, y + 5, couleur);
-				g.fill(x + 2, y + 4, x + 7, y + 7, couleur);
-				g.fill(x + 3, y + 7, x + 6, y + 8, couleur);
-			}
 		}
 	}
 

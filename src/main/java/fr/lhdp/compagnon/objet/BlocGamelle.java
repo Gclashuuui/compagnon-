@@ -11,6 +11,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -91,7 +93,7 @@ public final class BlocGamelle extends Block {
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack pile, BlockState etat, Level monde,
 			BlockPos position, Player joueur, InteractionHand main, BlockHitResult touche) {
-		if (pile.is(Items.WATER_BUCKET)) {
+		if (pile.is(Items.WATER_BUCKET) || estFioleDEau(pile)) {
 			if (etat.getValue(EAU) || contenu(monde, position) != null) {
 				if (!monde.isClientSide()) {
 					joueur.displayClientMessage(Component.translatable("gamelle.compagnon.pleine"), true);
@@ -99,12 +101,12 @@ public final class BlocGamelle extends Block {
 				return ItemInteractionResult.FAIL;
 			}
 			if (!monde.isClientSide()) {
+				boolean fiole = estFioleDEau(pile);
 				monde.setBlock(position, etat.setValue(EAU, true), Block.UPDATE_ALL);
 				GamellesEau.ajouter(monde, position);
 				monde.scheduleTick(position, this, 20 * 30);
-				if (!joueur.getAbilities().instabuild) {
-					joueur.setItemInHand(main, new ItemStack(Items.BUCKET));
-				}
+				rendreRecipient(joueur, main, pile,
+						new ItemStack(fiole ? Items.GLASS_BOTTLE : Items.BUCKET));
 				joueur.displayClientMessage(Component.translatable("gamelle.compagnon.eau_verse"), true);
 			}
 			return ItemInteractionResult.SUCCESS;
@@ -151,6 +153,25 @@ public final class BlocGamelle extends Block {
 		joueur.displayClientMessage(Component.translatable("gamelle.compagnon.depose",
 				repas.getHoverName()), true);
 		return ItemInteractionResult.SUCCESS;
+	}
+
+	private static boolean estFioleDEau(ItemStack pile) {
+		PotionContents contenu = pile.get(DataComponents.POTION_CONTENTS);
+		return pile.is(Items.POTION) && contenu != null && contenu.is(Potions.WATER);
+	}
+
+	/** Rend le récipient vide sans perdre un éventuel reste de pile. */
+	private static void rendreRecipient(Player joueur, InteractionHand main,
+			ItemStack utilise, ItemStack vide) {
+		if (joueur.getAbilities().instabuild) {
+			return;
+		}
+		utilise.shrink(1);
+		if (utilise.isEmpty()) {
+			joueur.setItemInHand(main, vide);
+		} else if (!joueur.getInventory().add(vide)) {
+			joueur.drop(vide, false);
+		}
 	}
 
 	@Override

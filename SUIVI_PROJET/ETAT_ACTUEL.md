@@ -28,6 +28,7 @@
 - Dragonnet et autres espèces déclarées par fichiers de données.
 - Faim, énergie, santé, complicité, goûts alimentaires et souvenirs persistants.
 - Gamelle, gamelle d'eau, coussin et perchoir intégrés au coin personnel.
+- La gamelle d'eau accepte un seau ou une fiole d'eau et rend le récipient vide.
 - Rituels quotidiens, missions, progression et interactions vocales.
 - Les systèmes coûteux sont temporisés et limités pour rester adaptés à un serveur.
 
@@ -54,12 +55,18 @@
   du jeu avec une échelle propre, indépendante de la police décorative du pack.
 - Les morceaux de page superposés ont disparu du journal et du carnet : les coins
   inférieurs sont désormais des zones cliquables invisibles de 38 × 38 pixels.
+- Les rituels quotidiens sont redevenus trois cartes typographiques sobres, sans
+  illustration ni emoji. Les souvenirs emploient des points de chronologie
+  dessinés par le jeu, donc aucun glyphe ne peut manquer selon la police.
+- Les talents sont répartis sur deux colonnes indépendantes, une par page. Leur
+  nom, leur niveau requis et deux lignes de description restent hors de la reliure.
 - Le HUD de santé permanent est désormais un panneau RP minimal de 112 × 38 pixels,
   placé à huit pixels du coin supérieur gauche. Il n'affiche aucun grand décor.
 - Treize cadres discrets lui donnent la palette du carnet choisi sans modifier sa
   taille : Parchemin, Sylvestre, Nocturne et les dix thèmes enchantés.
-- Ses quatre besoins utilisent des pictogrammes géométriques dessinés pixel par
-  pixel — nourriture, éclair, croix et cœur. Les jauges ont un sillon sombre,
+- Ses quatre besoins utilisent maintenant les vraies planches d'icônes des
+  carnets, réduites sur une grille entière plutôt que des formes improvisées.
+  Les jauges ont un sillon sombre,
   trois niveaux de lumière, un reflet terminal et des repères de quart discrets.
 - Sous 25 %, la jauge concernée respire lentement entre deux rouges ; le témoin
   placé devant le nom reprend aussi la couleur de l'état prioritaire.
@@ -83,7 +90,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 171 tests automatisés réussis.
+- 174 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

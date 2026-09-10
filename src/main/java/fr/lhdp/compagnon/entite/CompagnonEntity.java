@@ -194,6 +194,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	private static final int FONDU = 8;
 	private static final int FONDU_LOCOMOTION = 3;
 
+	/** Une transition plus longue ressemble à une locomotion jouée sur place. */
+	private static final int TRANSITION_LOCOMOTION_MAX = 20 * 3 / 2;
+
 	/**
 	 * Le nom interne du fondu de sortie.
 	 *
@@ -2124,12 +2127,6 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			if (monture && autre.getUUID().equals(maitre)) {
 				continue;
 			}
-			// Il ne bouscule pas son maitre quand il le suit. Sinon, plante devant
-			// lui, il le pousserait doucement a travers la piece — tres drole, mais
-			// insupportable.
-			if (mode() == Mode.SUIT && autre.getUUID().equals(getOwnerUUID())) {
-				continue;
-			}
 			for (AABB boite : boites) {
 				if (autre.getBoundingBox().intersects(boite)) {
 					repousser(autre, boite);
@@ -2313,7 +2310,15 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		}
 
 		String animation = espece.reaction(role);
-		return animation == null || animation.isBlank() ? null : animation;
+		if (animation == null || animation.isBlank()) {
+			return null;
+		}
+		// Une pré-animation est un raccord, jamais une scène. Les transitions du
+		// premier pack duraient six secondes : pendant tout ce temps le dragon
+		// jouait encore la course, immobile, et paraissait glisser. Une transition
+		// trop longue est désormais ignorée au profit du fondu de trois ticks.
+		return Longueurs.de(animation) <= TRANSITION_LOCOMOTION_MAX
+				? animation : null;
 	}
 
 	private static boolean roleAerien(String role) {

@@ -19,7 +19,7 @@ package fr.lhdp.compagnon.contenu;
  * @param sociabilite  va vers les inconnus, ou les evite
  * @param attachement  reste pres de son maitre, ou vagabonde
  * @param vivacite     bouge souvent, ou se pose
- * @param calin        vient reclamer des caresses, se colle aux jambes
+	 * @param calin        vient reclamer des caresses, reste près du joueur
  * @param curiosite    va voir ce qui bouge
  */
 public record Caractere(

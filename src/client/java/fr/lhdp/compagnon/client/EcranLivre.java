@@ -45,7 +45,6 @@ public class EcranLivre extends EcranCompagnon {
 	private ResourceLocation CADRE_PORTRAIT;
 	private ResourceLocation SOULIGNEMENT;
 	private ResourceLocation SIGNETS_TEXTURE;
-	private ResourceLocation CARTES_RITUELS;
 	private ResourceLocation PAGE_TOURNE_RTL;
 	private ResourceLocation PAGE_TOURNE_LTR;
 
@@ -129,7 +128,8 @@ public class EcranLivre extends EcranCompagnon {
 	private static final int DERNIERE_PAGE = PAGE_MISSIONS;
 
 	/** Hauteur d'une ligne de competence, description comprise. */
-	private static final int LIGNE_COMPETENCE = 21;
+	private static final int LIGNE_COMPETENCE = 32;
+	private static final int COMPETENCES_PAR_PAGE = 5;
 
 	private int ENCRE_VERTE;
 
@@ -140,10 +140,8 @@ public class EcranLivre extends EcranCompagnon {
 
 	private static final int HAUTEUR_JAUGE = 8;
 	private static final int LIGNE = 11;
-	private static final int HAUTEUR_RITUEL = 30;
+	private static final int HAUTEUR_RITUEL = 24;
 	private static final int LARGEUR_RITUEL = 45;
-	private static final int RITUELS_SOURCE_L = 135;
-	private static final int RITUELS_SOURCE_H = 90;
 
 	/** Les signets de navigation, poses sur le bord droit du livre. */
 	private static final int SIGNET_LARGEUR = 24;
@@ -224,7 +222,6 @@ public class EcranLivre extends EcranCompagnon {
 		this.SOULIGNEMENT = nouveau.texture("underline_astra");
 		this.SIGNETS_TEXTURE = nouveau.texture(nouveau.hauteDefinition()
 				? "bookmark_tabs_hd" : "bookmark_tabs");
-		this.CARTES_RITUELS = nouveau.texture("ritual_cards");
 		this.PAGE_TOURNE_RTL = nouveau.texture("page_turn_rtl_strip");
 		this.PAGE_TOURNE_LTR = nouveau.texture("page_turn_ltr_strip");
 		this.ENCRE = nouveau.encre;
@@ -721,25 +718,27 @@ public class EcranLivre extends EcranCompagnon {
 	 */
 	private void rituelsDuJour(GuiGraphics g, int x, int y, int sourisX, int sourisY) {
 		int ecart = 3;
-		carteRituel(g, x, y, 0, SourceXp.SOINS,
+		carteRituel(g, x, y, SourceXp.SOINS,
 				"livre.compagnon.rituel.soins", sourisX, sourisY);
-		carteRituel(g, x + LARGEUR_RITUEL + ecart, y, 1, SourceXp.AFFECTION,
+		carteRituel(g, x + LARGEUR_RITUEL + ecart, y, SourceXp.AFFECTION,
 				"livre.compagnon.rituel.affection", sourisX, sourisY);
-		carteRituel(g, x + (LARGEUR_RITUEL + ecart) * 2, y, 2, SourceXp.BALADE,
+		carteRituel(g, x + (LARGEUR_RITUEL + ecart) * 2, y, SourceXp.BALADE,
 				"livre.compagnon.rituel.balade", sourisX, sourisY);
 	}
 
-	private void carteRituel(GuiGraphics g, int x, int y, int colonne, SourceXp source,
+	private void carteRituel(GuiGraphics g, int x, int y, SourceXp source,
 			String cle, int sourisX, int sourisY) {
 		boolean fait = this.donnees.rituelAccompli(source);
 		boolean survole = sourisX >= x && sourisX < x + LARGEUR_RITUEL
 				&& sourisY >= y && sourisY < y + HAUTEUR_RITUEL;
-		int ligne = fait ? 2 : survole ? 1 : 0;
-		g.blit(this.CARTES_RITUELS, x, y,
-				colonne * LARGEUR_RITUEL, ligne * HAUTEUR_RITUEL,
-				LARGEUR_RITUEL, HAUTEUR_RITUEL, RITUELS_SOURCE_L, RITUELS_SOURCE_H);
+		int fond = survole ? Peinture.melanger(PAPIER, ENCRE, 0.10F) : PAPIER;
+		g.fill(x, y, x + LARGEUR_RITUEL, y + HAUTEUR_RITUEL, CADRE);
+		g.fill(x + 1, y + 1, x + LARGEUR_RITUEL - 1,
+				y + HAUTEUR_RITUEL - 1, fond);
+		g.fill(x + 4, y + HAUTEUR_RITUEL - 4, x + LARGEUR_RITUEL - 4,
+				y + HAUTEUR_RITUEL - 3, fait ? ENCRE_VERTE : FILET);
 		String nom = Component.translatable(cle).getString();
-		dessinerLibelleRituel(g, nom, x, y + 19, fait ? ENCRE_VERTE : ENCRE);
+		dessinerLibelleRituel(g, nom, x, y + 7, fait ? ENCRE_VERTE : ENCRE);
 
 		if (survole) {
 			this.rituelSurvole = source;
@@ -1098,43 +1097,45 @@ public class EcranLivre extends EcranCompagnon {
 	/**
 	 * « Ce qu'il est. »
 	 *
-	 * <p>Sur les deux pages a la fois : les competences sont longues a lire, et
-	 * les serrer dans une colonne de cent quarante pixels les rendrait
-	 * illisibles. C'est la seule page du livre qui s'etale ainsi, et c'est
-	 * justifie — on y prend une decision qu'on ne pourra pas reprendre.
+	 * <p>Une colonne par page : aucun nom ni aucune description ne traverse la
+	 * reliure. Chaque description dispose de deux lignes dans sa propre feuille.
 	 *
 	 * <p>Tout est montre, y compris ce qu'il ne peut pas encore prendre. Montrer
 	 * ce qui existe fait plus pour l'envie que de le cacher : c'est le meme
 	 * raisonnement que les cadenas de la roue.
 	 */
 	private void pageCompetences(GuiGraphics g, int sourisX, int sourisY) {
-		int x = this.gauche + PAGE_GAUCHE_X;
+		int xGauche = this.gauche + PAGE_GAUCHE_X;
+		int xDroite = this.gauche + PAGE_DROITE_X;
 		int y = this.haut + PAGE_Y;
-		int large = PAGE_DROITE_X - PAGE_GAUCHE_X + PAGE_LARGEUR;
 
 		g.drawString(this.font, Component.translatable("livre.compagnon.competences"),
-				x, y, ENCRE, false);
+				xGauche, y, ENCRE, false);
 
 		int points = this.donnees.pointsDeCompetence();
 		Component compte = points > 0
 				? Component.translatable("livre.compagnon.competence.points", points)
 				: Component.translatable("livre.compagnon.competence.aucun_point");
-		g.drawString(this.font, compte, x + large - this.font.width(compte), y,
+		g.drawString(this.font, compte,
+				xDroite + PAGE_LARGEUR - this.font.width(compte), y,
 				points > 0 ? ENCRE_VERTE : ENCRE_PALE, false);
 		y += LIGNE + 4;
 
 		if (this.donnees.competences().isEmpty()) {
 			g.drawString(this.font, Component.translatable("livre.compagnon.competence.vide"),
-				x, y, ENCRE_PALE, false);
+				xGauche, y, ENCRE_PALE, false);
 			return;
 		}
 
-		for (EntreeCompetence competence : this.donnees.competences()) {
-			if (y > this.haut + HAUTEUR - 56) {
-				break;
-			}
-			ligneDeCompetence(g, x, y, large, competence, points, sourisX, sourisY);
-			y += LIGNE_COMPETENCE;
+		int maximum = Math.min(this.donnees.competences().size(),
+				COMPETENCES_PAR_PAGE * 2);
+		for (int i = 0; i < maximum; i++) {
+			int colonne = i / COMPETENCES_PAR_PAGE;
+			int ligne = i % COMPETENCES_PAR_PAGE;
+			int x = colonne == 0 ? xGauche : xDroite;
+			ligneDeCompetence(g, x, y + ligne * LIGNE_COMPETENCE,
+					PAGE_LARGEUR, this.donnees.competences().get(i), points,
+					sourisX, sourisY);
 		}
 	}
 
@@ -1158,17 +1159,23 @@ public class EcranLivre extends EcranCompagnon {
 		}
 
 		int couleur = competence.prise() ? ENCRE_VERTE : ouverte ? ENCRE : ENCRE_PALE;
-		g.drawString(this.font, competence.nom(), x, y, couleur, false);
-
+		int placeRequise = 0;
 		if (!competence.prise() && !ouverte) {
 			Component requis = Component.translatable(
 				"livre.compagnon.competence.requis", competence.niveauRequis());
+			placeRequise = this.font.width(requis) + ECART_COLONNES;
 			g.drawString(this.font, requis, x + large - this.font.width(requis), y,
 				ENCRE_PALE, false);
 		}
-		g.drawString(this.font,
-				this.font.plainSubstrByWidth(competence.description(), large),
-				x + 4, y + 10, ENCRE_PALE, false);
+		String nom = this.font.plainSubstrByWidth(competence.nom(),
+				Math.max(0, large - placeRequise));
+		g.drawString(this.font, nom, x, y, couleur, false);
+		List<net.minecraft.util.FormattedCharSequence> description = this.font.split(
+				Component.literal(competence.description()), large - 4);
+		for (int i = 0; i < Math.min(2, description.size()); i++) {
+			g.drawString(this.font, description.get(i), x + 4,
+					y + 10 + i * 9, ENCRE_PALE, false);
+		}
 	}
 
 	/** La competence sous la souris, si on peut la prendre. */
@@ -1176,21 +1183,22 @@ public class EcranLivre extends EcranCompagnon {
 		if (this.page != PAGE_COMPETENCES || this.donnees.pointsDeCompetence() <= 0) {
 			return null;
 		}
-		int x = this.gauche + PAGE_GAUCHE_X;
-		int large = PAGE_DROITE_X - PAGE_GAUCHE_X + PAGE_LARGEUR;
 		int y = this.haut + PAGE_Y + LIGNE + 4;
 
-		for (EntreeCompetence competence : this.donnees.competences()) {
-			if (y > this.haut + HAUTEUR - 56) {
-				break;
-			}
-			boolean dessus = sourisX >= x && sourisX < x + large
-					&& sourisY >= y - 2 && sourisY < y + LIGNE_COMPETENCE - 4;
+		int maximum = Math.min(this.donnees.competences().size(),
+				COMPETENCES_PAR_PAGE * 2);
+		for (int i = 0; i < maximum; i++) {
+			EntreeCompetence competence = this.donnees.competences().get(i);
+			int x = this.gauche + (i / COMPETENCES_PAR_PAGE == 0
+					? PAGE_GAUCHE_X : PAGE_DROITE_X);
+			int ligneY = y + (i % COMPETENCES_PAR_PAGE) * LIGNE_COMPETENCE;
+			boolean dessus = sourisX >= x && sourisX < x + PAGE_LARGEUR
+					&& sourisY >= ligneY - 2
+					&& sourisY < ligneY + LIGNE_COMPETENCE - 4;
 			if (dessus && !competence.prise()
 					&& this.donnees.niveau() >= competence.niveauRequis()) {
 				return competence;
 			}
-			y += LIGNE_COMPETENCE;
 		}
 		return null;
 	}
@@ -1236,8 +1244,7 @@ public class EcranLivre extends EcranCompagnon {
 			// souvenirs restent dans le meme ordre, mais l'oeil comprend maintenant
 			// qu'ils appartiennent tous a la meme vie.
 			g.fill(x + 4, y + 7, x + 5, y + LIGNE + 2, FILET);
-			g.drawString(this.font, Icones.de(iconeMoment(moment.cle())), x, y,
-					couleurMoment(moment.cle()), false);
+			dessinerPointMoment(g, x + 2, y + 4, couleurMoment(moment.cle()));
 			String phrase = libelleMoment(moment.cle());
 			deuxColonnesDans(g, x + 11, y, PAGE_LARGEUR - 11,
 					phrase, quand, ENCRE, ENCRE_PALE);
@@ -1267,28 +1274,19 @@ public class EcranLivre extends EcranCompagnon {
 		int hauteur = LIGNE;
 		for (String trait : traits) {
 			String ligne = this.font.plainSubstrByWidth(libelleMoment(trait), PAGE_LARGEUR - 12);
-			g.drawString(this.font, Icones.de(Icones.COEUR), x, y + hauteur,
-					trait.startsWith("defaut.") ? ENCRE_ROUGE : ENCRE_VERTE, false);
+			dessinerPointMoment(g, x + 2, y + hauteur + 4,
+					trait.startsWith("defaut.") ? ENCRE_ROUGE : ENCRE_VERTE);
 			g.drawString(this.font, ligne, x + 11, y + hauteur, ENCRE_PALE, false);
 			hauteur += LIGNE;
 		}
 		return hauteur + 4;
 	}
 
-	private static String iconeMoment(String cle) {
-		if (cle.startsWith("gout.") || cle.startsWith(PREFIXE_OBJET_PREFERE)) {
-			return Icones.FAIM;
-		}
-		if (cle.startsWith("manie.") || cle.startsWith("defaut.")) {
-			return Icones.COEUR;
-		}
-		if (cle.startsWith("mission.") || cle.contains("niveau")) {
-			return Icones.ETOILE;
-		}
-		if (cle.startsWith("reve.") || cle.contains("biome")) {
-			return Icones.PLUME;
-		}
-		return Icones.PATTE;
+	/** Un repère de chronologie dessiné, donc aucun glyphe Unicode manquant. */
+	private static void dessinerPointMoment(GuiGraphics g, int x, int y, int couleur) {
+		g.fill(x + 1, y, x + 4, y + 1, couleur);
+		g.fill(x, y + 1, x + 5, y + 4, couleur);
+		g.fill(x + 1, y + 4, x + 4, y + 5, couleur);
 	}
 
 	private int couleurMoment(String cle) {

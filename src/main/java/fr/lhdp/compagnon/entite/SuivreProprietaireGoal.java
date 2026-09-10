@@ -1,6 +1,5 @@
 package fr.lhdp.compagnon.entite;
 
-import fr.lhdp.compagnon.contenu.Caractere;
 import fr.lhdp.compagnon.fiche.Mode;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -24,11 +23,14 @@ import java.util.EnumSet;
  */
 public class SuivreProprietaireGoal extends Goal {
 
-	/** Distance a la droite du maitre, en blocs. Valeur inventee. */
-	private static final double COTE = 0.6D;
+	/** Même très attaché, il garde assez de place pour ne pas toucher le joueur. */
+	static final double ESPACE_MINIMUM = 1.35D;
+
+	/** Un caractère indépendant ajoute jusqu'à cette distance. */
+	private static final double ESPACE_INDEPENDANT = 0.85D;
 
 	/** Un peu en arriere de son epaule, pour ne pas lui couper la route. */
-	private static final double RECUL = 0.2D;
+	private static final double RECUL = 0.55D;
 
 	/** En deca, il est deja bien place : on ne le fait pas gigoter. */
 	private static final double TOLERANCE = 0.55D;
@@ -37,7 +39,10 @@ public class SuivreProprietaireGoal extends Goal {
 	 * Tolerance quand le maitre est arrete. Beaucoup plus large : une fois pose a
 	 * cote de lui, il n'a aucune raison de bouger encore.
 	 */
-	private static final double TOLERANCE_ARRET = 1.6D;
+	private static final double TOLERANCE_ARRET = 0.85D;
+
+	/** Au repos, cette couronne évite de recalculer une place à chaque regard. */
+	private static final double REPOS_MAXIMUM = 3.1D;
 
 	/** En dessous de cette vitesse, on considere que le maitre est arrete. */
 	private static final double IMMOBILE = 0.02D;
@@ -136,6 +141,8 @@ public class SuivreProprietaireGoal extends Goal {
 		boolean maitreImmobile = this.proprietaire.getDeltaMovement()
 				.horizontalDistanceSqr() < IMMOBILE * IMMOBILE;
 		double tolerance = maitreImmobile ? TOLERANCE_ARRET : TOLERANCE;
+		double distanceAuMaitre = distanceHorizontale(
+				this.compagnon.position(), this.proprietaire.position());
 
 		// IL SE RAPPROCHE QUAND SON MAITRE VA MAL.
 		//
@@ -149,7 +156,11 @@ public class SuivreProprietaireGoal extends Goal {
 			tolerance = Math.min(tolerance, TOLERANCE);
 		}
 
-		if (distance < tolerance) {
+		boolean reposeNaturellement = maitreImmobile
+				&& distanceAuMaitre >= ESPACE_MINIMUM
+				&& distanceAuMaitre <= REPOS_MAXIMUM;
+		if (reposeNaturellement || (distance < tolerance
+				&& distanceAuMaitre >= ESPACE_MINIMUM)) {
 			// Il est bien place. On le laisse tranquille plutot que de lui faire
 			// corriger sa position sans arret.
 			this.compagnon.getNavigation().stop();
@@ -190,13 +201,25 @@ public class SuivreProprietaireGoal extends Goal {
 		}
 		Vec3 droite = regard.cross(new Vec3(0.0D, 1.0D, 0.0D)).normalize();
 
-		double ecart = Caractere.peser((float) COTE, 1.0F - this.compagnon.caractere().attachement());
+		double ecart = distancePersonnelle(this.compagnon.caractere().attachement());
 
 		// Le produit vectoriel regard x verticale donne deja la droite du maitre :
 		// on ajoute, on ne soustrait pas, sinon il marcherait a gauche.
 		return this.proprietaire.position()
 				.add(droite.scale(ecart))
 				.subtract(regard.scale(RECUL));
+	}
+
+	/** Une distance lisible et bornée : l'affection ne signifie jamais collision. */
+	static double distancePersonnelle(float attachement) {
+		double borne = Math.max(0.0D, Math.min(1.0D, attachement));
+		return ESPACE_MINIMUM + (1.0D - borne) * ESPACE_INDEPENDANT;
+	}
+
+	private static double distanceHorizontale(Vec3 a, Vec3 b) {
+		double dx = a.x - b.x;
+		double dz = a.z - b.z;
+		return Math.sqrt(dx * dx + dz * dz);
 	}
 
 	/** Trop loin pour marcher : on le repose a cote, sans bruit. */
