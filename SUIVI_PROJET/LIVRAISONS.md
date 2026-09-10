@@ -1,5 +1,18 @@
 # Livraisons
 
+## Treize cadres discrets du HUD
+
+- Commit : `4680a3c` — Cadres thématiques et nouvelles jauges compactes.
+- Les treize textures 448 × 152 sont rendues en 112 × 38, à l'intérieur du HUD
+  RP, sans débordement ni information incorporée.
+- Les jauges dynamiques gagnent un sillon, trois tons de remplissage, un reflet,
+  des repères de quart et une pulsation rouge sous 25 %.
+- Les pictogrammes conservent leur géométrie nette et gagnent une ombre d'un pixel.
+- Les treize cadres et leurs blocs 4 × 4 sont verrouillés par les tests.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- SHA-256 : `AF0CF51967B5DCFA8E0486982593A19076E04AC5669545E4C7A2B2BF185901C5`.
+- Vérification : compilation réussie, 154 tests réussis, 13 cadres présents dans le JAR.
+
 ## Recentrage de la bibliothèque
 
 - Commit : `ba42271` — Aperçus reculés et typographie recalibrée.
