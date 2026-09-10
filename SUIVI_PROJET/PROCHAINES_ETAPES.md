@@ -13,8 +13,9 @@
 1. Tester les onze thèmes HD en jeu et corriger les derniers débordements de texte.
 2. Vérifier en jeu la bibliothèque illustrée aux petites et grandes échelles
    d'interface, notamment les zones de clic des étoiles et des filtres.
-3. Tester les noms français longs, les infobulles et l'état sans aucun favori.
-4. Ajouter les nouvelles couvertures que l'auteur va produire.
+3. Valider le nouveau recul des aperçus et le titre centré sur la texture finale.
+4. Tester les noms français longs, les infobulles et l'état sans aucun favori.
+5. Ajouter les nouvelles couvertures que l'auteur va produire.
 
 ## Objet 3D « Journal des Liens »
 

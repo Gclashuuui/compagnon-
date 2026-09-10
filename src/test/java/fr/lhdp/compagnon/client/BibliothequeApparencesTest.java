@@ -6,10 +6,13 @@ import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Verrouille le gabarit et les ouvertures de la bibliothèque illustrée. */
 class BibliothequeApparencesTest {
@@ -34,6 +37,18 @@ class BibliothequeApparencesTest {
 			assertEquals(0, alpha(cartes, etat * 376 + 188, 118),
 					"fenêtre de miniature opaque pour l'état " + etat);
 		}
+	}
+
+	@Test
+	@DisplayName("les livres restent entiers et les textes utilisent la police régulière")
+	void cadrageEtPolice() throws IOException {
+		String code = Files.readString(Path.of(
+				"src/client/java/fr/lhdp/compagnon/client/EcranThemesLivre.java"),
+				StandardCharsets.UTF_8);
+		assertTrue(code.contains("ResourceLocation.withDefaultNamespace(\"uniform\")"),
+				"la bibliothèque retombe sur la police décorative du pack");
+		assertTrue(code.contains("54, 36, 0.0F, 0.0F, 384, 256"),
+				"l'aperçu du livre est de nouveau zoomé ou rogné");
 	}
 
 	private static BufferedImage verifier(String nom, int largeur, int hauteur)

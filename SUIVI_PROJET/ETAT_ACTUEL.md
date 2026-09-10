@@ -35,6 +35,10 @@
 - Chaque carte possède quatre états visuels. Les favoris persistants utilisent
   une étoile PNG et deux filtres directs « Tous » / « Favoris » ; aucun caractère
   d'icône incompatible n'est utilisé.
+- Les aperçus affichent maintenant le livre entier en 54 × 36 pixels, centré dans
+  sa vitrine sans rognage. Le titre tient sur une seule ligne centrée.
+- Le titre, les filtres et les noms de thèmes utilisent la police Unicode régulière
+  du jeu avec une échelle propre, indépendante de la police décorative du pack.
 - Les morceaux de page superposés ont disparu du journal et du carnet : les coins
   inférieurs sont désormais des zones cliquables invisibles de 38 × 38 pixels.
 - Le HUD de santé permanent est désormais un panneau RP minimal de 112 × 38 pixels,
@@ -62,7 +66,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 152 tests automatisés réussis.
+- 153 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.

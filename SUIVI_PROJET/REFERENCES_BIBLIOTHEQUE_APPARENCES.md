@@ -25,6 +25,10 @@
 - Grille fixe de 4 × 3 cartes, soit 12 livres par page.
 - Le panneau entier est centré et réduit uniformément si la résolution manque.
 - Les aperçus et tous les textes sont rendus dynamiquement par Minecraft.
+- Chaque aperçu complet est ramené à 54 × 36 pixels et centré en (20, 12) dans
+  sa carte ; aucune partie du livre n'est coupée.
+- Le titre complet est centré sur une ligne dans son cartouche. Les textes utilisent
+  la police régulière `minecraft:uniform` avec une échelle adaptée à leur zone.
 - Les noms trop longs sont abrégés visuellement et restent complets en infobulle.
 - Clic gauche sur une carte : appliquer le thème. Clic sur l'étoile ou clic droit :
   ajouter ou retirer le favori sans fermer la bibliothèque.

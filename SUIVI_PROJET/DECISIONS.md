@@ -19,6 +19,10 @@
   et la pagination. Aucun emoji, caractère privé ou texte n'est incorporé aux images.
 - Les miniatures restent les vraies textures des livres chargées par le jeu : le
   décor de bibliothèque ne fige jamais une couverture dans ses PNG.
+- Une miniature de bibliothèque montre toujours le livre entier en respectant son
+  rapport 3:2 ; elle n'est ni étirée ni rognée pour remplir la vitrine.
+- Les textes de la bibliothèque utilisent `minecraft:uniform` afin de rester fins,
+  lisibles et indépendants des remplacements de la police principale.
 - Le panneau de santé doit toujours montrer quatre besoins distincts : faim, énergie,
   santé et complicité. Un cœur ne représente pas à la fois la santé et le lien.
 - Les thèmes du carnet de santé changent le cadre et la palette, jamais la position

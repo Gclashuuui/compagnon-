@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
@@ -21,6 +22,9 @@ final class EcranThemesLivre extends EcranCompagnon {
 	private static final ResourceLocation PAGINATION = texture("pagination_states_hd");
 	private static final ResourceLocation VIDE = texture("empty_favorites_hd");
 	private static final ResourceLocation DETAILS = texture("library_details_overlay");
+	/** Police Unicode régulière : plus fine et indépendante du pack de ressources. */
+	private static final ResourceLocation POLICE =
+			ResourceLocation.withDefaultNamespace("uniform");
 
 	private static final int LARGEUR = 416;
 	private static final int HAUTEUR = 284;
@@ -106,23 +110,17 @@ final class EcranThemesLivre extends EcranCompagnon {
 	}
 
 	private void dessinerTitre(GuiGraphics g) {
-		g.drawString(this.font,
-				Component.translatable("livre.compagnon.themes.titre.ligne1"),
-				38, 14, ENCRE, false);
-		g.drawString(this.font,
-				Component.translatable("livre.compagnon.themes.titre.ligne2"),
-				38, 24, ENCRE, false);
+		dessinerTexteCentre(g, police(Component.translatable(
+				"livre.compagnon.themes.titre")), 107, 21, ENCRE, 0.82F);
 	}
 
 	private void dessinerFiltres(GuiGraphics g, int sourisX, int sourisY,
 			boolean textes) {
 		if (textes) {
-			g.drawString(this.font,
-					Component.translatable("livre.compagnon.themes.tous_court"),
-					219, 22, ENCRE, false);
-			g.drawString(this.font,
-					Component.translatable("livre.compagnon.themes.favoris_court"),
-					325, 22, ENCRE, false);
+			dessinerTexteCentre(g, police(Component.translatable(
+					"livre.compagnon.themes.tous_court")), 256, 22, ENCRE, 0.85F);
+			dessinerTexteCentre(g, police(Component.translatable(
+					"livre.compagnon.themes.favoris_court")), 362, 22, ENCRE, 0.85F);
 			return;
 		}
 
@@ -150,9 +148,9 @@ final class EcranThemesLivre extends EcranCompagnon {
 
 			if (textes) {
 				String nomComplet = Component.translatable(theme.traduction()).getString();
-				String nom = abreger(nomComplet, 65);
-				g.drawString(this.font, nom, x + 9, y + 54,
-						theme == this.selection ? OR : ENCRE, false);
+				Component nom = abreger(nomComplet, 85);
+				dessinerTexteCentre(g, nom, x + 41, y + 55,
+						theme == this.selection ? OR : ENCRE, 0.75F);
 				if (etoileSurvolee) {
 					this.infoBulle = Component.translatable(theme.favori()
 							? "livre.compagnon.themes.retirer_favori"
@@ -164,10 +162,10 @@ final class EcranThemesLivre extends EcranCompagnon {
 				continue;
 			}
 
-			// Le cadre est plus large que la texture 3:2 du livre. Une coupe
-			// verticale légère conserve les proportions sans écraser l'aperçu.
-			g.blit(theme.texture("book_astra_v2"), x + 8, y + 10,
-					78, 39, 0.0F, 32.0F, 384, 192, 384, 256);
+			// Le livre entier est légèrement reculé dans sa vitrine. Le format
+			// 54 x 36 garde exactement son rapport 3:2 et laisse respirer le cadre.
+			g.blit(theme.texture("book_astra_v2"), x + 20, y + 12,
+					54, 36, 0.0F, 0.0F, 384, 256, 384, 256);
 			int etatCarte = theme == this.selection
 					? theme.favori() ? 3 : 2
 					: survole ? 1 : 0;
@@ -303,11 +301,35 @@ final class EcranThemesLivre extends EcranCompagnon {
 		Minecraft.getInstance().setScreen(this.retour);
 	}
 
-	private String abreger(String texte, int largeur) {
-		if (this.font.width(texte) <= largeur) {
-			return texte;
+	private Component abreger(String texte, int largeur) {
+		Component complet = police(Component.literal(texte));
+		if (this.font.width(complet) <= largeur) {
+			return complet;
 		}
-		return this.font.plainSubstrByWidth(texte, largeur - this.font.width("...")) + "...";
+		String fin = "…";
+		int caracteres = texte.length();
+		while (caracteres > 0) {
+			Component candidat = police(Component.literal(
+					texte.substring(0, caracteres).stripTrailing() + fin));
+			if (this.font.width(candidat) <= largeur) {
+				return candidat;
+			}
+			caracteres--;
+		}
+		return police(Component.literal(fin));
+	}
+
+	private void dessinerTexteCentre(GuiGraphics g, Component texte, int centreX,
+			int y, int couleur, float echelleTexte) {
+		g.pose().pushPose();
+		g.pose().translate(centreX, y, 0.0F);
+		g.pose().scale(echelleTexte, echelleTexte, 1.0F);
+		g.drawCenteredString(this.font, texte, 0, 0, couleur);
+		g.pose().popPose();
+	}
+
+	private static Component police(Component texte) {
+		return texte.copy().withStyle(Style.EMPTY.withFont(POLICE));
 	}
 
 	private int pages(int combien) {
