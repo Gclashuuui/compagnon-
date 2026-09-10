@@ -152,6 +152,13 @@ public record Espece(
 	public static final String RITUEL_SOIR = "rituel_soir";
 	public static final String RECONNAIT_PERSONNE = "reconnait_personne";
 	public static final String OBSERVE_INCONNU = "observe_inconnu";
+	public static final String INSPECTION_DEBUT = "inspection_debut";
+	public static final String INSPECTION_BOUCLE = "inspection_boucle";
+	public static final String INSPECTION_FIN = "inspection_fin";
+	public static final String DETENTE_APRES_ALERTE = "detente_apres_alerte";
+	public static final String ENNUI = "ennui";
+	public static final String REMARQUE_AMI = "remarque_ami";
+	public static final String FIN_APPROCHE_AFFECTIVE = "fin_approche_affective";
 
 	/**
 	 * Les deux poses dattente qui montrent son humeur.

@@ -218,6 +218,17 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	/** Compte a rebours de la reaction en cours ; zero quand il n'y en a pas. */
 	private int ticksAction;
 
+	/**
+	 * Jusqu'à quatre morceaux raccordés, dans un tableau fixe. Une inspection
+	 * peut ainsi baisser la tête, observer puis la relever sans qu'un contrôleur
+	 * ou une liste ne soit créé à chaque tick.
+	 */
+	private final String[] suiteActions = new String[4];
+	private int nombreActionsDansLaSuite;
+	private int prochaineActionDeLaSuite;
+	private PrioriteAction prioriteDeLaSuite = PrioriteAction.AMBIANCE;
+	private boolean lanceDepuisLaSuite;
+
 	/** La derniere action lancee cote affichage, pour savoir quand elle s'acheve. */
 	private String actionJouee = "";
 
@@ -1122,6 +1133,7 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 	 * regarder une pose aussi longtemps qu'on veut.
 	 */
 	public void jouerAction(String nomAnimation) {
+		viderSuiteActions();
 		this.entityData.set(ACTION, nomAnimation);
 		this.entityData.set(ACTION_JETON, this.entityData.get(ACTION_JETON) + 1);
 		this.ticksAction = 0;
@@ -1141,6 +1153,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 			PrioriteAction priorite) {
 		if (occupe() && !priorite.interrompt(this.prioriteAction)) {
 			return false;
+		}
+		if (!this.lanceDepuisLaSuite) {
+			viderSuiteActions();
 		}
 		// UN ROLE DURE LE TEMPS DE SA VRAIE ANIMATION.
 		//
@@ -1164,6 +1179,54 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		this.ticksAction = Math.max(1, ticks);
 		this.prioriteAction = priorite;
 		return true;
+	}
+
+	/**
+	 * Joue de un à quatre rôles l'un après l'autre. Un rôle absent de l'espèce est
+	 * simplement sauté : le même cerveau reste donc valable pour un dragon très
+	 * animé comme pour un nouveau compagnon qui ne possède encore que son repos.
+	 */
+	public boolean jouerSuite(PrioriteAction priorite, String... actions) {
+		if (actions == null || actions.length == 0
+				|| occupe() && !priorite.interrompt(this.prioriteAction)) {
+			return false;
+		}
+		viderSuiteActions();
+		for (String action : actions) {
+			if (action != null && !action.isBlank()
+					&& this.nombreActionsDansLaSuite < this.suiteActions.length) {
+				this.suiteActions[this.nombreActionsDansLaSuite++] = action;
+			}
+		}
+		this.prioriteDeLaSuite = priorite;
+		return jouerProchaineActionDeLaSuite();
+	}
+
+	private boolean jouerProchaineActionDeLaSuite() {
+		while (this.prochaineActionDeLaSuite < this.nombreActionsDansLaSuite) {
+			String suivante = this.suiteActions[this.prochaineActionDeLaSuite++];
+			this.lanceDepuisLaSuite = true;
+			boolean lancee;
+			try {
+				lancee = jouerActionPendant(suivante, 1, this.prioriteDeLaSuite);
+			} finally {
+				this.lanceDepuisLaSuite = false;
+			}
+			if (lancee) {
+				return true;
+			}
+		}
+		viderSuiteActions();
+		return false;
+	}
+
+	private void viderSuiteActions() {
+		for (int i = 0; i < this.nombreActionsDansLaSuite; i++) {
+			this.suiteActions[i] = null;
+		}
+		this.nombreActionsDansLaSuite = 0;
+		this.prochaineActionDeLaSuite = 0;
+		this.prioriteDeLaSuite = PrioriteAction.AMBIANCE;
 	}
 
 	/**
@@ -1574,6 +1637,9 @@ public class CompagnonEntity extends TamableAnimal implements GeoEntity {
 		// La reaction ne dure qu'un temps : sans ca, la couche action resterait
 		// bloquee sur la derniere animation jouee.
 		if (this.ticksAction > 0 && --this.ticksAction == 0) {
+			if (jouerProchaineActionDeLaSuite()) {
+				return;
+			}
 			// LE GESTE NE S'ARRETE PAS NET.
 			//
 			// Couper la couche d'action d'un coup fait revenir la bete a sa pose

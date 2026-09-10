@@ -139,3 +139,10 @@ d'un inconnu. Un familier reçoit `reconnait_personne`, puis un ancien geste de
 reconnaissance ou de salut en repli. Un inconnu reçoit `observe_inconnu`, puis
 `ecoute` ou `surpris`. La connaissance existait déjà dans la fiche ; cette scène
 la rend visible sans nouvelle recherche de joueur et sans agrandir la sauvegarde.
+
+Le dragonnet possède maintenant trente micro-animations raccordées à ces rôles.
+Une file fixe de quatre morceaux permet les vrais enchaînements : l'inspection
+joue `inspection_debut`, une boucle d'observation, puis `inspection_fin` ; une
+approche affectueuse joue son raccord avant l'affection ; deux amis se remarquent
+avant de se saluer. Un rôle absent est sauté automatiquement, donc ce mécanisme
+reste compatible avec toutes les espèces anciennes et futures.

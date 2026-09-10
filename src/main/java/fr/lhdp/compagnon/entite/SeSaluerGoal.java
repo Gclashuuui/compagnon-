@@ -118,7 +118,8 @@ public class SeSaluerGoal extends Goal {
 		int duree = DUREE + enCommunAvec(this.ami) * EN_PLUS_PAR_POINT_COMMUN;
 		this.reste = duree;
 		this.compagnon.getNavigation().stop();
-		this.compagnon.jouerActionPendant(GESTE, duree, PrioriteAction.AFFECTIF);
+		this.compagnon.jouerSuite(PrioriteAction.AFFECTIF,
+				"@" + fr.lhdp.compagnon.espece.Espece.REMARQUE_AMI, GESTE);
 
 		Compteurs.compter(this.compagnon, Compteurs.SALUTATIONS);
 		this.dernierSalue = this.ami.getUUID();

@@ -98,8 +98,13 @@ public final class SceneAffectiveGoal extends Goal {
 			this.reste = 0;
 			return;
 		}
-		this.gesteLance = this.compagnon.jouerActionPendant("@" + role, 30,
-				PrioriteAction.AFFECTIF);
+		String raccord = premierRoleDisponible(this.compagnon,
+				Espece.FIN_APPROCHE_AFFECTIVE);
+		this.gesteLance = raccord == null
+				? this.compagnon.jouerActionPendant("@" + role, 30,
+						PrioriteAction.AFFECTIF)
+				: this.compagnon.jouerSuite(PrioriteAction.AFFECTIF,
+						"@" + raccord, "@" + role);
 		if (this.gesteLance && this.compagnon.caractere().calin() >= 0.75F
 				&& this.compagnon.complicite() >= 60.0F) {
 			Etincelles.coeurs(this.compagnon, 1);

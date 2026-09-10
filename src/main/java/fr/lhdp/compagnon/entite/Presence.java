@@ -65,7 +65,15 @@ public final class Presence {
 	/** En moyenne une proposition par minute, examinee deux fois par seconde. */
 	/** Les roles disponibles, dont chaque espece peut remplir tout ou partie. */
 	private static final List<String> GESTES_NATURELS =
-			List.of("ambiance", "ambiance_2", "ambiance_3", "ambiance_4");
+			List.of("ambiance", "ambiance_2", "ambiance_3", "ambiance_4",
+					"micro_cligne", "micro_cligne_double",
+					"micro_oreille_gauche", "micro_oreille_droite",
+					"micro_regard_gauche", "micro_regard_droite",
+					"micro_tete_gauche", "micro_tete_droite",
+					"micro_appui_gauche", "micro_appui_droite",
+					"micro_queue_gauche", "micro_queue_droite",
+					"micro_queue_repose", "micro_aile_replace",
+					"micro_regarde_derriere", "micro_hesite");
 
 	/** Un gourmand remendie au bout d'une minute. */
 	private static final int AVANT_DE_REMENDIER = 20 * 60;
@@ -142,6 +150,9 @@ public final class Presence {
 		if (uneManie(compagnon, maitre, attention)) {
 			return;
 		}
+		if (uneEmotionInterieure(compagnon, attention)) {
+			return;
+		}
 		if (unRituelQuotidien(compagnon)) {
 			return;
 		}
@@ -149,6 +160,26 @@ public final class Presence {
 			return;
 		}
 		leMonde(compagnon, attention);
+	}
+
+	/** L'ennui et le retour au calme deviennent visibles sans barre supplémentaire. */
+	private static boolean uneEmotionInterieure(CompagnonEntity compagnon,
+			Attention attention) {
+		EtatInterieur interieur = compagnon.etatInterieur();
+		if (interieur.ennui() >= 0.68F
+				&& attention.permet("emotion.ennui", 20 * 90)) {
+			return compagnon.jouerActionPendant("@" + Espece.ENNUI, 30,
+					PrioriteAction.AMBIANCE);
+		}
+		boolean mondeCalme = !compagnon.memoireCourte().contient(MemoireCourte.Signal.MENACE)
+				&& !compagnon.memoireCourte().contient(MemoireCourte.Signal.ORAGE)
+				&& !compagnon.memoireCourte().contient(MemoireCourte.Signal.MAITRE_EN_DANGER);
+		if (mondeCalme && interieur.stress() >= 0.28F && interieur.stress() <= 0.62F
+				&& attention.permet("emotion.detente", 20 * 120)) {
+			return compagnon.jouerActionPendant("@" + Espece.DETENTE_APRES_ALERTE,
+					30, PrioriteAction.AMBIANCE);
+		}
+		return false;
 	}
 
 	/**

@@ -106,15 +106,21 @@ public class AllerVoirGoal extends Goal {
 			this.compagnon.getNavigation().stop();
 			if (!this.aReagi) {
 				this.aReagi = true;
-				this.reste = Math.min(this.reste, 36);
-				String role = SceneAffectiveGoal.premierRoleDisponible(this.compagnon,
-						fr.lhdp.compagnon.espece.Espece.SURPRIS,
-						fr.lhdp.compagnon.espece.Espece.ECOUTE,
-						fr.lhdp.compagnon.espece.Espece.JOIE,
-						fr.lhdp.compagnon.espece.Espece.JOYEUX);
-				if (role != null) {
-					this.compagnon.jouerActionPendant("@" + role, 30,
-							PrioriteAction.EVENEMENT);
+				this.reste = Math.min(this.reste, 90);
+				boolean inspection = this.compagnon.jouerSuite(PrioriteAction.EVENEMENT,
+						"@" + fr.lhdp.compagnon.espece.Espece.INSPECTION_DEBUT,
+						"@" + fr.lhdp.compagnon.espece.Espece.INSPECTION_BOUCLE,
+						"@" + fr.lhdp.compagnon.espece.Espece.INSPECTION_FIN);
+				if (!inspection) {
+					String role = SceneAffectiveGoal.premierRoleDisponible(this.compagnon,
+							fr.lhdp.compagnon.espece.Espece.SURPRIS,
+							fr.lhdp.compagnon.espece.Espece.ECOUTE,
+							fr.lhdp.compagnon.espece.Espece.JOIE,
+							fr.lhdp.compagnon.espece.Espece.JOYEUX);
+					if (role != null) {
+						this.compagnon.jouerActionPendant("@" + role, 30,
+								PrioriteAction.EVENEMENT);
+					}
 				}
 			}
 			return;

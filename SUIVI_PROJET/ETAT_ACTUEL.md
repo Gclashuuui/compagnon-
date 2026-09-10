@@ -13,6 +13,9 @@
 - Deux habitudes quotidiennes décalées par UUID donnent un réveil et un retour au
   calme non synchronisés. L'approche sociale distingue désormais personne connue
   et inconnue et choisit des rôles d'animation différents.
+- Les 30 micro-animations du dragonnet sont intégrées sans modifier les 72
+  anciennes. Une file bornée enchaîne inspection, fin d'approche affectueuse et
+  salut social ; ennui et détente après alerte disposent de gestes contextuels.
 - Les animations sont choisies par rôle afin qu'une espèce puisse remplacer ses
   gestes sans modifier le code Java.
 - La voix fonctionne hors ligne avec Plasmo Voice, Vosk et un mode de diagnostic.
@@ -77,7 +80,7 @@
 ## Vérification connue
 
 - Dernière compilation complète réussie.
-- 166 tests automatisés réussis.
+- 167 tests automatisés réussis.
 - Les cinq thèmes merveilleux sont présents dans le JAR avec leurs 12 ressources
   propres chacun ; aucun de leurs éléments ne retombe sur le thème Sylvestre.
 - La validation visuelle finale doit toujours être faite dans Minecraft.
