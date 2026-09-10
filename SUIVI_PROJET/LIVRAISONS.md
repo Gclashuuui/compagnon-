@@ -1,5 +1,17 @@
 # Livraisons
 
+## Recentrage de la bibliothèque
+
+- Commit : `ba42271` — Aperçus reculés et typographie recalibrée.
+- Les livres sont désormais affichés entièrement en 54 × 36 pixels, centrés et
+  sans étirement ni rognage.
+- « Bibliothèque des apparences » tient sur une ligne centrée dans son cartouche.
+- Titre, filtres et noms utilisent la police régulière `minecraft:uniform` avec
+  une échelle propre à chaque zone.
+- JAR local : `build/libs/compagnon-0.1.0.jar`.
+- SHA-256 : `BA753812A6FD55150B04653CFC461C6B9DF8EFF0FE7D435E316F8B30ABA81A67`.
+- Vérification : compilation réussie, 153 tests réussis.
+
 ## HUD de santé RP minimal
 
 - Commit : `bed5c25` — HUD permanent compact et galerie mieux cadrée.
